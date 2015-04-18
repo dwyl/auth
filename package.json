@@ -1,0 +1,29 @@
+{
+  "name": "hapi-login",
+  "version": "1.0.0",
+  "description": "A Complete Login Solution for Hapi.js Apps/APIs ",
+  "main": "index.js",
+  "scripts": {
+    "test": "tape"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nelsonic/hapi-login.git"
+  },
+  "keywords": [
+    "Hapi",
+    "Hapi.js",
+    "Login",
+    "End-to-End",
+    "Complete",
+    "Solution",
+    "Tested",
+    "Production"
+  ],
+  "author": "@nelsonic <contact.nelsonic@gmail.com> (https://github.com/nelsonic)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nelsonic/hapi-login/issues"
+  },
+  "homepage": "https://github.com/nelsonic/hapi-login"
+}
