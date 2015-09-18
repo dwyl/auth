@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/nelsonic/hapi-login.git"
+    "url": "https://github.com/dwyl/hapi-login.git"
   },
   "keywords": [
     "Hapi",
@@ -23,12 +23,21 @@
   "author": "@nelsonic <contact.nelsonic@gmail.com> (https://github.com/nelsonic)",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/nelsonic/hapi-login/issues"
+    "url": "https://github.com/dwyl/hapi-login/issues"
   },
-  "homepage": "https://github.com/nelsonic/hapi-login",
+  "homepage": "https://github.com/dwyl/hapi-login",
+  "engines": {
+    "node": ">=4.0"
+  },
   "devDependencies": {
-    "bell": "^3.0.0",
-    "hapi": "^8.5.3"
+    "aguid": "^1.0.3",
+    "hapi": "^10.0.0",
+    "codeclimate-test-reporter": "^0.1.0",
+    "istanbul": "^0.3.19",
+    "jshint": "^2.8.0",
+    "pre-commit": "^1.1.1",
+    "tap-spec": "^4.1.0",
+    "tape": "^4.2.0"
   },
   "dependencies": {
     "bell": "^5.1.0",

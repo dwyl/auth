@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Hapi Login
 
 A ***Complete Login Solution*** for **Hapi.js** Apps/APIs to get you
@@ -29,12 +28,19 @@ so that we can *rely* on the package for our *high-traffic/security* projects.
 If you spot any area for improvement, please create an issue:
 https://github.com/dwyl/hapi-login/issues so we can discuss!
 
-## How?
+
+## How? [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/ideaq/time/issues)
 
 As the name suggests, this plugin is built for apps built with the  [Hapi.js](https://github.com/nelsonic/learn-hapi) web framework.  
 If you or *anyone* on your team are new to Hapi, we
 have an **introductory tutorial**: https://github.com/nelsonic/learn-hapi
 
+### Basic Login
+
+
+
+
+### Google Auth
 
 
 
