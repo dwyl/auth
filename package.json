@@ -25,5 +25,9 @@
   "bugs": {
     "url": "https://github.com/nelsonic/hapi-login/issues"
   },
-  "homepage": "https://github.com/nelsonic/hapi-login"
+  "homepage": "https://github.com/nelsonic/hapi-login",
+  "devDependencies": {
+    "bell": "^3.0.0",
+    "hapi": "^8.5.3"
+  }
 }

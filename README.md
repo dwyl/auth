@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Hapi Login
 
 A ***Complete Login Solution*** for **Hapi.js** Apps/APIs to get you
@@ -56,3 +57,8 @@ identify (*authorise*) people returning to the site/app using a
 If you want to learn more about the [**dwyl**]()
 technology stack and how this module fits into it,
 please see: https://github.com/dwyl/technology-stack
+
+
+## Google Authentication
+
+> visit: https://console.developers.google.com to get started
