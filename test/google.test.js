@@ -1,71 +1,23 @@
-require('env2')('.env');
-// console.log(process.env);
-var google = require('googleapis');
-var OAuth2Client = google.auth.OAuth2;
-var CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
-var CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
-var REDIRECT_URL = 'http://localhost:8000/googleauth';
-var oauth2Client = new OAuth2Client(CLIENT_ID, CLIENT_SECRET, REDIRECT_URL);
-var plus = google.plus('v1');
+var test = require('tape');
+var nock = require('nock');
+var dir  = __dirname.split('/')[__dirname.split('/').length-1];
+var file = dir + __filename.replace(__dirname, '') + " > ";
 
-// var fs = require('fs');
-// var token_fixture = fs.readFileSync('./test/fixtures/sample-auth-token.json');
-// var nock = require('nock');
-// var scope = nock('https://accounts.google.com')
-//           .post('/o/oauth2/token')
-//           .reply(200, token_fixture);
+/*
+https://accounts.google.com/o/oauth2/auth?access_type=offline&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email&response_type=code&client_id=362187680368-27ov5qtji49d3skn6jtlom0l0lim4f7b.apps.googleusercontent.com&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fauth
+*/
 
-var Hapi = require('hapi');
-var server = new Hapi.Server();
-server.connection({
-	host: '0.0.0.0',
-	port: Number(process.argv[2] || 8000)
+// example nock test if you're unfamiliar with it.
+// nock intercepts an http request to a given resource/path
+nock('https://google.com').get('/hello').reply(200, 'hello world');
+
+test(file+'nock (mocking) example test', function(t) {
+  var Wreck = require('wreck');
+
+  Wreck.get('https://google.com/hello', function (err, res, payload) {
+    var result = payload.toString();
+    // console.log(' - - - - >'+result);
+    t.equal(result, 'hello world', "Result is: "+result);
+    t.end();
+  });
 });
-server.register(require('bell'), function (err) {
-	server.route([
-	  {
-	  	method: 'GET',
-	  	path: '/',
-	  	handler: function(req, reply) {
-				var url = oauth2Client.generateAuthUrl({
-					access_type: 'offline', // will return a refresh token
-					scope: 'https://www.googleapis.com/auth/plus.profile.emails.read'
-					// can be a space-delimited string or an array of scopes
-				});
-	      reply("<a href='" + url +"'>Click to Login!</a>" );
-	  	}
-	  },
-	  {
-	    method: '*',
-	    path: '/googleauth',
-	    handler: function(req, reply) {
-				var code = req.query.code;
-				console.log(' - - - - - - - - - - - - code:');
-				console.log(code);
-				// get the Oauth2 Token
-				oauth2Client.getToken(code, function(err, tokens) {
-		      console.log(' - - - - - - - - - - - - - - - - - - - tokens:');
-	      	console.log(JSON.stringify(tokens));
-		      console.log(' \n \n');
-		      // set tokens to the client
-		      // TODO: tokens should be set by OAuth2 client.
-		      oauth2Client.setCredentials(tokens);
-					plus.people.get({ userId: 'me', auth: oauth2Client }, function(err, profile) {
-						if (err) {
-							console.log('An error occured', err);
-							return;
-						}
-						console.log( JSON.stringify(profile) );
-						reply("Hello " +profile.name.givenName + " You Logged in Using Goolge!");
-					});
-		    });
-	    }
-	  }
-	]);
-});
-
-server.start(function(){ // boots your server
-	console.log('Now Visit: http://localhost:'+server.info.port);
-});
-
-module.exports = server;
