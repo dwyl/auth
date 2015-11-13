@@ -3,7 +3,7 @@ var nock = require('nock');
 var dir  = __dirname.split('/')[__dirname.split('/').length-1];
 var file = dir + __filename.replace(__dirname, '') + " > ";
 
-var server = require('./google.server.js');
+var server = require('../lib/google.server.js');
 
 test(file+'Visit / root url expect to see a link', function(t) {
   var options = {
