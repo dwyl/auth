@@ -31,28 +31,7 @@ server.register(require('bell'), function (err) {
 	  {
 	    method: '*',
 	    path: '/googleauth',
-	    handler: function(req, reply) {
-				var code = req.query.code;
-				console.log(' - - - - - - - - - - - - code:');
-				console.log(code);
-				// get the Oauth2 Token
-				oauth2Client.getToken(code, function(err, tokens) {
-		      console.log(' - - - - - - - - - - - - - - - - - - - tokens:');
-	      	console.log(JSON.stringify(tokens));
-		      console.log(' \n \n');
-		      // set tokens to the client
-		      // TODO: tokens should be set by OAuth2 client.
-		      oauth2Client.setCredentials(tokens);
-					plus.people.get({ userId: 'me', auth: oauth2Client }, function(err, profile) {
-						if (err) {
-							console.log('An error occured', err);
-							return;
-						}
-						console.log( JSON.stringify(profile) );
-						reply("Hello " +profile.name.givenName + " You Logged in Using Goolge!");
-					});
-		    });
-	    }
+	    handler: require('../lib/google_oauth_handler.js')
 	  }
 	]);
 });
