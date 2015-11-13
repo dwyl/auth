@@ -42,6 +42,8 @@ https://github.com/dwyl/hapi-login
 
 ### Google Auth
 
+We are using the Google
+
 
 
 
@@ -69,3 +71,8 @@ please see: https://github.com/dwyl/technology-stack
 ## Google Authentication
 
 > visit: https://console.developers.google.com to get started
+
+## Recommended Reading
+
++ Introduction to OAuth2:
+https://www.digitalocean.com/community/tutorials/an-introduction-to-oauth-2
