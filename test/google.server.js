@@ -8,18 +8,11 @@ var REDIRECT_URL = 'http://localhost:8000/googleauth';
 var oauth2Client = new OAuth2Client(CLIENT_ID, CLIENT_SECRET, REDIRECT_URL);
 var plus = google.plus('v1');
 
-// var fs = require('fs');
-// var token_fixture = fs.readFileSync('./test/fixtures/sample-auth-token.json');
-// var nock = require('nock');
-// var scope = nock('https://accounts.google.com')
-//           .post('/o/oauth2/token')
-//           .reply(200, token_fixture);
-
 var Hapi = require('hapi');
 var server = new Hapi.Server();
 server.connection({
 	host: '0.0.0.0',
-	port: Number(process.argv[2] || 8000)
+	port: Number(process.env.PORT || 8000)
 });
 server.register(require('bell'), function (err) {
 	server.route([

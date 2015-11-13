@@ -9,7 +9,7 @@ nock('https://google.com').get('/hello').reply(200, 'hello world');
 
 test(file+'nock (mocking) example test', function(t) {
   var Wreck = require('wreck');
-
+  // when we issue an HTTP GET request to "google" it is intercepted by nock
   Wreck.get('https://google.com/hello', function (err, res, payload) {
     var result = payload.toString();
     // console.log(' - - - - >'+result);
