@@ -37,26 +37,34 @@ have an **introductory tutorial**: https://github.com/nelsonic/learn-hapi
 
 ### Basic Login
 
-https://github.com/dwyl/hapi-login
+If all you need is the ability to let people login to your app/website
+using an email/username and password,
+see: https://github.com/dwyl/hapi-login
 
 
 ### Google Auth
 
-We are using the Google
+We are using the Googles to let people sign into our App(s)
+[@dwylhq](https://github.com/dwyl)
+because we *all* use Gmail and Google Calendar *personally*,
+so it makes sense.
+
+
 
 
 
 
 ### Dependencies
 
-+ [**hapi-auth-basic**](https://github.com/hapijs/hapi-auth-basic) -
-we use the "*standard*" package for username & password style authentication.
-+ [**bell**](https://github.com/hapijs/bell) - powers the Google, Facebook,
-Twitter & LinkedIn Authentication
++ [**google-api-nodejs-client**](https://www.npmjs.com/package/googleapis) -
+handles authentication with Google and access to other Google Services. [![Build Status](https://travis-ci.org/google/google-api-nodejs-client.svg?branch=master)](https://travis-ci.org/google/google-api-nodejs-client) [![Coverage Status](https://coveralls.io/repos/google/google-api-nodejs-client/badge.svg?branch=master&service=github)](https://coveralls.io/github/google/google-api-nodejs-client?branch=master) [![Dependency Status](https://david-dm.org/google/google-api-nodejs-client.svg)](https://david-dm.org/google/google-api-nodejs-client)
+
 + [**hapi-auth-jwt2**](https://github.com/dwyl/hapi-auth-jwt2) -
 lets us track the session for people who have logged in and
 identify (*authorise*) people returning to the site/app using a
-[JSON Web Token](https://github.com/dwyl/learn-json-web-tokens)
+[JSON Web Token](https://github.com/dwyl/learn-json-web-tokens) [![Build Status](https://travis-ci.org/dwyl/hapi-auth-jwt2.svg?branch=master)](https://travis-ci.org/dwyl/hapi-auth-jwt2) [![codecov.io](https://codecov.io/github/dwyl/hapi-auth-jwt2/coverage.svg?branch=master)](https://codecov.io/github/dwyl/hapi-auth-jwt2?branch=master) [![Dependency Status](https://david-dm.org/dwyl/hapi-auth-jwt2.svg)](https://david-dm.org/dwyl/hapi-auth-jwt2)
+
++ [**bell**](https://github.com/hapijs/bell) - Facebook, Twitter & LinkedIn Authentication
 
 ## Research
 

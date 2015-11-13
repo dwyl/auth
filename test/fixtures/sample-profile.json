@@ -2,15 +2,15 @@
   "kind": "plus#person",
   "etag": "\"MrhFVuKLF7zHXL6gE2l7cEdzuiA/TG8DHZwichjBK-RV9CBqN60PIW8\"",
   "emails": [{
-    "value": "hello.world@gmail.com",
+    "value": "alex.smith@gmail.com",
     "type": "account"
   }],
   "objectType": "person",
   "id": "100760152254779061594",
-  "displayName": "Hello World",
+  "displayName": "Alex Smith",
   "name": {
-    "familyName": "Hello",
-    "givenName": "World"
+    "familyName": "Smith",
+    "givenName": "Alex"
   },
   "url": "https://plus.google.com/100760152254779061594",
   "image": {
@@ -18,6 +18,6 @@
     "isDefault": true
   },
   "isPlusUser": true,
-  "circledByCount": 0,
+  "circledByCount": 1,
   "verified": false
 }
