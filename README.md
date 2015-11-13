@@ -37,10 +37,11 @@ have an **introductory tutorial**: https://github.com/nelsonic/learn-hapi
 
 ### Basic Login
 
-
+https://github.com/dwyl/hapi-login
 
 
 ### Google Auth
+
 
 
 
