@@ -8,7 +8,7 @@
     "jshint": "./node_modules/jshint/bin/jshint -c .jshintrc --exclude-path .gitignore .",
     "spec": "node ./node_modules/tape/bin/tape ./test/*.test.js | node_modules/tap-spec/bin/cmd.js",
     "test": "./node_modules/.bin/istanbul cover ./node_modules/tape/bin/tape ./test/*.test.js",
-    "start":"node_modules/.bin/nodemon test/google.server.js"
+    "start": "node_modules/.bin/nodemon test/google.server.js"
   },
   "repository": {
     "type": "git",
@@ -37,6 +37,7 @@
     "aguid": "^1.0.3",
     "env2": "^2.0.4",
     "hapi": "^10.5.0",
+    "hoek": "^3.0.4",
     "istanbul": "^0.3.19",
     "jshint": "^2.8.0",
     "nock": "^2.18.1",
