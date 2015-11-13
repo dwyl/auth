@@ -49,8 +49,16 @@ We are using the Googles to let people sign into our App(s)
 because we *all* use Gmail and Google Calendar *personally*,
 so it makes sense.
 
+To enable Google Auth you will need to have two Environment Variables set:
+```sh
+GOOGLE_CLIENT_ID=YourAppsClientId.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=SuperSecret
+```
 
-
+You will need to create an App on https://console.developers.google.com
+and get your `CLIENT_ID` & `CLIENT_SECRET`.
+We export these two variables prefixed with `GOOGLE_`
+to distinguish them from other services.
 
 
 
