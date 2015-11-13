@@ -4,7 +4,7 @@ var google = require('googleapis');
 var OAuth2Client = google.auth.OAuth2;
 var CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 var CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
-var REDIRECT_URL = 'http://localhost:8000/auth';
+var REDIRECT_URL = 'http://localhost:8000/googleauth';
 var oauth2Client = new OAuth2Client(CLIENT_ID, CLIENT_SECRET, REDIRECT_URL);
 var plus = google.plus('v1');
 
@@ -37,7 +37,7 @@ server.register(require('bell'), function (err) {
 	  },
 	  {
 	    method: '*',
-	    path: '/auth',
+	    path: '/googleauth',
 	    handler: function(req, reply) {
 				var code = req.query.code;
 				console.log(' - - - - - - - - - - - - code:');
