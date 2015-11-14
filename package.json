@@ -48,6 +48,7 @@
     "wreck": "^7.0.0"
   },
   "dependencies": {
+    "bell": "^6.0.0",
     "googleapis": "^2.1.6",
     "hapi-auth-jwt2": "^5.0.7"
   }
