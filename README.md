@@ -40,6 +40,16 @@ As the name suggests, this plugin is built for apps built with the  [Hapi.js](ht
 If you or *anyone* on your team are new to Hapi, we
 have an **introductory tutorial**: https://github.com/nelsonic/learn-hapi
 
+### Environment Variables?
+
+This plugin checks for the presence of
+*specific* **Environment Variables**
+to enable each authentication provider.
+
+If you are new to Environment Variables,
+see: https://github.com/dwyl/learn-environment-variables
+
+
 ### Basic Login
 
 If all you need is the ability to let people login to your app/website
@@ -49,17 +59,16 @@ see: https://github.com/dwyl/hapi-login
 
 ### Google Auth
 
-We are using the Googles to let people sign into our App(s)
-[@dwylhq](https://github.com/dwyl)
-because we *all* use Gmail and Google Calendar *personally*,
-so it makes sense.
+There are
+[***900 Million***](http://techcrunch.com/2015/05/28/gmail-now-has-900m-active-users-75-on-mobile/) using GMail so offering people the option of logging into
+your App(s) using their Google Account makes a lot of sense.
 
 To enable Google Auth you will need to have two Environment Variables set:
 ```sh
 GOOGLE_CLIENT_ID=YourAppsClientId.apps.googleusercontent.com
 GOOGLE_CLIENT_SECRET=SuperSecret
 ```
-
+To *get* these Environment Variables,
 You will need to create an App on https://console.developers.google.com
 and get your `CLIENT_ID` & `CLIENT_SECRET`.
 We export these two variables prefixed with `GOOGLE_`
