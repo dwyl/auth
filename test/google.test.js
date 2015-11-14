@@ -22,7 +22,7 @@ var fs = require('fs');
 var token_fixture = fs.readFileSync('./test/fixtures/sample-auth-token.json');
 var nock = require('nock');
 var scope = nock('https://accounts.google.com')
-          .persist()
+          .persist() // https://github.com/pgte/nock#persist
           .post('/o/oauth2/token')
           .reply(200, token_fixture);
 
