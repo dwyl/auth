@@ -3,6 +3,11 @@
 A ***Complete Login Solution*** for **Hapi.js** Apps/APIs to get you
 ***up and running*** in the next ***5 minutes***.
 
+[![Build Status](https://travis-ci.org/dwyl/hapi-auth.svg)](https://travis-ci.org/dwyl/hapi-auth)
+[![codecov.io](https://codecov.io/github/dwyl/hapi-auth/coverage.svg?branch=master)](https://codecov.io/github/dwyl/hapi-auth?branch=master)
+[![Dependency Status](https://david-dm.org/dwyl/hapi-auth.svg)](https://david-dm.org/dwyl/hapi-auth)
+
+
 ## Why?
 
 Letting people login to your App/API is *essential* any time

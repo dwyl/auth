@@ -1,5 +1,5 @@
 {
-  "name": "hapi-login",
+  "name": "hapi-auth",
   "version": "1.0.1",
   "description": "A Complete Login Solution for Hapi.js Apps/APIs ",
   "main": "index.js",
