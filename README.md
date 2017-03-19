@@ -27,6 +27,8 @@ As a developer, _using_ this module you can _rest assured_ that
 + all the auth-related code is ***well documented, tested & maintained***.
 + when ever there is an update in the underlying modules (_dependencies_)
 they will be **updated** and throughly tested in a ***timely manner***.
++ All ***personally identifiable information*** is stored in a logically
+separate place from your application so you have added security.
 + you only have to **update _one_ thing**
 and your app continues to work as expected.
 
@@ -67,16 +69,20 @@ If you or *anyone* on your team are new to Phoenix, we
 have an **introductory tutorial**:
 [github.com/dwyl/**learn-phoenix-framework**](https://github.com/dwyl/learn-phoenix-framework)
 
-### 1-Minute Setup
+### _One Minute_ Setup
 
 
 
 To start your Phoenix app:
 
-  * Install dependencies with `mix deps.get`
-  * Create and migrate your database with `mix ecto.create && mix ecto.migrate`
-  * Install Node.js dependencies with `npm install`
-  * Start Phoenix endpoint with `mix phoenix.server`
++ Install dependencies with `mix deps.get`
+
++ Create and migrate your database with `mix ecto.create && mix ecto.migrate` <br />
+(_ensure that PostgreSQL is running on your localhost before you
+  run these commands_)
++ Install Node.js dependencies with `npm install`
+
++ Start Phoenix endpoint with `mix phoenix.server`
 
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
@@ -135,6 +141,8 @@ rather than having the ingredients for the meal, we want the meal to be _ready_!
 
 # tl;dr
 
+## Frequently Asked/Answered Questions
+
 ### Why NOT Use a Service Like Auth0, Cognito, Stormpath, etc?
 
 There are _several_ "Authentication-as-a-Service" providers
@@ -151,6 +159,14 @@ and "not have to think about auth" then go for it!
 _This_ repo/project is for people who _do_ want to think about auth,
 want to _know_ where sensitive data is stored and want to
 be able to extend the code if they choose to.
+
+### Phoenix Has a Session System Already, Does this Use It?
+
+Phoenix has a built-in mechanism for sessions:
+http://www.phoenixframework.org/docs/sessions
+
+This project _uses_ and _extends_ it to support several 3rd party auth services.
+
 
 ## Research
 
