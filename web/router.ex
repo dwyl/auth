@@ -1,5 +1,6 @@
 defmodule Auth.Router do
   use Auth.Web, :router
+  require Ueberauth
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -13,11 +14,22 @@ defmodule Auth.Router do
     plug :accepts, ["json"]
   end
 
+  scope "/auth", Auth do
+    pipe_through :browser
+
+    get "/:provider", AuthController, :request
+    get "/:provider/callback", AuthController, :callback
+    post "/:provider/callback", AuthController, :callback
+    post "/identity/callback", AuthController, :identity_callback
+    delete "/logout", AuthController, :delete
+  end
+
   scope "/", Auth do
     pipe_through :browser # Use the default browser stack
 
     get "/", PageController, :index
   end
+
 
   # Other scopes may use custom stacks.
   # scope "/api", Auth do

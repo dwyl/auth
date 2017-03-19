@@ -130,11 +130,15 @@ to distinguish them from other services.
 
 ### Dependencies
 
-This project builds on the _fantastic_ work done
+This project builds on the _fantastic_ work done _many_
+people in the Elixir/Phoenix community.
++ Phoenix default session handling
+(_so your app handles sessions for authenticated users the same way
+  the example apps in all the Phoenix docs_)
++ ['ueberauth'](https://github.com/ueberauth/ueberauth)
 by @hassox & @scrogson & friends
-in ['ueberauth'](https://github.com/ueberauth/ueberauth)
-which in turn was _inspired by_
-[`omniauth`](https://github.com/omniauth/omniauth) (_ruby_).
+which is "_inspired by_"
+[`omniauth`](https://github.com/omniauth/omniauth) (_from Ruby land_).
 
 The purpose of _this_ project is to have a more "_turnkey_" solution
 rather than having the ingredients for the meal, we want the meal to be _ready_!
