@@ -7,6 +7,13 @@ defmodule Auth.Mixfile do
      elixir: "~> 1.2",
      elixirc_paths: elixirc_paths(Mix.env),
      compilers: [:phoenix, :gettext] ++ Mix.compilers,
+     test_coverage: [tool: ExCoveralls],
+     preferred_cli_env: [
+       "coveralls": :test,
+       "coveralls.detail": :test,
+       "coveralls.post": :test,
+       "coveralls.html": :test
+     ],
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      aliases: aliases(),
@@ -45,8 +52,11 @@ defmodule Auth.Mixfile do
       {:cowboy, "~> 1.0"},
 
       # Auth:
-      {:ueberauth, "~> 0.4"},         # github.com/ueberauth/ueberauth
-      {:ueberauth_identity, "~> 0.2"} # github.com/ueberauth/ueberauth_identity
+      {:ueberauth, "~> 0.4"},          # github.com/ueberauth/ueberauth
+      {:ueberauth_identity, "~> 0.2"}, # github.com/ueberauth/ueberauth_identity
+
+      # Dev/Test only:
+      {:excoveralls, "~> 0.6", only: :test},
     ]
   end
 
