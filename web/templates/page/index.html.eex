@@ -1,5 +1,5 @@
 <div cla<div class="jumbotron">
-  <h2>Überauth + Phoenix Example</h2>
+  <h2>Phoenix Authentication Example</h2>
   <p class="lead">
   This is an application to show an example of how to wire up
   <a href="https://github.com/ueberauth/ueberauth">Überauth</a> with

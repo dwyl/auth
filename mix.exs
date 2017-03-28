@@ -25,12 +25,15 @@ defmodule Auth.Mixfile do
   # Type `mix help compile.app` for more information.
   def application do
     [mod: {Auth, []},
-     applications: [
+    applications: [
       # phoenix defaults:
       :phoenix, :phoenix_pubsub, :phoenix_html,
       :cowboy, :logger, :gettext, :phoenix_ecto, :postgrex,
       # auth specific:
-      :ueberauth, :ueberauth_identity]]
+      :ueberauth, :ueberauth_identity,
+      # password encryption/checking for :ueberauth_identity
+      :comeonin,
+    ]]
   end
 
   # Specifies which paths to compile per environment.
@@ -54,6 +57,9 @@ defmodule Auth.Mixfile do
       # Auth:
       {:ueberauth, "~> 0.4"},          # github.com/ueberauth/ueberauth
       {:ueberauth_identity, "~> 0.2"}, # github.com/ueberauth/ueberauth_identity
+
+      # Password Hashing
+      {:comeonin, "~> 2.0"},           # github.com/riverrun/comeonin (bcrypt)
 
       # Dev/Test only:
       {:excoveralls, "~> 0.6", only: :test},

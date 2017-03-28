@@ -1,5 +1,6 @@
 defmodule Auth.AuthController do
   use Auth.Web, :controller
+  import Comeonin.Bcrypt, only: [checkpw: 2, dummy_checkpw: 0]
   plug Ueberauth
 
   alias Ueberauth.Strategy.Helpers
@@ -29,9 +30,14 @@ defmodule Auth.AuthController do
   def identity_callback(%{assigns: %{ueberauth_auth: auth}} = conn, params) do
     IO.puts "auth:"
     IO.inspect auth
-    case validate_password(auth.credentials) do
+    opts = {}
+    repo = Keyword.fetch!(opts, :repo)
+    user = repo.get_by(Rumbl.User, username: auth.username)
+    IO.inspect user
+    # case validate_password(auth.credentials) do
+    case user && checkpw(auth.password, user.password_hash) do
       :ok ->
-        user = %{id: auth.uid, name: name_from_auth(auth),
+        user = %{id: auth.uid, name: auth.name,
           avatar: auth.info.image}
         conn
         |> put_flash(:info, "Successfully authenticated.")
@@ -43,6 +49,8 @@ defmodule Auth.AuthController do
         |> redirect(to: "/")
     end
   end
+
+
 
   def delete(conn, _params) do
     conn
