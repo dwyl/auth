@@ -22,6 +22,9 @@ defmodule Auth.Router do
     post "/:provider/callback", AuthController, :callback
     post "/identity/callback", AuthController, :identity_callback
     delete "/logout", AuthController, :delete
+
+    get "/register", UserController, :register
+    post "/register", UserController, :register
   end
 
   scope "/", Auth do

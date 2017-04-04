@@ -2,7 +2,7 @@
   <h2>Phoenix Authentication Example</h2>
   <p class="lead">
   This is an application to show an example of how to wire up
-  <a href="https://github.com/ueberauth/ueberauth">Überauth</a> with
+  <a href="https://github.com/dwyl/auth">Authentication</a> with
   <a href="https://github.com/phoenixframework/phoenix">Phoenix</a>.
   </p>
 
@@ -16,17 +16,17 @@
       <i class="fa fa-github"></i>
       Sign in with GitHub
     </a>
-
+<!--
     <a class="btn btn-primary btn-lg" href="/auth/facebook">
       <i class="fa fa-facebook"></i>
       Sign in with Facebook
     </a>
-
+-->
     <a class="btn btn-primary btn-lg" href="/auth/google">
       <i class="fa fa-google"></i>
       Sign in with Google
     </a>
-
+<!--
     <a class="btn btn-primary btn-lg" href="/auth/slack">
       <i class="fa fa-slack"></i>
       Sign in with Slack
@@ -36,7 +36,7 @@
       <i class="fa fa-twitter"></i>
       Sign in with Twitter
     </a>
-
+-->
     <a class="btn btn-primary btn-lg" href="/auth/identity">
       <i class="fa fa-user"></i>
       Sign in with Username/Password

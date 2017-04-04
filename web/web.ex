@@ -36,6 +36,7 @@ defmodule Auth.Web do
 
       import Auth.Router.Helpers
       import Auth.Gettext
+      # import Auth.AuthController, only: [authenticate_user: 2] # New import
     end
   end
 

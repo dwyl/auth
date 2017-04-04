@@ -1,0 +1,46 @@
+defmodule Auth.User do
+  use Auth.Web, :model
+
+  schema "users" do
+    field :name, :string
+    field :username, :string
+    field :password, :string, virtual: true
+    field :password_hash, :string
+    timestamps
+  end
+
+  def changeset(model, params \\ :empty) do
+    model
+    |> cast(params, ~w(name username))
+    |> validate_required([:name, :username])
+    |> validate_length(:username, min: 1, max: 20)
+    |> unique_constraint(:username) # save unique_constraint for last as DB call
+  end
+
+  # def registration_changeset(model, params) do
+  #   model
+  #   |> changeset(params)
+  #   |> cast(params, ~w(password))
+  #   |> validate_length(:password, min: 6, max: 100)
+  #   |> put_pass_hash()
+  # end
+
+  # register with only email address
+  def register_changeset(model, params \\ :empty) do
+    IO.inspect params
+    model
+    |> IO.inspect
+    |> cast(params, ~w(username name))
+    |> validate_required([:username])
+    |> changeset(params)
+  end
+
+  defp put_pass_hash(changeset) do
+    case changeset do
+      %Ecto.Changeset{valid?: true, changes: %{password: pass}} ->
+        put_change(changeset, :password_hash, Comeonin.Bcrypt.hashpwsalt(pass))
+      _ -> # that underscore matches the error case
+        changeset
+    end
+  end
+end

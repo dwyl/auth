@@ -192,3 +192,5 @@ please see: https://github.com/dwyl/technology-stack
 
 + Introduction to OAuth2:
 https://www.digitalocean.com/community/tutorials/an-introduction-to-oauth-2
++ Forms in Phoenix:
+http://blog.plataformatec.com.br/2016/09/dynamic-forms-with-phoenix

@@ -1,8 +1,9 @@
 defmodule Auth.AuthController do
-  use Auth.Web, :controller
+  import Plug.Conn
   import Comeonin.Bcrypt, only: [checkpw: 2, dummy_checkpw: 0]
   plug Ueberauth
-
+  # plug :authenticate_user when action in [:index, :show]
+  alias Auth.User
   alias Ueberauth.Strategy.Helpers
 
   def callback(%{assigns: %{ueberauth_failure: _fails}} = conn, _params) do
@@ -32,7 +33,7 @@ defmodule Auth.AuthController do
     IO.inspect auth
     opts = {}
     repo = Keyword.fetch!(opts, :repo)
-    user = repo.get_by(Rumbl.User, username: auth.username)
+    user = repo.get_by(Auth.User, username: auth.username)
     IO.inspect user
     # case validate_password(auth.credentials) do
     case user && checkpw(auth.password, user.password_hash) do
@@ -50,7 +51,12 @@ defmodule Auth.AuthController do
     end
   end
 
-
+  def login(conn, user) do
+    conn
+    |> put_current_user(user)
+    |> put_session(:user_id, user.id)
+    |> configure_session(renew: true)
+  end
 
   def delete(conn, _params) do
     conn
@@ -60,8 +66,22 @@ defmodule Auth.AuthController do
   end
 
   def request(conn, _params) do
+    IO.inspect conn
     IO.inspect Helpers.callback_url(conn)
     render(conn, "request.html", callback_url: Helpers.callback_url(conn))
   end
 
+  import Phoenix.Controller
+  alias Auth.Router.Helpers
+
+  def authenticate_user(conn, _opts) do
+    if conn.assigns.current_user do
+      conn
+    else
+      conn
+      |> put_flash(:error, "You must be logged in to access that page")
+      |> redirect(to: Helpers.page_path(conn, :index))
+      |> halt()
+    end
+  end
 end
