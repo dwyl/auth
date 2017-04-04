@@ -1,4 +1,5 @@
 defmodule Auth.AuthController do
+  use Auth.Web, :controller
   import Plug.Conn
   import Comeonin.Bcrypt, only: [checkpw: 2, dummy_checkpw: 0]
   plug Ueberauth
@@ -53,7 +54,7 @@ defmodule Auth.AuthController do
 
   def login(conn, user) do
     conn
-    |> put_current_user(user)
+    |> assign(:current_user, user)
     |> put_session(:user_id, user.id)
     |> configure_session(renew: true)
   end
