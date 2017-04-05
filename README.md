@@ -61,6 +61,11 @@ This acts as a "double-opt-in" and ensures that our app is _able_
 to contact the person in the future
 e.g: to reset a password or send an update/notification.
 
+#### Why Email?
+
+We don't think "Auth" _can_ be done without _some_ form of verification.
+We could send SMS or "Native" Notifications but both _cost more_ than email.
+
 ## How?
 
 As the description suggests, this module is built for apps built with the
@@ -97,10 +102,16 @@ This plugin checks for the presence of
 _specific **Environment Variables**_
 to enable each authentication provider.
 
-A provider (_endpoint_) will only work if the Environment Variable is present.
+An authentication provider (_endpoint_) will only work
+if the Environment Variable(s) for that service are present.
 
-If you are new to Environment Variables,
+> If you are new to Environment Variables,
 see: https://github.com/dwyl/learn-environment-variables
+
+### Email
+
+
+
 
 ### Google Auth
 

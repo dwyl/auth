@@ -31,6 +31,8 @@ defmodule Auth.Mixfile do
       :cowboy, :logger, :gettext, :phoenix_ecto, :postgrex,
       # auth specific:
       :ueberauth, :ueberauth_identity,
+      # email
+      :bamboo,
       # password encryption/checking for :ueberauth_identity
       :comeonin,
     ]]
@@ -58,11 +60,16 @@ defmodule Auth.Mixfile do
       {:ueberauth, "~> 0.4"},          # github.com/ueberauth/ueberauth
       {:ueberauth_identity, "~> 0.2"}, # github.com/ueberauth/ueberauth_identity
 
+      # Email Sent by AWS SES see: https://git.io/vSuqc
+      {:bamboo, "~> 0.7"},             # github.com/thoughtbot/bamboo
+      {:bamboo_smtp, "~> 1.2.1"},      # github.com/fewlinesco/bamboo_smtp
+
       # Password Hashing
       {:comeonin, "~> 2.0"},           # github.com/riverrun/comeonin (bcrypt)
 
       # Dev/Test only:
-      {:excoveralls, "~> 0.6", only: :test},
+      {:excoveralls, "~> 0.6", only: :test}, # for checking test coverage
+      {:mock, "~> 0.2.0", only: :test}, # for testing email without sending any
     ]
   end
 

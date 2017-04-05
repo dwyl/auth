@@ -23,7 +23,7 @@
             </a>
           </li>
         </ul>
-        <span class="logo"></span>
+        <!-- <span class="logo"></span> -->
       </div>
 
       <p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
