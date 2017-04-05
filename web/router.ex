@@ -16,15 +16,13 @@ defmodule Auth.Router do
 
   scope "/auth", Auth do
     pipe_through :browser
-
+    get "/register", UserController, :register
+    post "/register", UserController, :register
     get "/:provider", AuthController, :request
     get "/:provider/callback", AuthController, :callback
     post "/:provider/callback", AuthController, :callback
     post "/identity/callback", AuthController, :identity_callback
     delete "/logout", AuthController, :delete
-
-    get "/register", UserController, :register
-    post "/register", UserController, :register
   end
 
   scope "/", Auth do

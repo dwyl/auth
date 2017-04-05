@@ -9,7 +9,7 @@ defmodule Auth.User do
     timestamps
   end
 
-  def changeset(model, params \\ :empty) do
+  def changeset(model, params \\ %{}) do
     model
     |> cast(params, ~w(name username))
     |> validate_required([:name, :username])
@@ -27,6 +27,7 @@ defmodule Auth.User do
 
   # register with only email address
   def register_changeset(model, params \\ :empty) do
+    IO.puts "register_changeset called"
     IO.inspect params
     model
     |> IO.inspect

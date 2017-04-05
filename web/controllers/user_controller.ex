@@ -32,8 +32,8 @@ defmodule Auth.UserController do
     end
   end
 
-
   def register(conn, %{"user" => user_params}) do
+    IO.puts ">>>> UserController.register called"
     email = user_params["username"]
     IO.inspect ">>>>> username: " <> email
     user_params = Map.put(user_params, "name",
@@ -45,10 +45,16 @@ defmodule Auth.UserController do
         conn
         |> Auth.AuthController.login(user)
         |> put_flash(:info, "#{user.name} created!")
-        |> redirect(to: user_path(conn, :index))
+        |> redirect(to: page_path(conn, :index))
       {:error, changeset} ->
         IO.inspect changeset
         render(conn, "register.html", changeset: changeset)
     end
+  end
+
+  # render the registration template/partial without any data
+  def register(conn, _params) do
+    changeset = User.changeset(%User{})
+    render conn, "register.html", changeset: changeset
   end
 end

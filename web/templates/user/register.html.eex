@@ -6,7 +6,6 @@
       <p>Opps, something went wrong! Please check the errors below.</p>
     </div>
   <% end %>
-
   <div class="form-group">
     <%= text_input f, :username, placeholder: "Email Address", class: "form-control" %>
     <%= error_tag f, :username %>
