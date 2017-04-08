@@ -7,8 +7,8 @@
     </div>
   <% end %>
   <div class="form-group">
-    <%= text_input f, :username, placeholder: "Email Address", class: "form-control" %>
-    <%= error_tag f, :username %>
+    <%= text_input f, :email, placeholder: "Email Address", class: "form-control" %>
+    <%= error_tag f, :email %>
   </div>
 
   <%= submit "Create User", class: "btn btn-primary" %>

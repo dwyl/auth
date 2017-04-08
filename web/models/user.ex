@@ -2,6 +2,7 @@ defmodule Auth.User do
   use Auth.Web, :model
 
   schema "users" do
+    field :email, :string
     field :name, :string
     field :username, :string
     field :password, :string, virtual: true
@@ -11,10 +12,11 @@ defmodule Auth.User do
 
   def changeset(model, params \\ %{}) do
     model
-    |> cast(params, ~w(name username))
-    |> validate_required([:name, :username])
-    |> validate_length(:username, min: 1, max: 20)
-    |> unique_constraint(:username) # save unique_constraint for last as DB call
+    |> cast(params, ~w(email name username))
+    |> validate_required([:email])
+    |> validate_format(:email, ~r/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/)
+    # |> validate_length(:username, min: 1, max: 20)
+    |> unique_constraint(:email) # save unique_constraint for last as DB call
   end
 
   # def registration_changeset(model, params) do
@@ -32,7 +34,7 @@ defmodule Auth.User do
     model
     |> IO.inspect
     |> cast(params, ~w(username name))
-    |> validate_required([:username])
+    # |> validate_required([:username])
     |> changeset(params)
   end
 

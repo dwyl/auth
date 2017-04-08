@@ -34,10 +34,10 @@ defmodule Auth.UserController do
 
   def register(conn, %{"user" => user_params}) do
     IO.puts ">>>> UserController.register called"
-    email = user_params["username"]
+    email = user_params["email"]
     IO.inspect ">>>>> username: " <> email
     user_params = Map.put(user_params, "name",
-      Enum.at(String.split(user_params["username"], "@"), 0))
+      Enum.at(String.split(email, "@"), 0))
     changeset = User.register_changeset(%User{}, user_params)
     # render(conn, "register.html", changeset: changeset)
     case Repo.insert(changeset) do
