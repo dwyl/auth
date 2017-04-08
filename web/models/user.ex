@@ -14,7 +14,7 @@ defmodule Auth.User do
     model
     |> cast(params, ~w(email name username))
     |> validate_required([:email])
-    |> validate_format(:email, ~r/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/)
+    |> validate_format(:email, ~r/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/)
     # |> validate_length(:username, min: 1, max: 20)
     |> unique_constraint(:email) # save unique_constraint for last as DB call
   end
