@@ -1,5 +1,5 @@
 <div cla<div class="jumbotron">
-  <h2>Phoenix Authentication Example</h2>
+  <h2 class="fl">Phoenix <strong>Auth</strong>entication <em>Example</em></h2>
   <p class="lead">
   This is an application to show an example of how to wire up
   <a href="https://github.com/dwyl/auth">Authentication</a> with
@@ -15,19 +15,20 @@
     <ul>
 
     </ul>
-    <a class="dn btn btn-primary btn-lg" href="/auth/github">
+    <a class="dib b pa3 ma1 ba b--black bw2 br3 grow pointer
+    f3 lh-solid white hover-white no-underline bg-black" href="/auth/github">
       <i class="fa fa-github"></i>
       Sign in with GitHub
     </a>
-<!--
-    <a class="btn btn-primary btn-lg" href="/auth/facebook">
-      <i class="fa fa-facebook"></i>
-      Sign in with Facebook
-    </a>
--->
-    <a class="btn btn-primary btn-lg" href="/auth/google">
+    <a class="dib b pa3 ma1 ba b--red bw2 br3 grow pointer f3 lh-solid
+    white hover-white no-underline shadow-hover bg-red link" href="/auth/google">
       <i class="fa fa-google"></i>
       Sign in with Google
+    </a>
+    <a class="dib b pa3 ma1 ba b--dark-green bw2 br3 grow pointer
+    f4 lh-solid white hover-white no-underline bg-green" href="/auth/identity">
+      <i class="fa fa-user"></i>
+      Login with Email Address
     </a>
 <!--
     <a class="btn btn-primary btn-lg" href="/auth/twitter">
@@ -35,9 +36,11 @@
       Sign in with Twitter
     </a>
 -->
-    <a class="btn btn-primary btn-lg" href="/auth/identity">
-      <i class="fa fa-user"></i>
-      Sign in with Username/Password
+<!--
+    <a class="btn btn-primary btn-lg" href="/auth/facebook">
+      <i class="fa fa-facebook"></i>
+      Sign in with Facebook
     </a>
+-->
   <% end %>
 </div>
