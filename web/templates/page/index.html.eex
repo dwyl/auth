@@ -1,46 +1,45 @@
-<div cla<div class="jumbotron">
-  <h2 class="fl">Phoenix <strong>Auth</strong>entication <em>Example</em></h2>
-  <p class="lead">
-  This is an application to show an example of how to wire up
-  <a href="https://github.com/dwyl/auth">Authentication</a> with
-  <a href="https://github.com/phoenixframework/phoenix">Phoenix</a>.
-  </p>
 
-  <%= if @current_user do %>
-    <h2>Welcome, <%= @current_user.name %>!</h2>
-    <img src="<%= @current_user.avatar %>" class="img-circle"/>
-    <%= link "Logout", to: auth_path(@conn, :delete), method: :delete, class: "btn btn-danger" %>
-    <br>
-  <% else %>
-    <ul>
+<h2 class="f3 f1-m f-headline-l">Phoenix <br /><strong>Auth</strong>entication <br /><em>Example</em></h2>
+<p class="measure lh-copy">
+This is an application to show an example of how to wire up
+<a href="https://github.com/dwyl/auth">Authentication</a> with
+<a href="https://github.com/dwyl/learn-phoenix-framework">Phoenix</a>.
+</p>
 
-    </ul>
-    <a class="dib b pa3 ma1 ba b--black bw2 br3 grow pointer
-    f3 lh-solid white hover-white no-underline bg-black" href="/auth/github">
-      <i class="fa fa-github"></i>
-      Sign in with GitHub
-    </a>
-    <a class="dib b pa3 ma1 ba b--red bw2 br3 grow pointer f3 lh-solid
-    white hover-white no-underline shadow-hover bg-red link" href="/auth/google">
-      <i class="fa fa-google"></i>
-      Sign in with Google
-    </a>
-    <a class="dib b pa3 ma1 ba b--dark-green bw2 br3 grow pointer
-    f4 lh-solid white hover-white no-underline bg-green" href="/auth/identity">
-      <i class="fa fa-user"></i>
-      Login with Email Address
-    </a>
+<%= if @current_user do %>
+  <h2>Welcome, <%= @current_user.name %>!</h2>
+  <img src="<%= @current_user.avatar %>" class="img-circle"/>
+  <%= link "Logout", to: auth_path(@conn, :delete), method: :delete, class: "btn btn-danger" %>
+  <br>
+<% else %>
+  <ul>
+
+  </ul>
+  <a class="dib b pa3 ma1 ba b--black bw2 br3 grow pointer
+  f3 lh-solid white hover-white no-underline bg-black" href="/auth/github">
+    <i class="fa fa-github"></i>
+    Sign in with GitHub
+  </a>
+  <a class="dib b pa3 ma1 ba b--red bw2 br3 grow pointer f3 lh-solid
+  white hover-white no-underline shadow-hover bg-red link" href="/auth/google">
+    <i class="fa fa-google"></i>
+    Sign in with Google
+  </a>
+  <a class="dib b pa3 ma1 ba b--dark-green bw2 br3 grow pointer
+  f4 lh-solid white hover-white no-underline bg-green" href="/auth/identity">
+    <i class="fa fa-user"></i>
+    Login with Email Address
+  </a>
 <!--
-    <a class="btn btn-primary btn-lg" href="/auth/twitter">
-      <i class="fa fa-twitter"></i>
-      Sign in with Twitter
-    </a>
+  <a class="btn btn-primary btn-lg" href="/auth/twitter">
+    <i class="fa fa-twitter"></i>
+    Sign in with Twitter
+  </a>
 -->
 <!--
-    <a class="btn btn-primary btn-lg" href="/auth/facebook">
-      <i class="fa fa-facebook"></i>
-      Sign in with Facebook
-    </a>
+  <a class="btn btn-primary btn-lg" href="/auth/facebook">
+    <i class="fa fa-facebook"></i>
+    Sign in with Facebook
+  </a>
 -->
-  <% end %>
-</div>
+<% end %>
