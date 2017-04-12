@@ -16,16 +16,20 @@
   <body>
     <div class="container" role="main">
 
-
-    <p class="w-90 ba br2 pa3 ma2 green bg-washed-green" role="alert">
-      <%= get_flash(@conn, :info) %>
-      <!-- temporary holding text while matching the bootstrap styles -->
-      <strong>Well done!</strong> You successfully read this important alert message.
-    </p>
-    <p class="w-90 ba br2 pa3 ma2 red bg-washed-red" role="alert">
-      <%= get_flash(@conn, :error) %>
-      <strong>Oh snap!</strong> Change a few things up and try submitting again.
-    </p>
+<% # Alerts for Info/Errors using Tachyons see: https://git.io/vSMY7
+  info = get_flash(@conn, :info)
+  error = get_flash(@conn, :error)
+%>
+<%= if info do %>
+  <p class="w-90 ba br2 pa3 ma2 green bg-washed-green" role="alert">
+    <%= info %>
+  </p>
+<% end %>
+<%= if error do %>
+<p class="w-90 ba br2 pa3 ma2 red bg-washed-red" role="alert">
+  <%= error %>
+</p>
+<% end %>
 
 
     <%= render @view_module, @view_template, assigns %>
