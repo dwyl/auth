@@ -7,8 +7,13 @@
 # Generated on crash by the VM
 erl_crash.dump
 
-# Static artifacts
-/node_modules
+# If NPM crashes, it generates a log, let's ignore it too.
+npm-debug.log
+
+# The directory NPM downloads your dependencies sources to.
+/assets/node_modules/
+
+/assets/package-lock.json
 
 # Since we are building assets from web/static,
 # we ignore priv/static. You may want to comment
@@ -23,3 +28,5 @@ erl_crash.dump
 # variables.
 /config/prod.secret.exs
 .env
+
+.elixir_ls

@@ -1,4 +1,4 @@
-defmodule Auth.ChannelCase do
+defmodule AuthWeb.ChannelCase do
   @moduledoc """
   This module defines the test case to be used by
   channel tests.
@@ -20,14 +20,8 @@ defmodule Auth.ChannelCase do
       # Import conveniences for testing with channels
       use Phoenix.ChannelTest
 
-      alias Auth.Repo
-      import Ecto
-      import Ecto.Changeset
-      import Ecto.Query
-
-
       # The default endpoint for testing
-      @endpoint Auth.Endpoint
+      @endpoint AuthWeb.Endpoint
     end
   end
 
