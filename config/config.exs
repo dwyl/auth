@@ -10,12 +10,11 @@ config :auth,
   ecto_repos: [Auth.Repo]
 
 # Configures the endpoint
-config :auth, Auth.Endpoint,
+config :auth, AuthWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "jUgd/S8tmMjbhzawyKI8ns2C3RbS04n0ClDVrLa7KjHLgDfcFJ6FS60BhvWBw/cg",
-  render_errors: [view: Auth.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: Auth.PubSub,
-           adapter: Phoenix.PubSub.PG2]
+  render_errors: [view: AuthWeb.ErrorView, accepts: ~w(html json)],
+  pubsub: [name: Auth.PubSub, adapter: Phoenix.PubSub.PG2]
 
 # Configures Elixir's Logger
 config :logger, :console,
@@ -25,7 +24,7 @@ config :logger, :console,
 # Configure Ueberauth providers
 config :ueberauth, Ueberauth,
   providers: [
-    github: { Ueberauth.Strategy.Github, [] }
+    github: {Ueberauth.Strategy.Github, []}
   ]
 
 config :ueberauth, Ueberauth.Strategy.Github.OAuth,
@@ -39,11 +38,13 @@ config :auth, Auth.Mailer,
   port: System.get_env("SES_PORT"),
   username: System.get_env("SMTP_USERNAME"),
   password: System.get_env("SMTP_PASSWORD"),
-  tls: :always, # can be `:always` or `:never`
-  ssl: false, # can be `true`
+  # can be `:always` or `:never`
+  tls: :always,
+  # can be `true`
+  ssl: false,
   retries: 1
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
-import_config "#{Mix.env}.exs"
-IO.inspect Mix.env
+import_config "#{Mix.env()}.exs"
+IO.inspect(Mix.env())

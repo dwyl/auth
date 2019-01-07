@@ -1,0 +1,17 @@
+<h1 class="">Register Your Email Address</h1>
+
+<%= form_for @changeset, Routes.user_path(@conn, :register), fn f -> %>
+  <%= if @changeset.action do %>
+    <div class="alert alert-danger">
+      <p>Opps, something went wrong! Please check the errors below.</p>
+    </div>
+  <% end %>
+  <div class="form-group mt3">
+    <%= text_input f, :email, placeholder: "Your Email Address",
+      class: "pa3 ma2 mr1 f3 ba bg-transparent w-100" %>
+    <%= error_tag f, :email %>
+  </div>
+  <%= submit "Save Email Address",
+  class: "b pa3 input-reset ba b--dark-green bw2 br3 bg-transparent
+  grow pointer f4 lh-solid white bg-green fr mr1" %>
+<% end %>

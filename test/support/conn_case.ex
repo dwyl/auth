@@ -1,4 +1,4 @@
-defmodule Auth.ConnCase do
+defmodule AuthWeb.ConnCase do
   @moduledoc """
   This module defines the test case to be used by
   tests that require setting up a connection.
@@ -19,16 +19,10 @@ defmodule Auth.ConnCase do
     quote do
       # Import conveniences for testing with connections
       use Phoenix.ConnTest
-
-      alias Auth.Repo
-      import Ecto
-      import Ecto.Changeset
-      import Ecto.Query
-
-      import Auth.Router.Helpers
+      alias AuthWeb.Router.Helpers, as: Routes
 
       # The default endpoint for testing
-      @endpoint Auth.Endpoint
+      @endpoint AuthWeb.Endpoint
     end
   end
 
