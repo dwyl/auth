@@ -1,7 +1,7 @@
 defmodule AuthWeb.AuthController do
   use AuthWeb, :controller
   import Plug.Conn
-  import Comeonin.Bcrypt, only: [checkpw: 2, dummy_checkpw: 0]
+  import Comeonin.Bcrypt, only: [checkpw: 2]
   plug(Ueberauth)
   # plug :authenticate_user when action in [:index, :show]
   alias Auth.User
@@ -30,12 +30,12 @@ defmodule AuthWeb.AuthController do
     end
   end
 
-  def identity_callback(%{assigns: %{ueberauth_auth: auth}} = conn, params) do
+  def identity_callback(%{assigns: %{ueberauth_auth: auth}} = conn, _params) do
     IO.puts("auth:")
     IO.inspect(auth)
     opts = {}
     repo = Keyword.fetch!(opts, :repo)
-    user = repo.get_by(Auth.User, username: auth.username)
+    user = repo.get_by(User, username: auth.username)
     IO.inspect(user)
     # case validate_password(auth.credentials) do
     case user && checkpw(auth.password, user.password_hash) do

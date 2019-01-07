@@ -69,9 +69,9 @@ defmodule Auth.Mixfile do
 
       # Email Sent by AWS SES see: https://git.io/vSuqc
       # github.com/thoughtbot/bamboo
-      {:bamboo, "~> 0.7"},
+      {:bamboo, "~> 1.1"},
       # github.com/fewlinesco/bamboo_smtp
-      {:bamboo_smtp, "~> 1.2.1"},
+      {:bamboo_smtp, "~> 1.6.0"},
 
       # Password Hashing
       # github.com/riverrun/comeonin (bcrypt)
