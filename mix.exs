@@ -48,8 +48,10 @@ defmodule Auth.Mixfile do
   #
   # Type `mix help deps` for examples and options.
   defp deps do
-    # Phoenix core:
     [
+      {:fields, git: "https://github.com/dwyl/fields.git", tag: "0.1.4"},
+      {:alog, git: "https://github.com/dwyl/alog.git", tag: "0.4.2"},
+      # Phoenix core:
       {:phoenix, "~> 1.4.0"},
       {:phoenix_pubsub, "~> 1.1"},
       {:phoenix_ecto, "~> 4.0"},

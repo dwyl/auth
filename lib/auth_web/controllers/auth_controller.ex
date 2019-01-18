@@ -31,26 +31,19 @@ defmodule AuthWeb.AuthController do
   end
 
   def identity_callback(%{assigns: %{ueberauth_auth: auth}} = conn, _params) do
-    IO.puts("auth:")
-    IO.inspect(auth)
-    opts = {}
-    repo = Keyword.fetch!(opts, :repo)
-    user = repo.get_by(User, username: auth.username)
-    IO.inspect(user)
-    # case validate_password(auth.credentials) do
-    case user && checkpw(auth.password, user.password_hash) do
-      :ok ->
-        user = %{id: auth.uid, name: auth.name, avatar: auth.info.image}
-
+    case Auth.Auth.validate_user(auth.uid, auth.credentials) do
+      {:ok, user} ->
         conn
-        |> put_flash(:info, "Successfully authenticated.")
-        |> put_session(:current_user, user)
-        |> redirect(to: "/")
+        |> Auth.login(user)
+        |> (fn c ->
+              case user.admin do
+                true -> redirect(c, to: "/admin")
+                false -> redirect(c, to: "/")
+              end
+            end).()
 
-      {:error, reason} ->
-        conn
-        |> put_flash(:error, reason)
-        |> redirect(to: "/")
+      err ->
+        redirect(conn, to: "/auth/identity")
     end
   end
 

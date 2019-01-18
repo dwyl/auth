@@ -1,23 +1,36 @@
 defmodule Auth.User do
   use Ecto.Schema
+  use Alog
   import Ecto.Changeset
 
   schema "users" do
-    field(:email, :string)
-    field(:name, :string)
-    field(:username, :string)
-    field(:password, :string, virtual: true)
-    field(:password_hash, :string)
+    field(:email, Fields.EmailEncrypted)
+    field(:email_hash, Fields.EmailHash)
+    field(:email_plaintext, Fields.EmailPlaintext, virtual: true)
+    field(:password, Fields.Password)
+    field(:entry_id, :string)
+    field(:deleted, :boolean, default: false)
+    field(:admin, :boolean, default: false)
+    field(:name, :string, virtual: true)
+    field(:username, :string, virtual: true)
+
     timestamps()
   end
 
-  def changeset(model, params \\ %{}) do
-    model
-    |> cast(params, ~w(email))
+  @doc false
+  def changeset(user, attrs \\ %{}) do
+    user
+    |> cast(attrs, [:email, :password, :admin])
     |> validate_required([:email])
-    |> validate_format(:email, ~r/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/)
-    # save unique_constraint for last as DB call
-    |> unique_constraint(:email)
+    |> put_email_hash()
+    |> unique_constraint(:email_hash)
+  end
+
+  def put_email_hash(user) do
+    case get_change(user, :email) do
+      nil -> user
+      email -> put_change(user, :email_hash, email)
+    end
   end
 
   def registration_changeset(model, params) do
