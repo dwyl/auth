@@ -30,6 +30,8 @@ defmodule AuthWeb.Router do
     pipe_through(:browser)
 
     get("/", PageController, :index)
+    get("/send-email", SendEmailController, :index)
+    post("/send-email", SendEmailController, :send_email)
     resources("/email", EmailController, only: [:index, :create])
     resources("/user", UserController, only: [:index, :create, :new, :show])
   end

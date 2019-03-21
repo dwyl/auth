@@ -1,0 +1,6 @@
+<p>Send an email</p>
+
+<%= form_for @conn, Routes.send_email_path(@conn, :send_email), fn f -> %>
+  <%= text_input f, :email %>
+  <%= submit "Send Email" %>
+<% end %>
