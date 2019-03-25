@@ -3,22 +3,19 @@ defmodule Auth.Email do
 
   def send_test_email(to_email_address, subject, message) do
     new_email()
-    |> from("nelson@dwyl.io") # also needs to be a validated email
+    # also needs to be a validated email
+    |> from("nelson@dwyl.io")
     |> to(to_email_address)
     |> subject(subject)
     |> text_body(message)
   end
 
-  def send_test_email_2(to_email_address, subject, link) do
+  def send_test_html_email(to_email_address, subject, link) do
     new_email()
     # also needs to be a validated email
     |> from("cleo@dwyl.com")
     |> to(to_email_address)
     |> subject(subject)
-    |> html_body(
-      EEx.eval_file(
-        "/Users/Cleo/Documents/dwyl/auth/lib/auth_web/templates/send_email/email.html.eex"
-      )
-    )
+    |> html_body(EEx.eval_file("./lib/auth_web/templates/html_email/email.html.eex"))
   end
 end

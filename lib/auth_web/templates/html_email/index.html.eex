@@ -1,0 +1,11 @@
+<section class="w-80 mt5 center">
+  <p>Send an email which contains a html template:</p>
+
+  <%= form_for @conn, Routes.html_email_path(@conn, :html_email), fn f -> %>
+    <div class="form-group pv3">
+      <%= label f, "Email address", class: "control-label" %>
+      <%= text_input f, :email %>
+    </div>
+    <%= submit "Send Html Email", class: "btn btn-primary" %>
+  <% end %>
+</section>
