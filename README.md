@@ -110,8 +110,28 @@ see: https://github.com/dwyl/learn-environment-variables
 
 ### Email
 
+This repo has two send email examples. One takes a string which becomes the body
+of the email, the other takes a html template. The two functions are defined in
+`lib/email.ex`. They use SES and Bamboo.
 
+For these functions to work you must have defined the following env variables:
+```
+SMTP_USERNAME
+SMTP_PASSWORD
+SES_SERVER
+SES_PORT
+```
 
+To understand more about how to set them up and how they work see the full
+tutorial here: https://github.com/dwyl/learn-phoenix-framework/blob/master/sending-emails.md
+
+To test out the string email go to the endpoint: `/email`
+To test out the html template email go to the endpoint: `/html-email`
+
+Using html gives you the ability to add an image. Inline styling gives you the
+ability to add colour, centering and padding like in the template in
+`html_email/email.html.eex`:
+![html-email](https://user-images.githubusercontent.com/16775804/54907608-d896a100-4edd-11e9-803e-d19af5e6d42f.png)
 
 ### Google Auth
 
