@@ -6,7 +6,7 @@ defmodule AuthWeb.HtmlEmailController do
   end
 
   def html_email(conn, %{"email" => email}) do
-    Auth.Email.send_test_html_email(email, "Email to me", "www.example_link.com")
+    Auth.Email.send_test_html_email(email, "Test email subject", "www.dwyl.com")
     |> Auth.Mailer.deliver_now()
 
     render(conn, "index.html")

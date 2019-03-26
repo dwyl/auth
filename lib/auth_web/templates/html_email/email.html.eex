@@ -12,7 +12,7 @@
   </p>
   <div style="text-align: center; margin-top: 3rem;">
     <a
-    href="/add_your_link_here"
+    href="<%= @link %>"
     style="font-family: arial; text-decoration: none; background-color: green; color: white; padding: 1rem; border-radius: 0.25rem;">
       Confirm your email
     </a>

@@ -1,5 +1,5 @@
 defmodule Auth.Email do
-  use Bamboo.Phoenix, view: Auth.EmailView
+  use Bamboo.Phoenix, view: AuthWeb.HtmlEmailView
 
   def send_test_email(to_email_address, subject, message) do
     new_email()
@@ -16,6 +16,7 @@ defmodule Auth.Email do
     |> from("cleo@dwyl.com")
     |> to(to_email_address)
     |> subject(subject)
-    |> html_body(EEx.eval_file("./lib/auth_web/templates/html_email/email.html.eex"))
+    |> assign(:link, link)
+    |> render("email.html")
   end
 end
