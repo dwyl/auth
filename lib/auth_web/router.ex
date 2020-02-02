@@ -25,6 +25,17 @@ defmodule AuthWeb.Router do
     delete("/logout", AuthController, :delete)
   end
 
+  scope "/", AuthWeb do
+    # Use the default browser stack
+    pipe_through(:browser)
+
+    get("/", PageController, :index)
+    get("/html-email", HtmlEmailController, :index)
+    post("/html-email", HtmlEmailController, :html_email)
+    resources("/email", EmailController, only: [:index, :create])
+    resources("/user", UserController, only: [:index, :create, :new, :show])
+  end
+
   # Other scopes may use custom stacks.
   # scope "/api", Auth do
   #   pipe_through :api
