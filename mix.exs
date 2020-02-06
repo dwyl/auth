@@ -49,14 +49,14 @@ defmodule Auth.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:fields, git: "https://github.com/dwyl/fields.git", tag: "0.1.4"},
-      {:alog, git: "https://github.com/dwyl/alog.git", tag: "0.4.2"},
+      {:fields, "~> 2.2.0"},
+      # {:alog, git: "https://github.com/dwyl/alog.git", tag: "0.4.2"},
       # Phoenix core:
-      {:phoenix, "~> 1.4.0"},
+      {:phoenix, "~> 1.4.12"},
       {:phoenix_pubsub, "~> 1.1"},
       {:phoenix_ecto, "~> 4.0"},
-      {:ecto_sql, "~> 3.0"},
-      {:postgrex, ">= 0.0.0"},
+      {:ecto_sql, "~> 3.3.3"},
+      {:postgrex, ">= 0.15.0"},
       {:phoenix_html, "~> 2.11"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:gettext, "~> 0.11"},
@@ -65,9 +65,9 @@ defmodule Auth.Mixfile do
 
       # Auth:
       # github.com/ueberauth/ueberauth
-      {:ueberauth, "~> 0.4"},
+      # {:ueberauth, "~> 0.4"},
       # github.com/ueberauth/ueberauth_identity
-      {:ueberauth_identity, "~> 0.2"},
+      # {:ueberauth_identity, "~> 0.2"},
 
       # Email Sent by AWS SES see: https://git.io/vSuqc
       # github.com/thoughtbot/bamboo
@@ -77,7 +77,7 @@ defmodule Auth.Mixfile do
 
       # Password Hashing
       # github.com/riverrun/comeonin (bcrypt)
-      {:comeonin, "~> 2.0"},
+      # {:comeonin, "~> 2.0"},
 
       # Dev/Test only:
       # for checking test coverage

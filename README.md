@@ -1,11 +1,22 @@
-# Elixir |> Phoenix |> Authentication
+<div align="center">
 
-A ***Complete Authentication Solution*** for **Phoenix** Apps/APIs
-to get you ***up and running*** in the next ***5 minutes***.
+# `auth`
 
-[![Build Status](https://travis-ci.org/dwyl/auth.svg)](https://travis-ci.org/dwyl/auth)
-[![codecov.io](https://codecov.io/github/dwyl/auth/coverage.svg?branch=master)](https://codecov.io/github/dwyl/auth?branch=master)
+A ***complete authentication solution*** for **Phoenix** Apps/APIs
+you can setup in ***5 minutes***.
 
+[![Build Status](https://img.shields.io/travis/dwyl/fields/master.svg?style=flat-square)](https://travis-ci.org/dwyl/fields)
+[![codecov.io](https://img.shields.io/codecov/c/github/dwyl/fields/master.svg?style=flat-square)](http://codecov.io/github/dwyl/fields?branch=master)
+[![Hex.pm](https://img.shields.io/hexpm/v/fields?color=brightgreen&style=flat-square)](https://hex.pm/packages/fields)
+[![docs](https://img.shields.io/badge/docs-maintained-brightgreen?style=flat-square)](https://hexdocs.pm/fields/api-reference.html)
+[![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat-square)](https://github.com/dwyl/fields/issues)
+<!--
+[![HitCount](http://hits.dwyl.io/dwyl/fields.svg)](http://hits.dwyl.io/dwyl/fields)
+<!-- uncomment when service is working ...
+[![Inline docs](http://inch-ci.org/github/dwyl/fields.svg?branch=master&style=flat-square)](http://inch-ci.org/github/dwyl/fields)
+-->
+
+</div>
 
 ## Why?
 
@@ -14,7 +25,7 @@ there is personalized content/functionality to display.
 
 We needed an *easy* way of doing Login/Authentication for our projects
 that we could drop into any project and be up-and-running in _minutes_
-and ***avoid*** "***re-inventing the wheel***".
+without worrying about complexity or maintenance.
 
 After much research and investigation, we decided to use a few *existing*
 **Elixir** modules together to form a re-useable "starter pack".
@@ -22,8 +33,8 @@ After much research and investigation, we decided to use a few *existing*
 ### What's In It For Me?
 
 As a developer, _using_ this module you can _rest assured_ that
-+ **all code** for **authentication** in _your_ app is
-**nicely contained & organized** in a ***single place**.
++ **all code** for **authentication** in _your_ app
+is **nicely contained & organized** in a ***single place***.
 + all the auth-related code is ***well documented, tested & maintained***.
 + when ever there is an update in the underlying modules (_dependencies_)
 they will be **updated** and throughly tested in a ***timely manner***.
@@ -37,9 +48,9 @@ and your app continues to work as expected.
 Login for Elixir/Phoenix Apps/APIs which gives you a set of routes
 and a predictable usage pattern.
 
-### Auth "Strategies"
+### What Can People Use to Authenticate?
 
-+ "***Basic***" - Username/Email and Password (_enabled by default_)
++ **Email+Password** - Email and Password (_enabled by default_)
 + **GitHub** - Allow people to login with their GitHub Account using OAuth2
 + **Google** - Let people authenticate with the most popular auth system!
 
@@ -49,7 +60,7 @@ Our *objective* is to **_extensively_ test every aspect** of this package
 so that we can *rely* on it for our *high-traffic/security* projects.
 
 If you spot _any_ area for improvement, please create an issue:
-https://github.com/dwyl/auth/issues so we can discuss. (_thanks!_)
+https://github.com/dwyl/auth/issues (_thanks!_)
 
 ### Email Verification
 
@@ -74,7 +85,7 @@ If you or *anyone* on your team are new to Phoenix, we
 have an **introductory tutorial**:
 [github.com/dwyl/**learn-phoenix-framework**](https://github.com/dwyl/learn-phoenix-framework)
 
-### _One Minute_ Setup
+### _5 Minute_ Setup
 
 
 
