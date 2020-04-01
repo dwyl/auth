@@ -37,12 +37,12 @@ defmodule Auth.Person do
       :picture
     ])
     |> validate_required([
-      :username,
+      # :username,
       :email,
-      :givenName,
-      :familyName,
-      :password_hash,
-      :key_id
+      # :givenName,
+      # :familyName,
+      # :password_hash,
+      # :key_id
     ])
     |> put_email_hash()
   end
