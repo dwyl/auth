@@ -45,3 +45,5 @@ auth-*.tar
 
 # The directory Mix downloads your dependencies sources to.
 /deps/
+
+*.DS_Store
