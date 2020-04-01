@@ -1,4 +1,4 @@
-defmodule App.Repo.Migrations.CreateSessionTable do
+defmodule Auth.Repo.Migrations.CreateSessionTable do
   use Ecto.Migration
 
   def change do

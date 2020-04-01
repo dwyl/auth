@@ -1,4 +1,4 @@
-defmodule App.Repo.Migrations.CreateStatus do
+defmodule Auth.Repo.Migrations.CreateStatus do
   use Ecto.Migration
 
   def change do

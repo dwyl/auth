@@ -1,4 +1,4 @@
-defmodule App.Repo.Migrations.CreateTags do
+defmodule Auth.Repo.Migrations.CreateTags do
   use Ecto.Migration
 
   def change do
