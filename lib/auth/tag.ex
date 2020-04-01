@@ -4,7 +4,7 @@ defmodule Auth.Tag do
 
   schema "tags" do
     field :text, :string
-    belongs_to :person, App.Ctx.Person
+    belongs_to :person, Auth.Person
     timestamps()
   end
 

@@ -17,7 +17,7 @@ defmodule Auth.Person do
     field :tag, :id
     field :key_id, :integer
 
-    has_many :sessions, App.Ctx.Session, on_delete: :delete_all
+    has_many :sessions, Auth.Session, on_delete: :delete_all
     timestamps()
   end
 
@@ -70,7 +70,7 @@ defmodule Auth.Person do
   end
 
   defp put_email_status_verified(changeset) do
-    status_verified = App.Ctx.get_status_verified()
+    status_verified = Auth.Status.get_status_verified()
 
     case changeset do
       %{valid?: true} ->

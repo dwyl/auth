@@ -4,7 +4,7 @@ defmodule Auth.Status do
 
   schema "status" do
     field :text, :string
-    belongs_to :person, App.Ctx.Person
+    belongs_to :person, Auth.Person
 
     timestamps()
   end
@@ -14,5 +14,9 @@ defmodule Auth.Status do
     status
     |> cast(attrs, [:text])
     |> validate_required([:text])
+  end
+
+  def get_status_verified() do
+    Auth.Repo.get_by(Status, text: "verified")
   end
 end

@@ -7,7 +7,7 @@ defmodule Auth.Session do
     field :refresh_token, Fields.Encrypted
     field :key_id, :integer
 
-    belongs_to :person, App.Ctx.Person
+    belongs_to :person, Auth.Person
     timestamps()
   end
 
