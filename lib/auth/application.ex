@@ -24,8 +24,11 @@ defmodule Auth.Application do
 
   # Tell Phoenix to update the endpoint configuration
   # whenever the application is updated.
+  # Sadly this is untestable hence ignoring it.
+  # coveralls-ignore-start
   def config_change(changed, _new, removed) do
     AuthWeb.Endpoint.config_change(changed, removed)
     :ok
   end
+  # coveralls-ignore-stop
 end
