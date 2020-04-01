@@ -1,8 +1,8 @@
 language: elixir
 elixir:
   - 1.7
-addons:
-  postgresql: '9.4'
+services:
+  - postgresql
 env:
   - MIX_ENV=test
 before_script:

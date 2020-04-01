@@ -4,7 +4,7 @@ defmodule Auth.Mixfile do
   def project do
     [
       app: :auth,
-      version: "0.0.1",
+      version: "1.0.0",
       elixir: "~> 1.5",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
@@ -28,15 +28,7 @@ defmodule Auth.Mixfile do
   def application do
     [
       mod: {Auth.Application, []},
-      extra_applications: [
-        # auth specific:
-        :ueberauth,
-        :ueberauth_identity,
-        # email
-        :bamboo,
-        # password encryption/checking for :ueberauth_identity
-        :comeonin
-      ]
+      extra_applications: [:logger, :runtime_tools]
     ]
   end
 
@@ -49,41 +41,26 @@ defmodule Auth.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:fields, "~> 2.2.0"},
-      # {:alog, git: "https://github.com/dwyl/alog.git", tag: "0.4.2"},
       # Phoenix core:
-      {:phoenix, "~> 1.4.12"},
+      {:phoenix, "~> 1.4.16"},
       {:phoenix_pubsub, "~> 1.1"},
       {:phoenix_ecto, "~> 4.0"},
-      {:ecto_sql, "~> 3.3.3"},
-      {:postgrex, ">= 0.15.0"},
+      {:ecto_sql, "~> 3.1"},
+      {:postgrex, ">= 0.0.0"},
       {:phoenix_html, "~> 2.11"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
 
+      # Field Validation and Encryption:
+      {:fields, "~> 2.3.1"},
+
       # Auth:
-      # github.com/ueberauth/ueberauth
-      # {:ueberauth, "~> 0.4"},
-      # github.com/ueberauth/ueberauth_identity
-      # {:ueberauth_identity, "~> 0.2"},
 
-      # Email Sent by AWS SES see: https://git.io/vSuqc
-      # github.com/thoughtbot/bamboo
-      {:bamboo, "~> 1.1"},
-      # github.com/fewlinesco/bamboo_smtp
-      {:bamboo_smtp, "~> 1.6.0"},
 
-      # Password Hashing
-      # github.com/riverrun/comeonin (bcrypt)
-      # {:comeonin, "~> 2.0"},
-
-      # Dev/Test only:
-      # for checking test coverage
+      # check test coverage
       {:excoveralls, "~> 0.6", only: :test},
-      # for testing email without sending any
-      {:mock, "~> 0.2.0", only: :test}
     ]
   end
 

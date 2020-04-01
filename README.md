@@ -32,7 +32,8 @@ After much research and investigation, we decided to use a few *existing*
 
 ### What's In It For Me?
 
-As a developer, _using_ this module you can _rest assured_ that
+As a developer, _using_ this module you can _rest assured_ that:
+
 + **all code** for **authentication** in _your_ app
 is **nicely contained & organized** in a ***single place***.
 + all the auth-related code is ***well documented, tested & maintained***.

@@ -1,7 +1,6 @@
 # App artifacts
 /_build
 /db
-/deps
 /*.ez
 
 # Generated on crash by the VM
@@ -20,6 +19,10 @@ npm-debug.log
 # this depending on your deployment strategy.
 /priv/static/
 
+
+# Ignore package tarball (built via "mix hex.build").
+auth-*.tar
+
 # The config/prod.secret.exs file by default contains sensitive
 # data and you should not commit it into version control.
 #
@@ -30,3 +33,15 @@ npm-debug.log
 .env
 
 .elixir_ls
+
+# If you run "mix test --cover", coverage assets end up here.
+/cover/
+
+# Ignore .fetch files in case you like to edit your project deps locally.
+/.fetch
+
+# Where 3rd-party dependencies like ExDoc output generated docs.
+/doc/
+
+# The directory Mix downloads your dependencies sources to.
+/deps/
