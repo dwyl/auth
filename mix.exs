@@ -4,8 +4,8 @@ defmodule Auth.Mixfile do
   def project do
     [
       app: :auth,
-      version: "1.0.0",
-      elixir: "~> 1.5",
+      version: "1.2.0",
+      elixir: "~> 1.9",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       test_coverage: [tool: ExCoveralls],
@@ -58,7 +58,7 @@ defmodule Auth.Mixfile do
 
       # Auth:
       {:elixir_auth_github, "~> 1.1"},
-      {:elixir_auth_google, "~> 1.1.5"},
+      {:elixir_auth_google, "~> 1.2.0"},
 
       # check test coverage
       {:excoveralls, "~> 0.6", only: :test},
