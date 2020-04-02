@@ -58,7 +58,7 @@ defmodule Auth.Mixfile do
 
       # Auth:
       {:elixir_auth_github, "~> 1.1"},
-      {:elixir_auth_google, "~> 1.1"},
+      {:elixir_auth_google, "~> 1.1.5"},
 
       # check test coverage
       {:excoveralls, "~> 0.6", only: :test},
