@@ -57,7 +57,7 @@ defmodule Auth.Mixfile do
       {:fields, "~> 2.3.1"},
 
       # Auth:
-      {:elixir_auth_github, "~> 1.1"},
+      {:elixir_auth_github, "~> 1.1.5"},
       {:elixir_auth_google, "~> 1.2.0"},
 
       # check test coverage
