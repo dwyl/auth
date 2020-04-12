@@ -17,6 +17,7 @@ defmodule AuthWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :index
+    get "/admin", PageController, :admin
     get "/auth/github/callback", GithubAuthController, :index
     get "/auth/google/callback", GoogleAuthController, :index
   end

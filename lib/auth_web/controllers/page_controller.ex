@@ -2,9 +2,9 @@ defmodule AuthWeb.PageController do
   use AuthWeb, :controller
 
   def index(conn, _params) do
-    get_referer(conn)
+    state = get_referer(conn)
     oauth_github_url =
-      ElixirAuthGithub.login_url(%{scopes: ["user:email"]})
+      ElixirAuthGithub.login_url(%{scopes: ["user:email"], state: state})
     oauth_google_url = ElixirAuthGoogle.generate_oauth_url(conn)
     render(conn, "index.html", [
       oauth_github_url: oauth_github_url,
@@ -12,17 +12,22 @@ defmodule AuthWeb.PageController do
     ])
   end
 
+  def admin(conn, _params) do
+    conn
+    |> put_view(AuthWeb.PageView)
+    |> render(:admin)
+  end
 
-  def get_referer(conn) do
-    # IO.inspect(conn, label: "extact_referer/1:16 conn")
+  defp get_referer(conn) do
     # https://stackoverflow.com/questions/37176911/get-http-referrer
     case List.keyfind(conn.req_headers, "referer", 0) do
       {"referer", referer} ->
-        IO.puts referer
+        IO.inspect referer, label: "referer"
+        referer
       nil ->
         IO.puts "no referer"
+        ""
     end
-    conn
   end
 
 end
