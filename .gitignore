@@ -47,3 +47,5 @@ auth-*.tar
 /deps/
 
 *.DS_Store
+*.idea
+*.iml
