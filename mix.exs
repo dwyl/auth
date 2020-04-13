@@ -54,14 +54,15 @@ defmodule Auth.Mixfile do
       {:plug_cowboy, "~> 2.0"},
 
       # Field Validation and Encryption:
-      {:fields, "~> 2.3.1"},
+      {:fields, "~> 2.4.0"},
 
       # Auth:
       {:elixir_auth_github, "~> 1.2.0"},
       {:elixir_auth_google, "~> 1.2.0"},
+      {:joken, "~> 2.2"},
 
       # check test coverage
-      {:excoveralls, "~> 0.6", only: :test},
+      {:excoveralls, "~> 0.12.3", only: :test},
     ]
   end
 
