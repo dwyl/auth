@@ -81,7 +81,7 @@ defmodule Auth.Mixfile do
   defp aliases do
     [
       "ecto.setup": ["ecto.create --quiet", "ecto.migrate --quiet", "seeds"],
-      "ecto.reset": ["ecto.drop --quiet", "ecto.setup"],
+      "ecto.reset": ["ecto.drop", "ecto.setup"],
       seeds: ["run priv/repo/seeds.exs"],
       test: ["ecto.reset", "test"]
     ]

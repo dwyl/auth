@@ -5,6 +5,6 @@ defmodule AuthWeb.GithubAuthControllerTest do
 
     conn = get(conn, Routes.github_auth_path(conn, :index,
       %{code: "123", state: "http://localhost/"}))
-    assert html_response(conn, 200) =~ "test@gmail.com"
+    assert html_response(conn, 302) =~ "http://localhost"  
   end
 end

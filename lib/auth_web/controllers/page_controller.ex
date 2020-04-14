@@ -12,7 +12,11 @@ defmodule AuthWeb.PageController do
     ])
   end
 
-  def admin(conn, _params) do
+  # https://github.com/dwyl/auth/issues/46
+  def admin(conn, params) do
+    IO.inspect(conn.req_headers, label: "conn.req_headers")
+    IO.inspect(params, label: "params")
+
     conn
     |> put_view(AuthWeb.PageView)
     |> render(:admin)

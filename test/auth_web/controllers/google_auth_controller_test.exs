@@ -5,6 +5,7 @@ defmodule AuthWeb.GoogleAuthControllerTest do
 
     conn = get(conn, Routes.google_auth_path(conn, :index,
       %{code: "234", state: "http://localhost/"}))
+
     assert html_response(conn, 200) =~ "nelson@gmail.com"
   end
 end

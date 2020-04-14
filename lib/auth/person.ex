@@ -1,6 +1,8 @@
 defmodule Auth.Person do
   use Ecto.Schema
   import Ecto.Changeset
+  alias Auth.Repo
+  alias __MODULE__ # https://stackoverflow.com/a/47501059/1148249
 
   schema "people" do
     field :email, Fields.EmailEncrypted
@@ -17,7 +19,8 @@ defmodule Auth.Person do
     field :tag, :id
     field :key_id, :integer
 
-    has_many :sessions, Auth.Session, on_delete: :delete_all
+    has_many :statuses, Auth.Status
+    # has_many :sessions, Auth.Session, on_delete: :delete_all
     timestamps()
   end
 
@@ -25,6 +28,8 @@ defmodule Auth.Person do
   Default attributes validation for Person
   """
   def changeset(person, attrs) do
+    # IO.inspect(person, label: "person")
+    # IO.inspect(attrs, label: "attrs")
     person
     |> cast(attrs, [
       :username,
@@ -44,7 +49,26 @@ defmodule Auth.Person do
       # :password_hash,
       # :key_id
     ])
+    # |> IO.inspect(label: "changeset (before email hash)")
     |> put_email_hash()
+  end
+
+  def create_google_person(profile) do
+    # IO.inspect(profile, label: "profile")
+    # IO.puts(" - - - - - - - - - - - - - - - - - ")
+    person = transform_profile_data_to_person(profile)
+    # IO.inspect(person, label: "person:60")
+    person = %Person{}
+    |> google_changeset(person)
+
+    case Person.get_person_by_email(profile.email) do
+      nil ->
+        Repo.insert!(person)
+
+      person ->
+        person
+    end
+
   end
 
   @doc """
@@ -59,27 +83,6 @@ defmodule Auth.Person do
     |> put_email_status_verified()
   end
 
-  defp put_email_hash(changeset) do
-    case changeset do
-      %{valid?: true, changes: %{email: email}} ->
-        put_change(changeset, :email_hash, email)
-
-      _ ->
-        changeset
-    end
-  end
-
-  defp put_email_status_verified(changeset) do
-    status_verified = Auth.Status.get_status_verified()
-
-    case changeset do
-      %{valid?: true} ->
-        put_change(changeset, :status, status_verified.id)
-
-      _ ->
-        changeset
-    end
-  end
 
   @doc """
   `transform_profile_data_to_person/1` transforms the profile data
@@ -113,6 +116,7 @@ defmodule Auth.Person do
     }
   """
   def transform_profile_data_to_person(profile) do
+    # IO.inspect(profile, label: "profile transform_profile_data_to_person/1")
     profile
     |> Map.put(:familyName, profile.family_name)
     |> Map.put(:givenName, profile.given_name)
@@ -134,6 +138,31 @@ defmodule Auth.Person do
     |> put_pass_hash()
   end
 
+  defp put_email_hash(changeset) do
+    # IO.inspect(changeset, label: "changeset put_email_hash/1")
+    # IO.inspect(changeset.data, label: "changeset.data")
+    case changeset do
+      %{valid?: true, data: %{email: email}} ->
+        put_change(changeset, :email_hash, email)
+        # |> IO.inspect(label: "changeset with :email_hash")
+
+      _ ->
+        changeset
+    end
+  end
+
+  defp put_email_status_verified(changeset) do
+    status_verified = Auth.Status.upsert_status("verified")
+
+    case changeset do
+      %{valid?: true} ->
+        put_change(changeset, :status, status_verified.id)
+
+      _ ->
+        changeset
+    end
+  end
+
   defp put_pass_hash(changeset) do
     case changeset do
       %Ecto.Changeset{valid?: true, changes: %{password: pass}} ->
@@ -142,5 +171,17 @@ defmodule Auth.Person do
       _ ->
         changeset
     end
+  end
+
+  @doc """
+  `get_person_by_email/1` returns the person based on email address.
+  """
+  def get_person_by_email(email) do
+    # IO.inspect(email, label: "get_person_by_email/1 > email")
+    # {:ok, email_hash} = Fields.EmailHash.dump(email)
+    # IO.inspect(email_hash, label: "get_person_by_email/1 > email_hash")
+    __MODULE__
+    |> Repo.get_by(email_hash: email)
+    # |> IO.inspect(label: "get_person_by_email/1")
   end
 end

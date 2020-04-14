@@ -3,7 +3,7 @@
 # `auth`
 
 A ***complete authentication solution*** for **Phoenix** Apps/APIs
-you can setup in ***7 minutes***.
+you can setup in ***5 minutes***.
 
 [![Build Status](https://img.shields.io/travis/dwyl/fields/master.svg?style=flat-square)](https://travis-ci.org/dwyl/fields)
 [![codecov.io](https://img.shields.io/codecov/c/github/dwyl/fields/master.svg?style=flat-square)](http://codecov.io/github/dwyl/fields?branch=master)
@@ -101,7 +101,7 @@ have an **introductory tutorial**:
 
 
 
-## 7 Minute 7 Step Setup
+## 5 Minute 5 Step Setup
 
 
 ### 1. Clone the project:
@@ -131,6 +131,7 @@ if the Environment Variable(s) for that service are present.
 If you want to enable a specific 3rd Party Authentication service,
 simply ensure that the relevant Environment Variables are defined.
 
+
 #### Google Auth
 
 To enable Google Auth
@@ -146,6 +147,7 @@ and get your `CLIENT_ID` & `CLIENT_SECRET`.
 Full instructions to create your Google Auth App:
 [create-google-app-guide.md](https://github.com/dwyl/elixir-auth-google/blob/master/create-google-app-guide.md)
 
+
 #### GitHub Auth
 
 Similarly, for GitHub Auth,
@@ -158,13 +160,16 @@ export GITHUB_CLIENT_SECRET=SuperSecret
 Full instructions to create your GitHub App:
 [create-github-app-guide.md](https://github.com/dwyl/elixir-auth-github/blob/master/create-github-app-guide.md)
 
+#### Full List of Environment Variables
 
 For the _full_ list of environment variables
 the `Auth` App expects, see:
 [`.env_sample`](https://github.com/dwyl/auth/blob/master/.env_sample)
 
+
 For completing the setup of the `Auth` App,
-you will need to have the `ADMIN_EMAIL` environment variable defined.
+you will need to have the `ADMIN_EMAIL`
+environment variable defined. <br />
 And for sending emails you will need the
 `SECRET_KEY_BASE` and `EMAIL_APP_URL` defined.
 
@@ -185,6 +190,8 @@ mix ecto.setup
 ```sh
 mix phoenix.server
 ```
+
+> It may take a couple of minutes to compile the app the first time. ⏳
 
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
