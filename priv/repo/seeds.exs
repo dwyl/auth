@@ -1,18 +1,25 @@
 # Script for populating the database. You can run it as:
 #
-#     mix run priv/repo/seeds.exs
+# mix run priv/repo/seeds.exs
 #
-# Inside the script, you can read and write to any of your
-# repositories directly:
+# The seeds.exs script will also run
+# when you execute the following command
+# to setup the database:
 #
-#     Auth.Repo.insert!(%Auth.SomeSchema{})
-#
-# We recommend using the bang functions (`insert!`, `update!`
-# and so on) as they will fail if something goes wrong.
-alias Auth.Person
-alias Auth.Repo
-IO.inspect(System.get_env("ADMIN_EMAIL"), label: "ADMIN_EMAIL")
+# mix ecto.setup
+defmodule Auth.Seeds do
+  alias Auth.{Person, Repo, Status}
+  import Ecto.Changeset # put_assoc
+  IO.inspect(System.get_env("ADMIN_EMAIL"), label: "ADMIN_EMAIL")
 
-%Person{email: System.get_env("ADMIN_EMAIL")}
-|> Person.changeset(%{email: System.get_env("ADMIN_EMAIL")})
-|> Repo.insert!()
+  def create_admin do
+    person = %Person{email: System.get_env("ADMIN_EMAIL")}
+    |> Person.changeset(%{email: System.get_env("ADMIN_EMAIL")})
+    |> put_assoc(:statuses, [%Status{text: "verified"}])
+    |> Repo.insert!()
+
+    IO.inspect(person, label: "first person")
+  end
+end
+
+Auth.Seeds.create_admin()
