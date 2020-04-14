@@ -18,7 +18,9 @@ defmodule Auth.Mixfile do
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+      package: package(),
+      description: "Turnkey Auth Auth Application"
     ]
   end
 
@@ -63,6 +65,10 @@ defmodule Auth.Mixfile do
 
       # check test coverage
       {:excoveralls, "~> 0.12.3", only: :test},
+
+      # For publishing Hex.docs:
+      {:ex_doc, "~> 0.21.3", only: :dev}
+
     ]
   end
 
@@ -77,6 +83,16 @@ defmodule Auth.Mixfile do
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate", "test"]
+    ]
+  end
+
+  defp package() do
+    [
+      files: ~w(lib LICENSE mix.exs README.md),
+      name: "auth",
+      licenses: ["GNU GPL v2.0"],
+      maintainers: ["dwyl"],
+      links: %{"GitHub" => "https://github.com/dwyl/auth"}
     ]
   end
 end
