@@ -5,6 +5,7 @@ defmodule Auth.Person do
   alias __MODULE__ # https://stackoverflow.com/a/47501059/1148249
 
   schema "people" do
+    field :auth_provider, :string
     field :email, Fields.EmailEncrypted
     field :email_hash, Fields.EmailHash
     field :familyName, Fields.Encrypted
@@ -38,13 +39,18 @@ defmodule Auth.Person do
       :key_id,
       :locale,
       :picture,
-      :username
+      :username,
+      :auth_provider
     ])
     |> validate_required([:email])
     |> put_email_hash()
   end
 
   def create_person(person) do
+    person = %Person{}
+      |> changeset(person)
+      |> put_email_status_verified()
+
     case get_person_by_email(person.changes.email) do
       nil ->
         Repo.insert!(person)
@@ -52,14 +58,6 @@ defmodule Auth.Person do
       person ->
         person
     end
-  end
-
-  def create_google_person(profile) do
-    person = transform_google_profile_data_to_person(profile)
-    %Person{}
-    |> changeset(person)
-    |> put_email_status_verified()
-    |> create_person()
   end
 
   @doc """
@@ -90,6 +88,7 @@ defmodule Auth.Person do
     |> Map.put(:username, profile.login)
     |> Map.put(:givenName, profile.name)
     |> Map.put(:picture, profile.avatar_url)
+    |> Map.put(:auth_provider, "github")
   end
 
   @doc """
@@ -129,6 +128,13 @@ defmodule Auth.Person do
     |> Map.put(:givenName, profile.given_name)
     |> Map.put(:locale, profile.locale)
     |> Map.put(:picture, profile.picture)
+    |> Map.put(:auth_provider, "google")
+  end
+
+  def create_google_person(profile) do
+    transform_github_profile_data_to_person(profile)
+    # IO.inspect(person, label: "person")
+    |> create_person()
   end
 
   @doc """
@@ -146,9 +152,11 @@ defmodule Auth.Person do
   end
 
   defp put_email_hash(changeset) do
+    IO.inspect(changeset, label: "changeset:157")
+    IO.inspect(changeset.data, label: "changeset.data:158")
     case changeset do
-      %{valid?: true, data: %{email: email}} ->
-        put_change(changeset, :email_hash, email)
+      %{valid?: true} ->
+        put_change(changeset, :email_hash, changeset.changes.email)
 
       _ ->
         changeset

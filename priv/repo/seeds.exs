@@ -17,11 +17,10 @@ defmodule Auth.Seeds do
 
     person = case Person.get_person_by_email(email) do
       nil ->
-        %Person{email: email}
+        %Person{}
         |> Person.changeset(%{email: email})
         |> put_assoc(:statuses, [%Status{text: "verified"}])
         |> Repo.insert!()
-        # |> IO.inspect( label: "inserted")
 
       person ->
         person
