@@ -13,7 +13,7 @@ config :auth,
 # Configures the endpoint
 config :auth, AuthWeb.Endpoint,
   url: [host: "localhost"],
-  secret_key_base: "dGzC3qel+EMmLNQQPhQphV5vdNjODKh9IGCbL8j2lipAwuoAWeysUTtfLDsYVlq7",
+  secret_key_base: System.get_env("SECRET_KEY_BASE"),
   render_errors: [view: AuthWeb.ErrorView, accepts: ~w(html json)],
   pubsub: [name: Auth.PubSub, adapter: Phoenix.PubSub.PG2],
   live_view: [signing_salt: "G+UI6RIv"]
