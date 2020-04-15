@@ -9,22 +9,25 @@
 # mix ecto.setup
 defmodule Auth.Seeds do
   alias Auth.{Person, Repo, Status}
-  import Ecto.Changeset # put_assoc
+  # put_assoc
+  import Ecto.Changeset
+
   # IO.inspect(System.get_env("ADMIN_EMAIL"), label: "ADMIN_EMAIL")
 
   def create_admin do
     email = System.get_env("ADMIN_EMAIL")
 
-    person = case Person.get_person_by_email(email) do
-      nil ->
-        %Person{}
-        |> Person.changeset(%{email: email})
-        |> put_assoc(:statuses, [%Status{text: "verified"}])
-        |> Repo.insert!()
+    person =
+      case Person.get_person_by_email(email) do
+        nil ->
+          %Person{}
+          |> Person.changeset(%{email: email})
+          |> put_assoc(:statuses, [%Status{text: "verified"}])
+          |> Repo.insert!()
 
-      person ->
-        person
-    end
+        person ->
+          person
+      end
 
     IO.inspect(person.id, label: "seeds.exs person.id")
     IO.puts("- - - - - - - - - - - - - - - - - - - - - - ")

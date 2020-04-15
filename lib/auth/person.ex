@@ -2,7 +2,8 @@ defmodule Auth.Person do
   use Ecto.Schema
   import Ecto.Changeset
   alias Auth.Repo
-  alias __MODULE__ # https://stackoverflow.com/a/47501059/1148249
+  # https://stackoverflow.com/a/47501059/1148249
+  alias __MODULE__
 
   schema "people" do
     field :auth_provider, :string
@@ -47,7 +48,8 @@ defmodule Auth.Person do
   end
 
   def create_person(person) do
-    person = %Person{}
+    person =
+      %Person{}
       |> changeset(person)
       |> put_email_status_verified()
 
@@ -162,6 +164,7 @@ defmodule Auth.Person do
 
   defp put_email_status_verified(changeset) do
     status_verified = Auth.Status.upsert_status("verified")
+
     case changeset do
       %{valid?: true} ->
         put_change(changeset, :status, status_verified.id)

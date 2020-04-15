@@ -7,8 +7,11 @@ defmodule AuthWeb.AuthController do
   """
   def github_handler(conn, %{"code" => code, "state" => state}) do
     {:ok, profile} = ElixirAuthGithub.github_auth(code)
-    person = Person.transform_github_profile_data_to_person(profile)
+
+    person =
+      Person.transform_github_profile_data_to_person(profile)
       |> Person.create_person()
+
     # render or redirect:
     handler(conn, person, state)
   end
@@ -25,20 +28,23 @@ defmodule AuthWeb.AuthController do
     handler(conn, person, state)
   end
 
-
   @doc """
   `handler/3` responds to successful auth requests.
   if the state is defined, redirect to it.
   """
   def handler(conn, person, state) do
     case not is_nil(state) and state =~ "//" do
-      true -> # redirect
+      # redirect
+      true ->
         url = state <> "?jwt=this.is.amaze"
+
         conn
         # |> put_req_header("authorization", "MY.JWT.HERE")
         |> redirect(external: url)
-        # |> halt()
-      false -> # no state
+
+      # |> halt()
+      # no state
+      false ->
         conn
         |> put_view(AuthWeb.PageView)
         |> render(:welcome, person: person)

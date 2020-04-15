@@ -68,7 +68,6 @@ defmodule Auth.Mixfile do
 
       # For publishing Hex.docs:
       {:ex_doc, "~> 0.21.3", only: :dev}
-
     ]
   end
 
