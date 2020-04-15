@@ -132,8 +132,7 @@ defmodule Auth.Person do
   end
 
   def create_google_person(profile) do
-    transform_github_profile_data_to_person(profile)
-    # IO.inspect(person, label: "person")
+    transform_google_profile_data_to_person(profile)
     |> create_person()
   end
 
@@ -152,8 +151,6 @@ defmodule Auth.Person do
   end
 
   defp put_email_hash(changeset) do
-    IO.inspect(changeset, label: "changeset:157")
-    IO.inspect(changeset.data, label: "changeset.data:158")
     case changeset do
       %{valid?: true} ->
         put_change(changeset, :email_hash, changeset.changes.email)
@@ -165,7 +162,6 @@ defmodule Auth.Person do
 
   defp put_email_status_verified(changeset) do
     status_verified = Auth.Status.upsert_status("verified")
-
     case changeset do
       %{valid?: true} ->
         put_change(changeset, :status, status_verified.id)

@@ -1,19 +1,17 @@
 defmodule AuthWeb.AuthController do
   use AuthWeb, :controller
+  alias Auth.Person
 
   @doc """
   `github_auth/2` handles the callback from GitHub Auth API redirect.
   """
   def github_handler(conn, %{"code" => code, "state" => state}) do
     {:ok, profile} = ElixirAuthGithub.github_auth(code)
-    # handler(conn, profile, state)
-    # IO.inspect(profile, label: "github profile")
-    conn
-    |> put_view(AuthWeb.PageView)
-    |> render(:welcome_github, profile: profile)
+    person = Person.transform_github_profile_data_to_person(profile)
+      |> Person.create_person()
+
+    handler(conn, person, state)
   end
-
-
 
 
   @doc """
@@ -31,7 +29,7 @@ defmodule AuthWeb.AuthController do
       false -> # no state
         conn
         |> put_view(AuthWeb.PageView)
-        |> render(:welcome_github, person: person)
+        |> render(:welcome, person: person)
     end
   end
 
