@@ -30,18 +30,15 @@ defmodule AuthWeb.AuthController do
   if the state is defined, redirect to it.
   """
   def handler(conn, person, state) do
+    # Send welcome email:
     Auth.Email.sendemail(%{email: person.email, template: "welcome"})
+    # check if valid state (HTTP referer) is defined:
     case not is_nil(state) and state =~ "//" do
       # redirect
       true ->
-        url = add_jwt_url_param(person, state)
-
         conn
-        # |> put_req_header("authorization", "MY.JWT.HERE")
-        |> redirect(external: url)
+        |> redirect(external: add_jwt_url_param(person, state))
 
-      # |> halt()
-      # no state
       false ->
         conn
         |> put_view(AuthWeb.PageView)
