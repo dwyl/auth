@@ -28,8 +28,6 @@ defmodule Auth.Person do
   Default attributes validation for Person
   """
   def changeset(person, attrs) do
-    # IO.inspect(person, label: "person")
-    # IO.inspect(attrs, label: "attrs")
     person
     |> cast(attrs, [
       :username,
@@ -39,50 +37,60 @@ defmodule Auth.Person do
       :password_hash,
       :key_id,
       :locale,
-      :picture
+      :picture,
+      :username
     ])
-    |> validate_required([
-      # :username,
-      :email,
-      # :givenName,
-      # :familyName,
-      # :password_hash,
-      # :key_id
-    ])
-    # |> IO.inspect(label: "changeset (before email hash)")
+    |> validate_required([:email])
     |> put_email_hash()
   end
 
-  def create_google_person(profile) do
-    # IO.inspect(profile, label: "profile")
-    # IO.puts(" - - - - - - - - - - - - - - - - - ")
-    person = transform_profile_data_to_person(profile)
-    # IO.inspect(person, label: "person:60")
-    person = %Person{}
-    |> google_changeset(person)
-
-    case Person.get_person_by_email(profile.email) do
+  def create_person(person) do
+    case get_person_by_email(person.changes.email) do
       nil ->
         Repo.insert!(person)
 
       person ->
         person
     end
+  end
 
+  def create_google_person(profile) do
+    person = transform_google_profile_data_to_person(profile)
+    %Person{}
+    |> changeset(person)
+    |> put_email_status_verified()
+    |> create_person()
   end
 
   @doc """
-  Changeset used for Google OAuth authentication
-  Add email hash and set status verified
-  """
-  def google_changeset(profile, attrs) do
-    profile
-    |> cast(attrs, [:email, :givenName, :familyName, :picture, :locale])
-    |> validate_required([:email])
-    |> put_email_hash()
-    |> put_email_status_verified()
-  end
+  `transform_github_profile_data_to_person/1` transforms the profile data
+  received from invoking `ElixirAuthGithub.github_auth/1`
+  into a `person` record that can be inserted into the people table.
 
+  ## Example
+
+    iex> transform_profile_data_to_person(%{
+      avatar_url: "https://avatars3.githubusercontent.com/u/194400?v=4",
+      email: "alex@gmail.com",
+      followers: 2846,
+      login: "alex",
+      name: "Alex McAwesome",
+      type: "User",
+      url: "https://api.github.com/users/alex"
+    })
+    %{
+      "email" => "nelson@gmail.com",
+      "picture" => "https://avatars3.githubusercontent.com/u/194400?v=4",
+      "status" => 1,
+      "givenName" => "Alex McAwesome"
+    }
+  """
+  def transform_github_profile_data_to_person(profile) do
+    profile
+    |> Map.put(:username, profile.login)
+    |> Map.put(:givenName, profile.name)
+    |> Map.put(:picture, profile.avatar_url)
+  end
 
   @doc """
   `transform_profile_data_to_person/1` transforms the profile data
@@ -115,8 +123,7 @@ defmodule Auth.Person do
       "givenName" => "Nelson"
     }
   """
-  def transform_profile_data_to_person(profile) do
-    # IO.inspect(profile, label: "profile transform_profile_data_to_person/1")
+  def transform_google_profile_data_to_person(profile) do
     profile
     |> Map.put(:familyName, profile.family_name)
     |> Map.put(:givenName, profile.given_name)
@@ -139,12 +146,9 @@ defmodule Auth.Person do
   end
 
   defp put_email_hash(changeset) do
-    # IO.inspect(changeset, label: "changeset put_email_hash/1")
-    # IO.inspect(changeset.data, label: "changeset.data")
     case changeset do
       %{valid?: true, data: %{email: email}} ->
         put_change(changeset, :email_hash, email)
-        # |> IO.inspect(label: "changeset with :email_hash")
 
       _ ->
         changeset
@@ -177,11 +181,7 @@ defmodule Auth.Person do
   `get_person_by_email/1` returns the person based on email address.
   """
   def get_person_by_email(email) do
-    # IO.inspect(email, label: "get_person_by_email/1 > email")
-    # {:ok, email_hash} = Fields.EmailHash.dump(email)
-    # IO.inspect(email_hash, label: "get_person_by_email/1 > email_hash")
     __MODULE__
     |> Repo.get_by(email_hash: email)
-    # |> IO.inspect(label: "get_person_by_email/1")
   end
 end

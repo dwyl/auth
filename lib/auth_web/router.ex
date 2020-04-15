@@ -18,7 +18,7 @@ defmodule AuthWeb.Router do
 
     get "/", PageController, :index
     get "/admin", PageController, :admin
-    get "/auth/github/callback", GithubAuthController, :index
+    get "/auth/github/callback", AuthController, :github_handler
     get "/auth/google/callback", GoogleAuthController, :index
   end
 

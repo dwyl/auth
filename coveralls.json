@@ -4,6 +4,7 @@
   },
   "skip_files": [
     "test/",
+    "lib/auth/application.ex",
     "lib/auth_web.ex",
     "lib/auth_web/views/error_helpers.ex"
   ]
