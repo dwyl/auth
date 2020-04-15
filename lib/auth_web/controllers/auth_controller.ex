@@ -9,7 +9,19 @@ defmodule AuthWeb.AuthController do
     {:ok, profile} = ElixirAuthGithub.github_auth(code)
     person = Person.transform_github_profile_data_to_person(profile)
       |> Person.create_person()
+    # render or redirect:
+    handler(conn, person, state)
+  end
 
+  @doc """
+  `google_handler/2` handles the callback from Google Auth API redirect.
+  """
+  def google_handler(conn, %{"code" => code, "state" => state}) do
+    {:ok, token} = ElixirAuthGoogle.get_token(code, conn)
+    {:ok, profile} = ElixirAuthGoogle.get_user_profile(token.access_token)
+    # save profile to people:
+    person = Auth.Person.create_google_person(profile)
+    # render or redirect:
     handler(conn, person, state)
   end
 

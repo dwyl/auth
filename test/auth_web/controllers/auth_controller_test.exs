@@ -11,9 +11,10 @@ defmodule AuthWeb.AuthControllerTest do
 
   test "index/2 handler for google auth callback", %{conn: conn} do
 
-    conn = get(conn, Routes.google_auth_path(conn, :index,
-      %{code: "234", state: "http://localhost/"}))
+    conn = get(conn, "/auth/google/callback",
+      %{code: "234", state: "http://localhost/"})
 
-    assert html_response(conn, 200) =~ "nelson@gmail.com"
+    # assert html_response(conn, 200) =~ "nelson@gmail.com"
+    assert html_response(conn, 302) =~ "http://localhost"
   end
 end

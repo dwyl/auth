@@ -19,7 +19,7 @@ defmodule AuthWeb.Router do
     get "/", PageController, :index
     get "/admin", PageController, :admin
     get "/auth/github/callback", AuthController, :github_handler
-    get "/auth/google/callback", GoogleAuthController, :index
+    get "/auth/google/callback", AuthController, :google_handler
   end
 
   # Other scopes may use custom stacks.
