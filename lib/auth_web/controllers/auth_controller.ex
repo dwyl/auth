@@ -30,6 +30,7 @@ defmodule AuthWeb.AuthController do
   if the state is defined, redirect to it.
   """
   def handler(conn, person, state) do
+    Auth.Email.sendemail(%{email: person.email, template: "welcome"})
     case not is_nil(state) and state =~ "//" do
       # redirect
       true ->
@@ -49,8 +50,6 @@ defmodule AuthWeb.AuthController do
   end
 
   def add_jwt_url_param(person, state) do
-    IO.inspect(state, label: "state")
-    IO.inspect(person, label: "person")
     data = %{
       auth_provider: person.auth_provider,
       givenName: person.givenName,
@@ -59,7 +58,7 @@ defmodule AuthWeb.AuthController do
       status: person.status,
     }
     jwt = Auth.Token.generate_and_sign!(data)
-    |> IO.inspect(label: "jwt")
+    # |> IO.inspect(label: "jwt")
     state <> "?jwt=" <> jwt
   end
 end
