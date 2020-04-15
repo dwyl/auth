@@ -51,9 +51,9 @@ defmodule AuthWeb.AuthController do
     end
   end
 
-  def redirect_to_referer_with_jwt(conn, referer, person) do
-    IO.inspect(conn, label: "conn")
-    IO.inspect(referer, label: "referer")
-    IO.inspect(person, label: "person")
-  end
+  # def redirect_to_referer_with_jwt(conn, referer, person) do
+  #   IO.inspect(conn, label: "conn")
+  #   IO.inspect(referer, label: "referer")
+  #   IO.inspect(person, label: "person")
+  # end
 end

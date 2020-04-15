@@ -14,7 +14,7 @@ defmodule AuthWeb.PageController do
 
   # https://github.com/dwyl/auth/issues/46
   def admin(conn, params) do
-    IO.inspect(conn.req_headers, label: "conn.req_headers")
+    # IO.inspect(conn.req_headers, label: "conn.req_headers")
     IO.inspect(params, label: "params")
 
     conn
@@ -23,18 +23,13 @@ defmodule AuthWeb.PageController do
   end
 
   defp get_referer(conn) do
-    IO.inspect(conn)
     # https://stackoverflow.com/questions/37176911/get-http-referrer
     case List.keyfind(conn.req_headers, "referer", 0) do
       {"referer", referer} ->
-        IO.inspect(referer, label: "referer")
         referer
 
       nil ->
-        IO.puts("no referer")
-
         ElixirAuthGoogle.get_baseurl_from_conn(conn)
-        |> IO.inspect(label: "baseurl")
     end
   end
 end
