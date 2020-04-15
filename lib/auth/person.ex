@@ -93,6 +93,11 @@ defmodule Auth.Person do
     |> Map.put(:auth_provider, "github")
   end
 
+  def create_github_person(profile) do
+    transform_github_profile_data_to_person(profile)
+    |> create_person()
+  end
+
   @doc """
   `transform_profile_data_to_person/1` transforms the profile data
   received from invoking `ElixirAuthGoogle.get_user_profile/1`
