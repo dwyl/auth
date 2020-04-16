@@ -8,6 +8,7 @@ defmodule Auth.EmailTest do
         "name" => "Super Successful",
         "template" => "welcome"
       }
+
       # IO.inspect(params, label: "params")
       res = Auth.Email.sendemail(params)
       assert Map.get(params, "email") == Map.get(res, "email")

@@ -30,8 +30,15 @@ defmodule AuthWeb.AuthController do
   if the state is defined, redirect to it.
   """
   def handler(conn, person, state) do
+    IO.inspect(person, label: "person")
     # Send welcome email:
-    Auth.Email.sendemail(%{email: person.email, template: "welcome"})
+    Auth.Email.sendemail(%{
+      email: person.email,
+      name: person.givenName,
+      template: "welcome"
+    })
+    |> IO.inspect(label: "email")
+
     # check if valid state (HTTP referer) is defined:
     case not is_nil(state) and state =~ "//" do
       # redirect
@@ -52,8 +59,9 @@ defmodule AuthWeb.AuthController do
       givenName: person.givenName,
       id: person.id,
       picture: person.picture,
-      status: person.status,
+      status: person.status
     }
+
     jwt = Auth.Token.generate_and_sign!(data)
     # |> IO.inspect(label: "jwt")
     state <> "?jwt=" <> jwt

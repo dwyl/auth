@@ -94,8 +94,7 @@ defmodule Auth.Person do
   end
 
   def create_github_person(profile) do
-    transform_github_profile_data_to_person(profile)
-    |> create_person()
+    transform_github_profile_data_to_person(profile) |> create_person()
   end
 
   @doc """
@@ -130,17 +129,15 @@ defmodule Auth.Person do
     }
   """
   def transform_google_profile_data_to_person(profile) do
-    profile
-    |> Map.put(:familyName, profile.family_name)
-    |> Map.put(:givenName, profile.given_name)
-    |> Map.put(:locale, profile.locale)
-    |> Map.put(:picture, profile.picture)
-    |> Map.put(:auth_provider, "google")
+    Map.merge(profile, %{
+      familyName: profile.family_name,
+      givenName: profile.given_name,
+      auth_provider: "google"
+    })
   end
 
   def create_google_person(profile) do
-    transform_google_profile_data_to_person(profile)
-    |> create_person()
+    transform_google_profile_data_to_person(profile) |> create_person()
   end
 
   @doc """
