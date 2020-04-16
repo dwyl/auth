@@ -7,7 +7,7 @@ you can setup in ***5 minutes***.
 
 [![Build Status](https://img.shields.io/travis/dwyl/fields/master.svg?style=flat-square)](https://travis-ci.org/dwyl/fields)
 [![codecov.io](https://img.shields.io/codecov/c/github/dwyl/fields/master.svg?style=flat-square)](http://codecov.io/github/dwyl/fields?branch=master)
-[![Hex.pm](https://img.shields.io/hexpm/v/fields?color=brightgreen&style=flat-square)](https://hex.pm/packages/fields)
+[![Hex.pm](https://img.shields.io/hexpm/v/auth?color=brightgreen&style=flat-square)](https://hex.pm/packages/auth)
 [![Libraries.io dependency status](https://img.shields.io/librariesio/release/hex/auth?logoColor=brightgreen&style=flat-square)](https://github.com/dwyl/auth/blob/master/mix.exs)
 [![docs](https://img.shields.io/badge/docs-maintained-brightgreen?style=flat-square)](https://hexdocs.pm/fields/api-reference.html)
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat-square)](https://github.com/dwyl/fields/issues)
