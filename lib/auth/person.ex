@@ -140,51 +140,38 @@ defmodule Auth.Person do
     transform_google_profile_data_to_person(profile) |> create_person()
   end
 
-  @doc """
-  Changeset function used for email/password registration
-  Define email hash and password hash
-  """
-  def changeset_registration(profile, attrs) do
-    profile
-    |> cast(attrs, [:email, :password])
-    |> validate_required([:email, :password])
-    |> validate_length(:password, min: 6, max: 100)
-    |> unique_constraint(:email)
-    |> put_email_hash()
-    |> put_pass_hash()
-  end
+  # @doc """
+  # Changeset function used for email/password registration
+  # Define email hash and password hash
+  # """
+  # def changeset_registration(profile, attrs) do
+  #   profile
+  #   |> cast(attrs, [:email, :password])
+  #   |> validate_required([:email, :password])
+  #   |> validate_length(:password, min: 6, max: 100)
+  #   |> unique_constraint(:email)
+  #   |> put_email_hash()
+  #   |> put_pass_hash()
+  # end
 
   defp put_email_hash(changeset) do
-    case changeset do
-      %{valid?: true} ->
-        put_change(changeset, :email_hash, changeset.changes.email)
-
-      _ ->
-        changeset
-    end
+    put_change(changeset, :email_hash, changeset.changes.email)
   end
 
-  defp put_email_status_verified(changeset) do
+  def put_email_status_verified(changeset) do
     status_verified = Auth.Status.upsert_status("verified")
-
-    case changeset do
-      %{valid?: true} ->
-        put_change(changeset, :status, status_verified.id)
-
-      _ ->
-        changeset
-    end
+    put_change(changeset, :status, status_verified.id)
   end
 
-  defp put_pass_hash(changeset) do
-    case changeset do
-      %Ecto.Changeset{valid?: true, changes: %{password: pass}} ->
-        put_change(changeset, :password_hash, pass)
-
-      _ ->
-        changeset
-    end
-  end
+  # defp put_pass_hash(changeset) do
+  #   case changeset do
+  #     %Ecto.Changeset{valid?: true, changes: %{password: pass}} ->
+  #       put_change(changeset, :password_hash, pass)
+  #
+  #     _ ->
+  #       changeset
+  #   end
+  # end
 
   @doc """
   `get_person_by_email/1` returns the person based on email address.
