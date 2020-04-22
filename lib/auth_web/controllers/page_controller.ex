@@ -41,6 +41,6 @@ defmodule AuthWeb.PageController do
             ElixirAuthGoogle.get_baseurl_from_conn(conn)
         end
     end
-    url = url |> URI.encode() |> IO.inspect(label: "URI.encode")
+    url |> URI.encode() |> IO.inspect(label: "URI.encode")
   end
 end
