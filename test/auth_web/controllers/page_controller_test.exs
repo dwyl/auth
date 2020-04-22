@@ -18,4 +18,11 @@ defmodule AuthWeb.PageControllerTest do
 
     assert conn.resp_body =~ "state=http://localhost/admin"
   end
+
+  test "get_referer/1 query_string", %{conn: conn} do
+    conn = conn
+      |> get("/?referer=" <> URI.encode("http://localhost/admin"))
+
+    assert conn.resp_body =~ "state=http://localhost/admin"
+  end
 end

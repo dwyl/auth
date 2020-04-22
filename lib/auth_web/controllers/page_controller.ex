@@ -22,14 +22,21 @@ defmodule AuthWeb.PageController do
     |> render(:admin)
   end
 
-  defp get_referer(conn) do
+  def get_referer(conn) do
     # https://stackoverflow.com/questions/37176911/get-http-referrer
     case List.keyfind(conn.req_headers, "referer", 0) do
       {"referer", referer} ->
         referer
 
-      nil ->
-        ElixirAuthGoogle.get_baseurl_from_conn(conn)
+      nil -> # referer not in headers, check URL query:
+        case conn.query_string =~ "referer" do
+          true ->
+            query = URI.decode_query(conn.query_string)
+            Map.get(query, "referer")
+
+          false -> # no referer, redirect back to this app. TODO:
+            ElixirAuthGoogle.get_baseurl_from_conn(conn)
+        end
     end
   end
 end

@@ -25,6 +25,13 @@ defmodule AuthWeb.AuthController do
     handler(conn, person, state)
   end
 
+
+  # def email_password_handler(conn, params) do
+  #
+  #   # GOTO: https://toranbillups.com/blog/archive/2018/11/18/implementing-basic-authentication/
+  # end
+
+
   @doc """
   `handler/3` responds to successful auth requests.
   if the state is defined, redirect to it.

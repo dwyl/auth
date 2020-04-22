@@ -7,7 +7,7 @@ defmodule AuthWeb.AuthControllerTest do
     assert html_response(conn, 302) =~ "http://localhost"
   end
 
-  test "index/2 handler for google auth callback", %{conn: conn} do
+  test "google_handler/2 for google auth callback", %{conn: conn} do
     conn = get(conn, "/auth/google/callback", %{code: "234", state: "http://localhost/"})
 
     # assert html_response(conn, 200) =~ "nelson@gmail.com"
