@@ -24,7 +24,7 @@ defmodule AuthWeb.PageController do
 
   def get_referer(conn) do
     # https://stackoverflow.com/questions/37176911/get-http-referrer
-    url = case List.keyfind(conn.req_headers, "referer", 0) do
+    case List.keyfind(conn.req_headers, "referer", 0) do
       {"referer", referer} ->
         referer
         |> IO.inspect(label: "req_headers referer")
@@ -41,6 +41,6 @@ defmodule AuthWeb.PageController do
             ElixirAuthGoogle.get_baseurl_from_conn(conn)
         end
     end
-    url |> URI.encode() |> IO.inspect(label: "URI.encode")
+    |> URI.encode
   end
 end
