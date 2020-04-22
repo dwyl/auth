@@ -17,9 +17,20 @@ defmodule AuthWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :index
-    get "/admin", PageController, :admin
     get "/auth/github/callback", AuthController, :github_handler
     get "/auth/google/callback", AuthController, :google_handler
+  end
+
+
+  pipeline :auth do
+    plug(AuthPlug, %{auth_url: "https://dwylauth.herokuapp.com"})
+  end
+
+  scope "/", AuthWeb do
+    pipe_through :browser
+    pipe_through :auth
+
+    get "/admin", PageController, :admin
   end
 
   # Other scopes may use custom stacks.
