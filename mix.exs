@@ -55,18 +55,24 @@ defmodule Auth.Mixfile do
       {:jason, "~> 1.2.0"},
       {:plug_cowboy, "~> 2.1.3"},
 
-      # Field Validation and Encryption:
+      # Auth:
+      # https://github.com/dwyl/elixir-auth-github
+      {:elixir_auth_github, "~> 1.2.0"},
+      # https://github.com/dwyl/elixir-auth-google
+      {:elixir_auth_google, "~> 1.2.0"},
+      # https://github.com/dwyl/auth_plug
+      {:auth_plug, "~> 0.4.0"},
+
+      # Field Validation and Encryption: github.com/dwyl/fields
       {:fields, "~> 2.4.0"},
 
-      # Auth:
-      {:elixir_auth_github, "~> 1.2.0"},
-      {:elixir_auth_google, "~> 1.2.0"},
+      # Crete JSON Web Tokens
       {:joken, "~> 2.2"},
 
-      # check test coverage
+      # Check test coverage
       {:excoveralls, "~> 0.12.3", only: :test},
 
-      # For publishing Hex.docs:
+      # Create Documentation for publishing Hex.docs:
       {:ex_doc, "~> 0.21.3", only: :dev}
     ]
   end

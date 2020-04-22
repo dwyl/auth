@@ -17,11 +17,8 @@ defmodule AuthWeb.AuthController do
   `google_handler/2` handles the callback from Google Auth API redirect.
   """
   def google_handler(conn, %{"code" => code, "state" => state}) do
-    IO.inspect(state, label: "state")
     {:ok, token} = ElixirAuthGoogle.get_token(code, conn)
-    IO.inspect(token, label: "token")
     {:ok, profile} = ElixirAuthGoogle.get_user_profile(token.access_token)
-    IO.inspect(profile, label: "profile")
 
     # save profile to people:
     person = Person.create_google_person(profile)
@@ -42,7 +39,7 @@ defmodule AuthWeb.AuthController do
   if the state is defined, redirect to it.
   """
   def handler(conn, person, state) do
-    IO.inspect(person, label: "handler/3 > person")
+    # IO.inspect(person, label: "handler/3 > person")
     # Send welcome email:
     Auth.Email.sendemail(%{
       email: person.email,
@@ -75,7 +72,6 @@ defmodule AuthWeb.AuthController do
     }
 
     jwt = Auth.Token.generate_and_sign!(data)
-    # |> IO.inspect(label: "jwt")
     URI.decode(state) <> "?jwt=" <> jwt
   end
 end
