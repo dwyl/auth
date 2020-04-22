@@ -19,6 +19,7 @@ defmodule AuthWeb.AuthController do
   def google_handler(conn, %{"code" => code, "state" => state}) do
     IO.inspect(state, label: "state")
     {:ok, token} = ElixirAuthGoogle.get_token(code, conn)
+    IO.inspect(token, label: "token")
     {:ok, profile} = ElixirAuthGoogle.get_user_profile(token.access_token)
     IO.inspect(profile, label: "profile")
 
@@ -41,7 +42,7 @@ defmodule AuthWeb.AuthController do
   if the state is defined, redirect to it.
   """
   def handler(conn, person, state) do
-    IO.inspect(person, label: "person")
+    IO.inspect(person, label: "handler/3 > person")
     # Send welcome email:
     Auth.Email.sendemail(%{
       email: person.email,
@@ -51,7 +52,7 @@ defmodule AuthWeb.AuthController do
     |> IO.inspect(label: "email")
 
     # check if valid state (HTTP referer) is defined:
-    case not is_nil(state) and state =~ "//" do
+    case not is_nil(state) do
       # redirect
       true ->
         conn
