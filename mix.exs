@@ -66,9 +66,6 @@ defmodule Auth.Mixfile do
       # Field Validation and Encryption: github.com/dwyl/fields
       {:fields, "~> 2.4.0"},
 
-      # Crete JSON Web Tokens
-      {:joken, "~> 2.2"},
-
       # Check test coverage
       {:excoveralls, "~> 0.12.3", only: :test},
 
