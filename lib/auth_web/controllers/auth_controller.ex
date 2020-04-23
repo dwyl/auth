@@ -71,7 +71,7 @@ defmodule AuthWeb.AuthController do
       status: person.status
     }
 
-    jwt = Auth.Token.generate_and_sign!(data)
+    jwt = AuthPlug.Token.generate_jwt!(data)
     URI.decode(state) <> "?jwt=" <> jwt
   end
 end
