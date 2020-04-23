@@ -8,7 +8,8 @@ defmodule AuthWeb.PageControllerTest do
 
   test "GET /admin", %{conn: conn} do
     conn = get(conn, "/admin")
-    assert html_response(conn, 200) =~ "Login"
+    # assert html_response(conn, 301) =~ "Login"
+    assert conn.status == 301
   end
 
   test "get_referer/1", %{conn: conn} do
