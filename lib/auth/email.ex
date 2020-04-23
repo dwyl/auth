@@ -26,7 +26,8 @@ defmodule Auth.Email do
     url = System.get_env("EMAIL_APP_URL") <> "/api/send"
     jwt = Auth.Token.generate_and_sign!(params)
     headers = [Authorization: "#{jwt}"]
-    options = [ssl: [{:versions, [:"tlsv1.2"]}], recv_timeout: 10000]
+    options = [ssl: [{:versions, [:"tlsv1.2"]}],
+      timeout: 50_000, recv_timeout: 50_000] # github.com/dwyl/auth/issues/48
     {:ok, response} = HTTPoison.post(url, "_nobody", headers, options)
     Jason.decode!(response.body)
   end
