@@ -1,0 +1,31 @@
+<h1>Show Apikey</h1>
+
+<div>
+  <p>
+    <strong>DWYL_API_KEY:</strong>
+    <div style="width:420px; font-size: 1.2em;
+    overflow-wrap: break-word; font-family: monospace;
+    border: 1px solid black; padding: 10px; background-color: #EBEDEF;">
+    <%= @apikey.client_id %><%= @apikey.client_secret %>
+    </div>
+  </p>
+
+  <p>
+    <strong>Name:</strong>
+    <%= @apikey.name %>
+  </p>
+
+  <p>
+    <strong>Description:</strong>
+    <%= @apikey.description %>
+  </p>
+
+  <p>
+    <strong>Url:</strong>
+    <%= @apikey.url %>
+  </p>
+
+</div>
+
+<span><%= link "Edit", to: Routes.apikey_path(@conn, :edit, @apikey) %></span>
+<span><%= link "Back", to: Routes.apikey_path(@conn, :index) %></span>

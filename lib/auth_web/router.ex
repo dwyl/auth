@@ -30,7 +30,8 @@ defmodule AuthWeb.Router do
     pipe_through :browser
     pipe_through :auth
 
-    get "/admin", PageController, :admin
+    get "/profile", PageController, :admin
+    resources "/profile/apikeys", ApikeyController
   end
 
   # Other scopes may use custom stacks.

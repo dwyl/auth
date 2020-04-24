@@ -1,0 +1,5 @@
+<h1>Edit Apikey</h1>
+
+<%= render "form.html", Map.put(assigns, :action, Routes.apikey_path(@conn, :update, @apikey)) %>
+
+<span><%= link "Back", to: Routes.apikey_path(@conn, :index) %></span>

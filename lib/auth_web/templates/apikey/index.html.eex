@@ -1,0 +1,32 @@
+<h1>API Keys</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>DWYL_API_KEY</th>
+      <th>Name</th>
+      <th>Description</th>
+      <th>Url</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for apikey <- @apikeys do %>
+    <tr>
+      <td><%= apikey.client_id %><%= apikey.client_secret %></td>
+      <td><%= apikey.name %></td>
+      <td><%= apikey.description %></td>
+      <td><%= apikey.url %></td>
+
+      <td>
+        <span><%= link "Show", to: Routes.apikey_path(@conn, :show, apikey) %></span>
+        <span><%= link "Edit", to: Routes.apikey_path(@conn, :edit, apikey) %></span>
+        <span><%= link "Delete", to: Routes.apikey_path(@conn, :delete, apikey), method: :delete, data: [confirm: "Are you sure?"] %></span>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Apikey", to: Routes.apikey_path(@conn, :new) %></span>
