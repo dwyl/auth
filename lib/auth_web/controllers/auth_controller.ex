@@ -49,16 +49,19 @@ defmodule AuthWeb.AuthController do
     |> IO.inspect(label: "email")
 
     # check if valid state (HTTP referer) is defined:
-    case not is_nil(state) do
-      # redirect
-      true ->
-        conn
-        |> redirect(external: add_jwt_url_param(person, state))
-
-      false ->
+    base_url = AuthPlug.Helpers.get_baseurl_from_conn(conn)
+    IO.inspect(state, label: "state")
+    IO.inspect(base_url, label: "base_url")
+    case state =~ base_url do
+      true -> # display welcome page
         conn
         |> put_view(AuthWeb.PageView)
         |> render(:welcome, person: person)
+
+      false -> # redirect
+        conn
+        |> redirect(external: add_jwt_url_param(person, state))
+
     end
   end
 

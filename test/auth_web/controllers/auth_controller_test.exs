@@ -16,9 +16,9 @@ defmodule AuthWeb.AuthControllerTest do
     assert html_response(conn, 302) =~ "http://localhost"
   end
 
-  test "google_handler/2 nil state", %{conn: conn} do
+  test "google_handler/2 show welcome page", %{conn: conn} do
     conn = get(conn, "/auth/google/callback",
-      %{code: "234", state: nil})
+      %{code: "234", state: AuthPlug.Helpers.get_baseurl_from_conn(conn)})
 
     assert html_response(conn, 200) =~ "nelson@gmail.com"
     # assert html_response(conn, 302) =~ "redirected"

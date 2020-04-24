@@ -36,9 +36,9 @@ defmodule AuthWeb.PageController do
             Map.get(query, "referer")
             |> IO.inspect(label: "url referer")
 
-          false -> # no referer, redirect back to this app. TODO:
+          false -> # no referer, redirect back to this app.
             IO.inspect("false: no referer")
-            ElixirAuthGoogle.get_baseurl_from_conn(conn)
+            AuthPlug.Helpers.get_baseurl_from_conn(conn)
         end
     end
     |> URI.encode |> IO.inspect(label: "referer")
