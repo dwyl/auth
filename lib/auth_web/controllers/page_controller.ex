@@ -19,7 +19,7 @@ defmodule AuthWeb.PageController do
 
     conn
     |> put_view(AuthWeb.PageView)
-    |> render(:admin)
+    |> render(:welcome)
   end
 
   def get_referer(conn) do
@@ -38,7 +38,7 @@ defmodule AuthWeb.PageController do
 
           false -> # no referer, redirect back to this app.
             IO.inspect("false: no referer")
-            AuthPlug.Helpers.get_baseurl_from_conn(conn)
+            AuthPlug.Helpers.get_baseurl_from_conn(conn) <> "/profile"
         end
     end
     |> URI.encode |> IO.inspect(label: "referer")

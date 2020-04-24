@@ -6,10 +6,10 @@ defmodule AuthWeb.PageControllerTest do
     assert html_response(conn, 200) =~ "login to"
   end
 
-  test "GET /admin", %{conn: conn} do
-    conn = get(conn, "/admin")
+  test "GET /profile", %{conn: conn} do
+    conn = get(conn, "/profile")
     # assert html_response(conn, 301) =~ "Login"
-    assert conn.status == 301
+    assert conn.status == 302
   end
 
   test "get_referer/1", %{conn: conn} do

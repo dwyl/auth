@@ -21,7 +21,6 @@ defmodule Auth.Email do
      "template" => "hi"
     }
   """
-
   def sendemail(params) do
     url = System.get_env("EMAIL_APP_URL") <> "/api/send"
     jwt = AuthPlug.Token.generate_jwt!(params)

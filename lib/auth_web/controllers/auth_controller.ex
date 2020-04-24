@@ -7,8 +7,10 @@ defmodule AuthWeb.AuthController do
   """
   def github_handler(conn, %{"code" => code, "state" => state}) do
     {:ok, profile} = ElixirAuthGithub.github_auth(code)
+    IO.inspect(profile, label: "github profile")
     # save profile to people:
     person = Person.create_github_person(profile)
+    IO.inspect(person, label: "github profile > person")
     # render or redirect:
     handler(conn, person, state)
   end
@@ -52,16 +54,15 @@ defmodule AuthWeb.AuthController do
     base_url = AuthPlug.Helpers.get_baseurl_from_conn(conn)
     IO.inspect(state, label: "state")
     IO.inspect(base_url, label: "base_url")
-    case state =~ base_url do
-      true -> # display welcome page
-        conn
-        |> put_view(AuthWeb.PageView)
-        |> render(:welcome, person: person)
-
-      false -> # redirect
+    case not is_nil(state) do
+      true -> # redirect
         conn
         |> redirect(external: add_jwt_url_param(person, state))
 
+      false -> # display welcome page
+        conn
+        |> put_view(AuthWeb.PageView)
+        |> render(:welcome, person: person)
     end
   end
 
