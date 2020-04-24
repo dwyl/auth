@@ -20,7 +20,7 @@ defmodule AuthWeb.AuthControllerTest do
     conn = get(conn, "/auth/google/callback",
       %{code: "234", state: AuthPlug.Helpers.get_baseurl_from_conn(conn)})
 
-    assert html_response(conn, 200) =~ "nelson@gmail.com"
-    # assert html_response(conn, 302) =~ "redirected"
+    # assert html_response(conn, 200) =~ "nelson@gmail.com"
+    assert html_response(conn, 302) =~ "redirected"
   end
 end
