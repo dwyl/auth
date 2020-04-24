@@ -4,11 +4,6 @@ defmodule AuthWeb.Endpoint do
   # The session will be stored in the cookie and signed,
   # this means its contents can be read but not tampered with.
   # Set :encryption_salt if you would also like to encrypt it.
-  @session_options [
-    store: :cookie,
-    key: "_auth_key",
-    signing_salt: "aDYyYPIr"
-  ]
 
   socket "/socket", AuthWeb.UserSocket,
     websocket: true,
@@ -42,6 +37,6 @@ defmodule AuthWeb.Endpoint do
 
   plug Plug.MethodOverride
   plug Plug.Head
-  plug Plug.Session, @session_options
+  plug Plug.Session, AuthPlug.session_options
   plug AuthWeb.Router
 end
