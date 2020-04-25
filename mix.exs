@@ -65,6 +65,7 @@ defmodule Auth.Mixfile do
 
       # Field Validation and Encryption: github.com/dwyl/fields
       {:fields, "~> 2.4.0"},
+      {:exbase58, "~> 1.0"}, # pending: github.com/dwyl/base58/pull/17
 
       # Check test coverage
       {:excoveralls, "~> 0.12.3", only: :test},
