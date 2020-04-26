@@ -40,17 +40,4 @@ defmodule AuthWeb.AuthControllerTest do
     assert html_response(conn, 200) =~ "google account"
     # assert html_response(conn, 302) =~ "redirected"
   end
-
-  # test "handler/3 show welcome page", %{conn: conn} do
-  #
-  #   person = Auth.Person.create_person(%{
-  #     email: "test@gmail.com", givenName: "McTestin"
-  #   })
-  #   IO.inspect(person, label: "person")
-  #
-  #   conn = AuthPlug.create_jwt_session(conn, %{email: person.email, id: person.id})
-  #   conn = AuthWeb.AuthController.handler(conn, person, nil)
-  #   IO.inspect(conn, label: "conn")
-  #   # assert html_response(conn, 302) =~ "redirected"
-  # end
 end
