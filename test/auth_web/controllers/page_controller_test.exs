@@ -42,4 +42,18 @@ defmodule AuthWeb.PageControllerTest do
     assert html_response(conn, 200) =~ "google account"
     # assert html_response(conn, 302) =~ "redirected"
   end
+
+  test "admin/2 show welcome page", %{conn: conn} do
+    data = %{
+      email: "nelson@gmail.com",
+      givenName: "McTestin",
+      picture: "https://youtu.be/naoknj1ebqI",
+      auth_provider: "google"
+    }
+    person = Auth.Person.create_person(data) # |> IO.inspect(label: "person")
+    conn = AuthPlug.create_jwt_session(conn, Map.merge(data, %{id: person.id}))
+    conn = get(conn, "/profile", %{})
+    assert html_response(conn, 200) =~ "google account"
+    # assert html_response(conn, 302) =~ "redirected"
+  end
 end

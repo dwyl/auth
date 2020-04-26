@@ -13,15 +13,11 @@ defmodule AuthWeb.PageController do
   end
 
   # https://github.com/dwyl/auth/issues/46
-  # def admin(conn, params) do
-  #   # IO.inspect(conn.req_headers, label: "conn.req_headers")
-  #   IO.inspect(params, label: "params")
-  #   IO.inspect(conn.assigns)
-  #
-  #   conn
-  #   |> put_view(AuthWeb.PageView)
-  #   |> render(:welcome)
-  # end
+  def admin(conn, _params) do
+    conn
+    |> put_view(AuthWeb.PageView)
+    |> render(:welcome)
+  end
 
   def get_referer(conn) do
     # https://stackoverflow.com/questions/37176911/get-http-referrer
