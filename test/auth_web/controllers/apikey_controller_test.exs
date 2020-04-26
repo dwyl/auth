@@ -2,6 +2,46 @@ defmodule AuthWeb.ApikeyControllerTest do
   use AuthWeb.ConnCase
 
   # alias Auth.Apikey
+  import AuthWeb.ApikeyController
+
+  describe "Create a DWYL_API_KEY for a given person_id" do
+    test "encrypt_encode/1 returns a base58 we can decrypt" do
+      person_id = 1
+      key = encrypt_encode(person_id)
+      # |> IO.inspect(label: "key")
+
+      decrypted = key
+      |> Base58.decode
+      # |> IO.inspect(label: "decoded")
+      |> Fields.AES.decrypt()
+      # |> IO.inspect(label: "decrypted")
+      |> String.to_integer()
+      # |> IO.inspect(label: "int")
+
+      assert decrypted == person_id
+    end
+
+    test "decode_decrypt/1 reverses the operation of encrypt_encode/1" do
+      person_id = 4869234521
+      key = encrypt_encode(person_id)
+      id = decode_decrypt(key)
+      assert person_id == id
+    end
+
+    test "create_api_key/1 creates a DWYL_API_KEY" do
+      person_id = 123456789
+      key = create_api_key(person_id)
+      assert key =~ "/"
+    end
+
+    test "decrypt_api_key/1 decrypts a DWYL_API_KEY" do
+      person_id = 123456789
+      key = create_api_key(person_id)
+      decrypted = decrypt_api_key(key) # |> IO.inspect()
+      assert decrypted == person_id
+    end
+
+  end
 
 
 

@@ -14,6 +14,22 @@ defmodule AuthWeb.ApikeyController do
     render(conn, "new.html", changeset: changeset)
   end
 
+  def encrypt_encode(person_id) do
+    Fields.AES.encrypt(person_id) |> Base58.encode
+  end
+
+  def create_api_key(person_id) do
+    encrypt_encode(person_id) <> "/" <> encrypt_encode(person_id)
+  end
+
+  def decode_decrypt(key) do
+    key |> Base58.decode |> Fields.AES.decrypt() |> String.to_integer()
+  end
+
+  def decrypt_api_key(key) do
+    key |> String.split("/") |> List.first() |> decode_decrypt()
+  end
+
   def create(conn, %{"apikey" => apikey_params}) do
     IO.inspect(apikey_params, label: "apikey_params")
     person_id = conn.assigns.decoded.id
