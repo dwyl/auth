@@ -33,14 +33,10 @@ defmodule AuthWeb.ApikeyController do
   def create(conn, %{"apikey" => apikey_params}) do
     IO.inspect(apikey_params, label: "apikey_params")
     person_id = conn.assigns.decoded.id
-    secret = Fields.AES.encrypt(person_id) |> Base58.encode
-    |> IO.inspect(label: "secret")
 
-    client = Fields.AES.encrypt(person_id) |> Base58.encode
-    |> IO.inspect(label: "client")
     params = Map.merge(apikey_params, %{
-      "client_secret" => secret,
-      "client_id" => client,
+      "client_secret" => encrypt_encode(person_id),
+      "client_id" => encrypt_encode(person_id),
       "person_id" => person_id
       })
     case Apikey.create_apikey(params) do

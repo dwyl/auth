@@ -1,17 +1,16 @@
-<h1>Show Apikey</h1>
+<h1>Your DWYL_API_KEY</h1>
 
 <div>
   <p>
-    <strong>DWYL_API_KEY:</strong>
-    <div style="width:420px; font-size: 1.2em;
+    <div style="width:470px; font-size: 1.2em;
     overflow-wrap: break-word; font-family: monospace;
     border: 1px solid black; padding: 10px; background-color: #EBEDEF;">
-    <%= @apikey.client_id %><%= @apikey.client_secret %>
+    <%= @apikey.client_id %>/<%= @apikey.client_secret %>
     </div>
   </p>
 
   <p>
-    <strong>Name:</strong>
+    <strong>Key Name:</strong>
     <%= @apikey.name %>
   </p>
 
@@ -21,7 +20,7 @@
   </p>
 
   <p>
-    <strong>Url:</strong>
+    <strong>URL:</strong>
     <%= @apikey.url %>
   </p>
 
