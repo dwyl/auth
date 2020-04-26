@@ -62,20 +62,25 @@ defmodule AuthWeb.ApikeyControllerTest do
   #   apikey
   # end
   #
-  # describe "index" do
-  #   test "lists all apikeys", %{conn: conn} do
-  #     conn = get(conn, Routes.apikey_path(conn, :index))
-  #     assert html_response(conn, 200) =~ "Listing Apikeys"
-  #   end
-  # end
-  #
-  # describe "new apikey" do
-  #   test "renders form", %{conn: conn} do
-  #     conn = get(conn, Routes.apikey_path(conn, :new))
-  #     assert html_response(conn, 200) =~ "New Apikey"
-  #   end
-  # end
-  #
+  describe "index" do
+    test "lists all apikeys", %{conn: conn} do
+      person = Auth.Person.get_person_by_email(@email)
+      conn = AuthPlug.create_jwt_session(conn, %{email: @email, id: person.id})
+      conn = get(conn, Routes.apikey_path(conn, :index))
+      assert html_response(conn, 200) =~ "DWYL_API_KEY"
+    end
+  end
+
+  describe "new apikey" do
+    test "renders form", %{conn: conn} do
+      person = Auth.Person.get_person_by_email(@email)
+      conn = AuthPlug.create_jwt_session(conn, %{email: @email, id: person.id})
+      
+      conn = get(conn, Routes.apikey_path(conn, :new))
+      assert html_response(conn, 200) =~ "New Apikey"
+    end
+  end
+
   describe "create apikey" do
 
     test "redirects to show when data is valid", %{conn: conn} do

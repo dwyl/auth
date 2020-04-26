@@ -3,7 +3,6 @@ defmodule AuthWeb.ApikeyController do
   alias Auth.Apikey
 
   def index(conn, _params) do
-
     person_id = conn.assigns.decoded.id
     apikeys = Apikey.list_apikeys_for_person(person_id)
     render(conn, "index.html", apikeys: apikeys)
@@ -39,15 +38,12 @@ defmodule AuthWeb.ApikeyController do
       "client_id" => encrypt_encode(person_id),
       "person_id" => person_id
       })
-    case Apikey.create_apikey(params) do
-      {:ok, apikey} ->
-        conn
-        |> put_flash(:info, "Apikey created successfully.")
-        |> redirect(to: Routes.apikey_path(conn, :show, apikey))
 
-      {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, "new.html", changeset: changeset)
-    end
+    {:ok, apikey} = Apikey.create_apikey(params)
+
+    conn
+    |> put_flash(:info, "Apikey created successfully.")
+    |> redirect(to: Routes.apikey_path(conn, :show, apikey))
   end
 
   def show(conn, %{"id" => id}) do
