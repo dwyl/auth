@@ -1,10 +1,42 @@
-# defmodule Auth.CtxTest do
-#   use Auth.DataCase
+defmodule Auth.ApikeyTest do
+  # use Auth.DataCase
+  use AuthWeb.ConnCase
+  # alias Auth.Apikey
+  @email System.get_env("ADMIN_EMAIL")
+
+  test "list_apikeys_for_person/1 returns all apikeys person" do
+    person = Auth.Person.get_person_by_email(@email)
+    # IO.inspect(person, label: "person")
+
+    keys = Auth.Apikey.list_apikeys_for_person(person.id)
+    # IO.inspect(keys, label: "keys")
+    assert keys == []
+
+    # Insert Two API keys:
+    params = %{
+      # "description" => "test key",
+      "name" => "My Amazing Key",
+      "url" => "http://localhost:400",
+      "person_id" => person.id,
+      "client_secret" => AuthWeb.ApikeyController.encrypt_encode(person.id)
+    }
+    Auth.Apikey.create_apikey(params)
+
+    Map.merge(params, %{
+      "client_secret" => AuthWeb.ApikeyController.encrypt_encode(person.id)
+    }) |> Auth.Apikey.create_apikey()
+
+    keys = Auth.Apikey.list_apikeys_for_person(person.id)
+    assert length(keys) == 2
+  end
+
+
+
 #
 #   alias Auth.Ctx
 #
 #   describe "apikeys" do
-#     alias Auth.Ctx.Apikey
+#     alias Auth.Apikey
 #
 #     @valid_attrs %{client_secret: "some client_secret", description: "some description", key_id: 42, name: "some name", url: "some url"}
 #     @update_attrs %{client_secret: "some updated client_secret", description: "some updated description", key_id: 43, name: "some updated name", url: "some updated url"}
@@ -19,10 +51,7 @@
 #       apikey
 #     end
 #
-#     test "list_apikeys/0 returns all apikeys" do
-#       apikey = apikey_fixture()
-#       assert Ctx.list_apikeys() == [apikey]
-#     end
+
 #
 #     test "get_apikey!/1 returns the apikey with given id" do
 #       apikey = apikey_fixture()
@@ -69,4 +98,4 @@
 #       assert %Ecto.Changeset{} = Ctx.change_apikey(apikey)
 #     end
 #   end
-# end
+end

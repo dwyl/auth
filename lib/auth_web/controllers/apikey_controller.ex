@@ -31,7 +31,7 @@ defmodule AuthWeb.ApikeyController do
   end
 
   def create(conn, %{"apikey" => apikey_params}) do
-    IO.inspect(apikey_params, label: "apikey_params")
+    # IO.inspect(apikey_params, label: "apikey_params")
     person_id = conn.assigns.decoded.id
 
     params = Map.merge(apikey_params, %{
@@ -52,6 +52,7 @@ defmodule AuthWeb.ApikeyController do
 
   def show(conn, %{"id" => id}) do
     apikey = Apikey.get_apikey!(id)
+    # combined = apikey.client_id <> "/" <> apikey.client_secret
     render(conn, "show.html", apikey: apikey)
   end
 

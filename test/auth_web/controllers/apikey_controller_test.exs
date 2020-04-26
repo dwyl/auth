@@ -1,8 +1,10 @@
 defmodule AuthWeb.ApikeyControllerTest do
   use AuthWeb.ConnCase
+  use ExUnitProperties
 
   # alias Auth.Apikey
   import AuthWeb.ApikeyController
+  @email System.get_env("ADMIN_EMAIL")
 
   describe "Create a DWYL_API_KEY for a given person_id" do
     test "encrypt_encode/1 returns a base58 we can decrypt" do
@@ -35,18 +37,24 @@ defmodule AuthWeb.ApikeyControllerTest do
     end
 
     test "decrypt_api_key/1 decrypts a DWYL_API_KEY" do
-      person_id = 123456789
-      key = create_api_key(person_id)
+      person_id = 1234
+      key = create_api_key(person_id) |> IO.inspect()
+      # IO.inspect(String.length(key), label: "String.length(key)")
       decrypted = decrypt_api_key(key) # |> IO.inspect()
       assert decrypted == person_id
     end
 
+    property "Check a batch of int values can be decoded decode_decrypt/1" do
+      check all(int <- integer()) do
+        assert decode_decrypt(encrypt_encode(int)) == int
+      end
+    end
   end
 
 
 
-  # @create_attrs %{client_secret: "some client_secret", description: "some description", key_id: 42, name: "some name", url: "some url"}
-  # @update_attrs %{client_secret: "some updated client_secret", description: "some updated description", key_id: 43, name: "some updated name", url: "some updated url"}
+  @create_attrs %{description: "some description", name: "some name", url: "some url"}
+  # @update_attrs %{client_secret: "some updated client_secret", description: "some updated description", key_id: 43, name: "some updated name", url: "surl"}
   # @invalid_attrs %{client_secret: nil, description: nil, key_id: nil, name: nil, url: nil}
   #
   # def fixture(:apikey) do
@@ -68,22 +76,29 @@ defmodule AuthWeb.ApikeyControllerTest do
   #   end
   # end
   #
-  # describe "create apikey" do
-  #   test "redirects to show when data is valid", %{conn: conn} do
-  #     conn = post(conn, Routes.apikey_path(conn, :create), apikey: @create_attrs)
-  #
-  #     assert %{id: id} = redirected_params(conn)
-  #     assert redirected_to(conn) == Routes.apikey_path(conn, :show, id)
-  #
-  #     conn = get(conn, Routes.apikey_path(conn, :show, id))
-  #     assert html_response(conn, 200) =~ "Show Apikey"
-  #   end
-  #
-  #   test "renders errors when data is invalid", %{conn: conn} do
-  #     conn = post(conn, Routes.apikey_path(conn, :create), apikey: @invalid_attrs)
-  #     assert html_response(conn, 200) =~ "New Apikey"
-  #   end
-  # end
+  describe "create apikey" do
+
+    test "redirects to show when data is valid", %{conn: conn} do
+      person = Auth.Person.get_person_by_email(@email)
+      conn = AuthPlug.create_jwt_session(conn, %{email: @email, id: person.id})
+
+      conn = post(conn, Routes.apikey_path(conn, :create), apikey: @create_attrs)
+
+      assert %{id: id} = redirected_params(conn)
+      assert redirected_to(conn) == Routes.apikey_path(conn, :show, id)
+
+      conn = get(conn, Routes.apikey_path(conn, :show, id))
+      assert html_response(conn, 200) =~ "Your DWYL_API_KEY"
+    end
+
+    # test "renders errors when data is invalid", %{conn: conn} do
+    #   person = Auth.Person.get_person_by_email(@email)
+    #   conn = AuthPlug.create_jwt_session(conn, %{email: @email, id: person.id})
+    #
+    #   conn = post(conn, Routes.apikey_path(conn, :create), apikey: @invalid_attrs)
+    #   assert html_response(conn, 200) =~ "New Apikey"
+    # end
+  end
   #
   # describe "edit apikey" do
   #   setup [:create_apikey]

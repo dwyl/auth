@@ -61,17 +61,20 @@ defmodule Auth.Mixfile do
       # https://github.com/dwyl/elixir-auth-google
       {:elixir_auth_google, "~> 1.2.0"},
       # https://github.com/dwyl/auth_plug
-      {:auth_plug, "~> 0.9.0"},
+      {:auth_plug, "~> 0.11.0"},
 
       # Field Validation and Encryption: github.com/dwyl/fields
       {:fields, "~> 2.4.0"},
-      {:exbase58, "~> 1.0"}, # pending: github.com/dwyl/base58/pull/17
+      {:exbase58, "~> 1.0.2"}, # pending: github.com/dwyl/base58/pull/17
 
       # Check test coverage
       {:excoveralls, "~> 0.12.3", only: :test},
 
+      # Property based tests: github.com/dwyl/learn-property-based-testing
+      {:stream_data, "~> 0.4.3", only: :test},
+
       # Create Documentation for publishing Hex.docs:
-      {:ex_doc, "~> 0.21.3", only: :dev}
+      {:ex_doc, "~> 0.21.3", only: :dev},
     ]
   end
 
