@@ -64,7 +64,7 @@ defmodule Auth.Mixfile do
       {:auth_plug, "~> 0.14.0"},
 
       # Field Validation and Encryption: github.com/dwyl/fields
-      {:fields, "~> 2.4.0"},
+      {:fields, "~> 2.5.0"},
       {:exbase58, "~> 1.0.2"}, # pending: github.com/dwyl/base58/pull/17
 
       # Check test coverage
