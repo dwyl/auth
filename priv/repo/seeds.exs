@@ -31,7 +31,25 @@ defmodule Auth.Seeds do
 
     IO.inspect(person.id, label: "seeds.exs person.id")
     IO.puts("- - - - - - - - - - - - - - - - - - - - - - ")
+
+    person
+  end
+
+  def create_apikey_for_admin(person) do
+
+    {:ok, key} = %{"name" => "default key", "url" => "http://localhost:4000"}
+    |> AuthWeb.ApikeyController.make_apikey(person.id)
+    # |> IO.inspect(label: "apikey_params")
+    |> Auth.Apikey.create_apikey()
+
+    # IO.inspect(key, label: "key")
+    api_key = key.client_id <> "/" <> key.client_secret
+    # Set the AUTH_API_KEY to a valid value that is in the DB:
+    System.put_env("AUTH_API_KEY", api_key)
+    IO.inspect(System.get_env("AUTH_API_KEY"), label: "AUTH_API_KEY")
+    key
   end
 end
 
 Auth.Seeds.create_admin()
+|> Auth.Seeds.create_apikey_for_admin()
