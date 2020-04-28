@@ -28,7 +28,6 @@ defmodule AuthWeb.PageController do
     case List.keyfind(conn.req_headers, "referer", 0) do
       {"referer", referer} ->
         referer
-        # |> IO.inspect(label: "req_headers referer")
 
       nil -> # referer not in headers, check URL query:
         case conn.query_string =~ "referer" do
