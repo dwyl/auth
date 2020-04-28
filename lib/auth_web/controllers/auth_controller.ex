@@ -59,9 +59,10 @@ defmodule AuthWeb.AuthController do
         |> redirect(external: add_jwt_url_param(person, state))
 
       false -> # display welcome page
+        person = Map.delete(person, :email_hash) # Jason chokes on binary data!
         conn
         |> put_view(AuthWeb.PageView)
-        # |> AuthPlug.create_jwt_session(person)
+        |> AuthPlug.create_jwt_session(person)
         |> render(:welcome, person: person)
     end
   end
