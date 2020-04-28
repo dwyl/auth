@@ -19,6 +19,10 @@ defmodule AuthWeb.PageController do
     |> render(:welcome)
   end
 
+  def append_client_id(ref, client_id) do
+    ref <> "?client_id=" <> client_id
+  end
+
   def get_referer(conn) do
     # https://stackoverflow.com/questions/37176911/get-http-referrer
     case List.keyfind(conn.req_headers, "referer", 0) do
@@ -30,14 +34,15 @@ defmodule AuthWeb.PageController do
         case conn.query_string =~ "referer" do
           true ->
             query = URI.decode_query(conn.query_string)
-            Map.get(query, "referer")
-            # |> IO.inspect(label: "url referer")
+            ref = Map.get(query, "referer")
+            client_id = Map.get(query, "client_id")
+            ref |> append_client_id(client_id)
 
           false -> # no referer, redirect back to this app.
             # IO.inspect("false: no referer")
             AuthPlug.Helpers.get_baseurl_from_conn(conn) <> "/profile"
         end
     end
-    |> URI.encode # |> IO.inspect(label: "referer")
+    |> URI.encode |> IO.inspect(label: "referer")
   end
 end
