@@ -37,7 +37,7 @@ defmodule AuthWeb.AuthControllerTest do
     conn = get(conn, "/auth/google/callback",
       %{code: "234", state: nil})
 
-    # assert html_response(conn, 200) =~ "google account"
+    assert html_response(conn, 200) =~ "google account"
     # assert html_response(conn, 302) =~ "redirected"
   end
 end

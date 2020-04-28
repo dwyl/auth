@@ -131,7 +131,7 @@ defmodule Auth.Person do
     }
   """
   def transform_google_profile_data_to_person(profile) do
-    IO.inspect(profile, label: "profile")
+    # IO.inspect(profile, label: "profile")
     Map.merge(profile, %{
       familyName: profile.family_name,
       givenName: profile.given_name,

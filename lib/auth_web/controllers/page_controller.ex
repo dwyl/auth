@@ -24,20 +24,20 @@ defmodule AuthWeb.PageController do
     case List.keyfind(conn.req_headers, "referer", 0) do
       {"referer", referer} ->
         referer
-        |> IO.inspect(label: "req_headers referer")
+        # |> IO.inspect(label: "req_headers referer")
 
       nil -> # referer not in headers, check URL query:
         case conn.query_string =~ "referer" do
           true ->
             query = URI.decode_query(conn.query_string)
             Map.get(query, "referer")
-            |> IO.inspect(label: "url referer")
+            # |> IO.inspect(label: "url referer")
 
           false -> # no referer, redirect back to this app.
-            IO.inspect("false: no referer")
+            # IO.inspect("false: no referer")
             AuthPlug.Helpers.get_baseurl_from_conn(conn) <> "/profile"
         end
     end
-    |> URI.encode |> IO.inspect(label: "referer")
+    |> URI.encode # |> IO.inspect(label: "referer")
   end
 end

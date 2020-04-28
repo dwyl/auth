@@ -29,7 +29,7 @@ defmodule AuthWeb.PageControllerTest do
 
   test "google_handler/2 show welcome (state=nil) > handler/3", %{conn: conn} do
     # IO.inspect(System.get_env("AUTH_API_KEY"), label: "AUTH_API_KEY")
-    IO.inspect(AuthPlug.Token.client_id(), label: "AuthPlug.Token.client_id()")
+    # IO.inspect(AuthPlug.Token.client_id(), label: "AuthPlug.Token.client_id()")
     # data = %{
     #   email: "nelson@gmail.com",
     #   givenName: "McTestin",

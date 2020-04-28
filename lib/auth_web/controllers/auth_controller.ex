@@ -7,10 +7,10 @@ defmodule AuthWeb.AuthController do
   """
   def github_handler(conn, %{"code" => code, "state" => state}) do
     {:ok, profile} = ElixirAuthGithub.github_auth(code)
-    IO.inspect(profile, label: "github profile")
+    # IO.inspect(profile, label: "github profile")
     # save profile to people:
     person = Person.create_github_person(profile)
-    IO.inspect(person, label: "github profile > person")
+    # IO.inspect(person, label: "github profile > person")
     # render or redirect:
     handler(conn, person, state)
   end
@@ -41,16 +41,16 @@ defmodule AuthWeb.AuthController do
   if the state is defined, redirect to it.
   """
   def handler(conn, person, state) do
-    IO.inspect(person, label: "handler/3 > person")
+    # IO.inspect(person, label: "handler/3 > person")
     # Send welcome email:
-    # Auth.Email.sendemail(%{
-    #   email: person.email,
-    #   name: person.givenName,
-    #   template: "welcome"
-    # })
+    Auth.Email.sendemail(%{
+      email: person.email,
+      name: person.givenName,
+      template: "welcome"
+    })
     # |> IO.inspect(label: "email")
 
-    IO.inspect(state, label: "state handler/3:53")
+    # IO.inspect(state, label: "state handler/3:53")
 
     # check if valid state (HTTP referer) is defined:
     case not is_nil(state) do
@@ -59,7 +59,6 @@ defmodule AuthWeb.AuthController do
         |> redirect(external: add_jwt_url_param(person, state))
 
       false -> # display welcome page
-        person = Map.delete(person, :email_hash) # Jason chokes on binary data!
         conn
         |> put_view(AuthWeb.PageView)
         |> AuthPlug.create_jwt_session(person)

@@ -47,6 +47,7 @@ defmodule Auth.Seeds do
     # Set the AUTH_API_KEY to a valid value that is in the DB:
     System.put_env("AUTH_API_KEY", api_key)
     IO.inspect(System.get_env("AUTH_API_KEY"), label: "AUTH_API_KEY")
+    IO.puts("- - - - - - - - - - - - - - - - - - - - - - ")
     key
   end
 end

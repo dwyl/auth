@@ -38,7 +38,7 @@ defmodule AuthWeb.ApikeyControllerTest do
 
     test "decrypt_api_key/1 decrypts a DWYL_API_KEY" do
       person_id = 1234
-      key = create_api_key(person_id) |> IO.inspect()
+      key = create_api_key(person_id) # |> IO.inspect()
       # IO.inspect(String.length(key), label: "String.length(key)")
       decrypted = decrypt_api_key(key) # |> IO.inspect()
       assert decrypted == person_id
@@ -75,7 +75,7 @@ defmodule AuthWeb.ApikeyControllerTest do
     test "renders form", %{conn: conn} do
       person = Auth.Person.get_person_by_email(@email)
       conn = AuthPlug.create_jwt_session(conn, %{email: @email, id: person.id})
-      
+
       conn = get(conn, Routes.apikey_path(conn, :new))
       assert html_response(conn, 200) =~ "New Apikey"
     end
