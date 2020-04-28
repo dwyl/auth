@@ -10,7 +10,7 @@ defmodule Auth.ApikeyTest do
 
     keys = Auth.Apikey.list_apikeys_for_person(person.id)
     # IO.inspect(keys, label: "keys")
-    assert keys == []
+    assert length(keys) == 1
 
     # Insert Two API keys:
     params = %{
@@ -27,7 +27,7 @@ defmodule Auth.ApikeyTest do
     }) |> Auth.Apikey.create_apikey()
 
     keys = Auth.Apikey.list_apikeys_for_person(person.id)
-    assert length(keys) == 2
+    assert length(keys) == 3
   end
 
 

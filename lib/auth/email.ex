@@ -22,8 +22,11 @@ defmodule Auth.Email do
     }
   """
   def sendemail(params) do
+    # IO.inspect(params, label: "sendemail/1 params:")
     url = System.get_env("EMAIL_APP_URL") <> "/api/send"
-    jwt = AuthPlug.Token.generate_jwt!(params)
+    # until further notice use the SECRET_KEY_BASE for sending email:
+    secret = System.get_env("SECRET_KEY_BASE")
+    jwt = AuthPlug.Token.generate_jwt!(params, secret)
     headers = [Authorization: "#{jwt}"]
     options = [ssl: [{:versions, [:"tlsv1.2"]}],
       timeout: 50_000, recv_timeout: 50_000] # github.com/dwyl/auth/issues/48

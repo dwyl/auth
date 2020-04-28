@@ -41,14 +41,14 @@ defmodule AuthWeb.AuthController do
   if the state is defined, redirect to it.
   """
   def handler(conn, person, state) do
-    # IO.inspect(person, label: "handler/3 > person")
+    IO.inspect(person, label: "handler/3 > person")
     # Send welcome email:
-    Auth.Email.sendemail(%{
-      email: person.email,
-      name: person.givenName,
-      template: "welcome"
-    })
-    |> IO.inspect(label: "email")
+    # Auth.Email.sendemail(%{
+    #   email: person.email,
+    #   name: person.givenName,
+    #   template: "welcome"
+    # })
+    # |> IO.inspect(label: "email")
 
     IO.inspect(state, label: "state handler/3:53")
 
@@ -61,6 +61,7 @@ defmodule AuthWeb.AuthController do
       false -> # display welcome page
         conn
         |> put_view(AuthWeb.PageView)
+        # |> AuthPlug.create_jwt_session(person)
         |> render(:welcome, person: person)
     end
   end

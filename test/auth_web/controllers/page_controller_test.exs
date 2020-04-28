@@ -28,16 +28,18 @@ defmodule AuthWeb.PageControllerTest do
   end
 
   test "google_handler/2 show welcome (state=nil) > handler/3", %{conn: conn} do
-    data = %{
-      email: "nelson@gmail.com",
-      givenName: "McTestin",
-      picture: "https://youtu.be/naoknj1ebqI",
-      auth_provider: "google"
-    }
-    person = Auth.Person.create_person(data) # |> IO.inspect(label: "person")
-    conn = AuthPlug.create_jwt_session(conn, Map.merge(data, %{id: person.id}))
-    conn = get(conn, "/auth/google/callback",
-      %{code: "234", state: nil})
+    # IO.inspect(System.get_env("AUTH_API_KEY"), label: "AUTH_API_KEY")
+    IO.inspect(AuthPlug.Token.client_id(), label: "AuthPlug.Token.client_id()")
+    # data = %{
+    #   email: "nelson@gmail.com",
+    #   givenName: "McTestin",
+    #   picture: "https://youtu.be/naoknj1ebqI",
+    #   auth_provider: "google"
+    # }
+    # person = Auth.Person.create_person(data) |> IO.inspect(label: "person")
+    # conn = AuthPlug.create_jwt_session(conn, Map.merge(data, %{id: person.id}))
+    #   |> IO.inspect(label: "conn")
+    conn = get(conn, "/auth/google/callback", %{code: "234", state: nil})
 
     assert html_response(conn, 200) =~ "google account"
     # assert html_response(conn, 302) =~ "redirected"

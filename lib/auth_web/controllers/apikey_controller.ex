@@ -29,17 +29,19 @@ defmodule AuthWeb.ApikeyController do
     key |> String.split("/") |> List.first() |> decode_decrypt()
   end
 
-  def create(conn, %{"apikey" => apikey_params}) do
-    # IO.inspect(apikey_params, label: "apikey_params")
-    person_id = conn.assigns.decoded.id
-
-    params = Map.merge(apikey_params, %{
+  def make_apikey(apikey_params, person_id) do
+    Map.merge(apikey_params, %{
       "client_secret" => encrypt_encode(person_id),
       "client_id" => encrypt_encode(person_id),
       "person_id" => person_id
-      })
+    })
+  end
 
-    {:ok, apikey} = Apikey.create_apikey(params)
+  def create(conn, %{"apikey" => apikey_params}) do
+    {:ok, apikey} =
+      apikey_params
+      |> make_apikey(conn.assigns.decoded.id)
+      |> Apikey.create_apikey()
 
     conn
     |> put_flash(:info, "Apikey created successfully.")
