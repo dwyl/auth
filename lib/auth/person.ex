@@ -48,10 +48,12 @@ defmodule Auth.Person do
   end
 
   def create_person(person) do
+    IO.inspect(person, label: "create_person:51")
     person =
       %Person{}
       |> changeset(person)
       |> put_email_status_verified()
+      |> IO.inspect(label: "after put_email_status_verified")
 
     case get_person_by_email(person.changes.email) do
       nil ->
@@ -129,15 +131,19 @@ defmodule Auth.Person do
     }
   """
   def transform_google_profile_data_to_person(profile) do
+    IO.inspect(profile, label: "profile")
     Map.merge(profile, %{
       familyName: profile.family_name,
       givenName: profile.given_name,
       auth_provider: "google"
     })
+    |> IO.inspect(label: "merged")
   end
 
   def create_google_person(profile) do
-    transform_google_profile_data_to_person(profile) |> create_person()
+    transform_google_profile_data_to_person(profile)
+    |> create_person()
+    |> IO.inspect(label: "create_person:")
   end
 
   # @doc """
@@ -156,6 +162,7 @@ defmodule Auth.Person do
 
   defp put_email_hash(changeset) do
     put_change(changeset, :email_hash, changeset.changes.email)
+    |> IO.inspect(label: "changeset with :email_hash")
   end
 
   def put_email_status_verified(changeset) do

@@ -50,10 +50,9 @@ defmodule AuthWeb.AuthController do
     })
     |> IO.inspect(label: "email")
 
+    IO.inspect(state, label: "state handler/3:53")
+
     # check if valid state (HTTP referer) is defined:
-    base_url = AuthPlug.Helpers.get_baseurl_from_conn(conn)
-    IO.inspect(state, label: "state")
-    IO.inspect(base_url, label: "base_url")
     case not is_nil(state) do
       true -> # redirect
         conn
