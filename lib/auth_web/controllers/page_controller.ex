@@ -21,7 +21,7 @@ defmodule AuthWeb.PageController do
   end
 
   def append_client_id(ref, client_id) do
-    ref <> "&client_id=" <> client_id
+    ref <> "?auth_client_id=" <> client_id
   end
 
   def get_referer(conn) do

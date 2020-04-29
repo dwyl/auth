@@ -91,8 +91,9 @@ defmodule AuthWeb.AuthController do
   All other failure conditions return a 0 (zero) which results in a 401.
   """
   def get_client_secret_from_state(state) do
+    IO.inspect(state, label: "state:94")
     query = URI.decode_query(state)
-    IO.inspect(query, label: "query")
+    IO.inspect(query, label: "query:96")
     client_id = Map.get(query, "auth_client_id")
     IO.inspect(client_id, label: "client_id")
     case not is_nil(client_id) do
