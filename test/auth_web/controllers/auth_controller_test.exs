@@ -4,14 +4,16 @@ defmodule AuthWeb.AuthControllerTest do
 
   test "github_handler/2 github auth callback", %{conn: conn} do
     conn = get(conn, "/auth/github/callback",
-      %{code: "123", state: "http://localhost/"})
+      %{code: "123", state: "http://localhost/" <>
+      "&client_id=" <> AuthPlug.Token.client_id() })
     # assert html_response(conn, 200) =~ "test@gmail.com"
     assert html_response(conn, 302) =~ "http://localhost"
   end
 
   test "google_handler/2 for google auth callback", %{conn: conn} do
     conn = get(conn, "/auth/google/callback",
-      %{code: "234", state: "http://localhost/"})
+      %{code: "234", state: "http://localhost/" <>
+      "&client_id=" <> AuthPlug.Token.client_id() })
 
     # assert html_response(conn, 200) =~ "nelson@gmail.com"
     assert html_response(conn, 302) =~ "http://localhost"
@@ -42,4 +44,16 @@ defmodule AuthWeb.AuthControllerTest do
     assert html_response(conn, 200) =~ "google account"
     # assert html_response(conn, 302) =~ "redirected"
   end
+
+  test "decode_decrypt/1 with invalid client_id" do
+    valid_key = AuthWeb.ApikeyController.encrypt_encode(1)
+    person_id = AuthWeb.ApikeyController.decode_decrypt(valid_key)
+    assert person_id == 1
+
+    invalid_key = String.slice(valid_key, 0..-2)
+    error = AuthWeb.ApikeyController.decode_decrypt(invalid_key)
+    assert error == 0
+  end
+
+
 end

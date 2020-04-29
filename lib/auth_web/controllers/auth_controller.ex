@@ -48,15 +48,22 @@ defmodule AuthWeb.AuthController do
       name: person.givenName,
       template: "welcome"
     })
-    # |> IO.inspect(label: "email")
+    |> IO.inspect(label: "email")
 
     # IO.inspect(state, label: "state handler/3:53")
 
     # check if valid state (HTTP referer) is defined:
     case not is_nil(state) do
       true -> # redirect
-        conn
-        |> redirect(external: add_jwt_url_param(person, state))
+        case get_client_secret_from_state(state) do
+          0 ->
+            IO.inspect("client_secret is 0 (error)")
+            unauthorized(conn)
+          secret ->
+            IO.inspect(secret, label: "secret")
+            conn
+            |> redirect(external: add_jwt_url_param(person, state, secret))
+        end
 
       false -> # display welcome page
         conn
@@ -66,32 +73,44 @@ defmodule AuthWeb.AuthController do
     end
   end
 
+  defp unauthorized(conn) do
+    conn
+    |> put_resp_header("www-authenticate", "Bearer realm=\"Person access\"")
+    |> send_resp(401, "invalid client_id")
+    |> halt()
+  end
 
-
-
-
-  def add_jwt_url_param(person, state) do
-
-    IO.inspect(state, label: "state")
+  def get_client_secret_from_state(state) do
     query = URI.decode_query(state)
     # IO.inspect(query, label: "query")
     client_id = Map.get(query, "client_id")
     IO.inspect(client_id, label: "client_id")
-    client_secret = case not is_nil(client_id) do
-      true ->
-        # Lookup client_id in apikeys table
+    case not is_nil(client_id) do
+      true -> # Lookup client_id in apikeys table
         person_id = AuthWeb.ApikeyController.decode_decrypt(client_id)
         IO.inspect(person_id, label: "person_id")
-        apikeys = Auth.Apikey.list_apikeys_for_person(person_id)
-        IO.inspect(apikeys)
-        Enum.filter(apikeys, fn(k) ->
-          k.client_id == client_id # and state =~ k.url
-        end) |> List.first() |> Map.get(:client_secret)
+        if person_id == 0 do # decode_decrypt fails with state 0
+          # IO.inspect(person_id, label: "person_id:88")
+          0
+        else
+          apikeys = Auth.Apikey.list_apikeys_for_person(person_id)
+          # IO.inspect(apikeys)
+          Enum.filter(apikeys, fn(k) ->
+            k.client_id == client_id # and state =~ k.url
+          end) |> List.first() |> Map.get(:client_secret)
+          # check for URL match!
+        end
 
-      false ->
-        # use client_id:
-        AuthPlug.Token.client_secret()
+      false -> # state without client_id is not valid
+        0
     end
+  end
+
+
+
+  def add_jwt_url_param(person, state, client_secret) do
+
+    IO.inspect(state, label: "state")
 
     data = %{
       auth_provider: person.auth_provider,

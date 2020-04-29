@@ -21,8 +21,18 @@ defmodule AuthWeb.ApikeyController do
     encrypt_encode(person_id) <> "/" <> encrypt_encode(person_id)
   end
 
+  @doc"""
+  `decode_decrypt/1` accepts a `key` and attempts to Base58.decode
+  followed by AES.decrypt it. If decode or decrypt fails, return 0 (zero).
+  """
   def decode_decrypt(key) do
-    key |> Base58.decode |> Fields.AES.decrypt() |> String.to_integer()
+    try do
+      key |> Base58.decode |> Fields.AES.decrypt() |> String.to_integer()
+    rescue
+      ArgumentError ->
+        # IO.puts("AES.decrypt() unable to decrypt client_id")
+        0
+    end
   end
 
   def decrypt_api_key(key) do
