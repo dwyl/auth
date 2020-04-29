@@ -78,7 +78,7 @@ defmodule AuthWeb.AuthController do
     conn
     # |> put_resp_header("www-authenticate", "Bearer realm=\"Person access\"")
     |> put_resp_content_type("text/html")
-    |> send_resp(401, "invalid client_id")
+    |> send_resp(401, "invalid AUTH_API_KEY/client_id please check.")
     |> halt()
   end
 
@@ -97,7 +97,7 @@ defmodule AuthWeb.AuthController do
     case not is_nil(client_id) do
       true -> # Lookup client_id in apikeys table
         person_id = AuthWeb.ApikeyController.decode_decrypt(client_id)
-        IO.inspect(person_id, label: "person_id")
+        # IO.inspect(person_id, label: "person_id")
         if person_id == 0 do # decode_decrypt fails with state 0
           # IO.inspect(person_id, label: "person_id:88")
           0

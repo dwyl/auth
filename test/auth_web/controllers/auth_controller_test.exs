@@ -55,10 +55,10 @@ defmodule AuthWeb.AuthControllerTest do
   test "google_handler/2 with invalid client_id", %{conn: conn} do
     invalid_key = String.slice(AuthPlug.Token.client_id(), 0..-2)
     conn = get(conn, "/auth/google/callback",
-      %{code: "234", state: "www.example.com" <>
+      %{code: "234", state: "www.example.com/" <>
       "&client_id=" <> invalid_key })
     # assert html_response(conn, 200) =~ "google account"
-    assert html_response(conn, 401) =~ "invalid client_id"
+    assert html_response(conn, 401) =~ "invalid"
   end
 
 
