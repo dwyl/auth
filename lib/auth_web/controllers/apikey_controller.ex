@@ -82,16 +82,20 @@ defmodule AuthWeb.ApikeyController do
   """
   def update(conn, %{"id" => id, "apikey" => apikey_params}) do
     apikey = Apikey.get_apikey!(id)
-    
+    person_id = conn.assigns.decoded.id
+    # check that the person attempting to update the key owns it!
+    if apikey.person_id == person_id do
+      case Apikey.update_apikey(apikey, apikey_params) do
+        {:ok, apikey} ->
+          conn
+          |> put_flash(:info, "Apikey updated successfully.")
+          |> redirect(to: Routes.apikey_path(conn, :show, apikey))
 
-    case Apikey.update_apikey(apikey, apikey_params) do
-      {:ok, apikey} ->
-        conn
-        |> put_flash(:info, "Apikey updated successfully.")
-        |> redirect(to: Routes.apikey_path(conn, :show, apikey))
-
-      {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, "edit.html", apikey: apikey, changeset: changeset)
+        {:error, %Ecto.Changeset{} = changeset} ->
+          render(conn, "edit.html", apikey: apikey, changeset: changeset)
+      end
+    else
+      AuthWeb.AuthController.not_found(conn, "API KEY " <> id <> " not found." )
     end
   end
   #
