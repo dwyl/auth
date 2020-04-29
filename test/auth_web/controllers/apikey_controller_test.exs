@@ -171,6 +171,22 @@ defmodule AuthWeb.ApikeyControllerTest do
       conn = put(conn, Routes.apikey_path(conn, :update, key), apikey: @invalid_attrs)
       assert html_response(conn, 200) =~ "Edit Apikey"
     end
+
+    test "attempt to UPDATE a key I don't own > should 404", %{conn: conn} do
+
+      person = Auth.Person.get_person_by_email(@email)
+      # create session with wrong person:
+      wrong_person = Auth.Person.create_person(%{email: "wronger@gmail.com"})
+      conn = AuthPlug.create_jwt_session(conn, wrong_person)
+
+      {:ok, key} = %{"name" => "test key",
+      "url" => "http://localhost:4000", "person_id" => person.id}
+        |> AuthWeb.ApikeyController.make_apikey(person.id)
+        |> Auth.Apikey.create_apikey()
+
+      conn = put(conn, Routes.apikey_path(conn, :update, key.id), apikey: @update_attrs)
+      assert html_response(conn, 404) =~ "not found"
+    end
   end
   #
   # describe "delete apikey" do
