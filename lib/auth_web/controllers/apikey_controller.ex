@@ -64,11 +64,17 @@ defmodule AuthWeb.ApikeyController do
     render(conn, "show.html", apikey: apikey)
   end
 
-  # def edit(conn, %{"id" => id}) do
-  #   apikey = Ctx.get_apikey!(id)
-  #   changeset = Ctx.change_apikey(apikey)
-  #   render(conn, "edit.html", apikey: apikey, changeset: changeset)
-  # end
+  def edit(conn, %{"id" => id}) do
+    person_id = conn.assigns.decoded.id
+    apikey = Auth.Apikey.get_apikey!(id)
+    # IO.inspect(apikey, label: "apikey")
+    if apikey.person_id == person_id do
+      changeset = Auth.Apikey.change_apikey(apikey)
+      render(conn, "edit.html", apikey: apikey, changeset: changeset)
+    else
+      AuthWeb.AuthController.not_found(conn, "API KEY " <> id <> " not found." )
+    end
+  end
 
   # def update(conn, %{"id" => id, "apikey" => apikey_params}) do
   #   apikey = Ctx.get_apikey!(id)

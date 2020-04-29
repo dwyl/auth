@@ -75,12 +75,20 @@ defmodule AuthWeb.AuthController do
     end
   end
 
-  defp unauthorized(conn) do
+  def unauthorized(conn) do
     # IO.inspect(conn)
     conn
     # |> put_resp_header("www-authenticate", "Bearer realm=\"Person access\"")
     |> put_resp_content_type("text/html")
     |> send_resp(401, "invalid AUTH_API_KEY/client_id please check.")
+    |> halt()
+  end
+
+  # TODO: refactor this to render a template with a nice layout.
+  def not_found(conn, message) do
+    conn
+    |> put_resp_content_type("text/html")
+    |> send_resp(404, message)
     |> halt()
   end
 
