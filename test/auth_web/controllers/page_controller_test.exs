@@ -23,7 +23,7 @@ defmodule AuthWeb.PageControllerTest do
   test "get_referer/1 query_string", %{conn: conn} do
     conn = conn
       |> get("/?referer=" <> URI.encode("http://localhost/admin")
-          <> "&client_id=" <> AuthPlug.Token.client_id()
+          <> "&auth_client_id=" <> AuthPlug.Token.client_id()
         )
 
     assert conn.resp_body =~ "state=http://localhost/admin"
