@@ -4,7 +4,7 @@ defmodule AuthWeb.AuthControllerTest do
 
   test "github_handler/2 github auth callback", %{conn: conn} do
     conn = get(conn, "/auth/github/callback",
-      %{code: "123", state: "http://localhost/" <>
+      %{code: "123", state: "http://localhost:4000/" <>
       "&client_id=" <> AuthPlug.Token.client_id() })
     # assert html_response(conn, 200) =~ "test@gmail.com"
     assert html_response(conn, 302) =~ "http://localhost"
@@ -12,7 +12,7 @@ defmodule AuthWeb.AuthControllerTest do
 
   test "google_handler/2 for google auth callback", %{conn: conn} do
     conn = get(conn, "/auth/google/callback",
-      %{code: "234", state: "http://localhost/" <>
+      %{code: "234", state: "http://localhost:4000/" <>
       "&client_id=" <> AuthPlug.Token.client_id() })
 
     # assert html_response(conn, 200) =~ "nelson@gmail.com"
@@ -20,10 +20,17 @@ defmodule AuthWeb.AuthControllerTest do
   end
 
   test "google_handler/2 show welcome page", %{conn: conn} do
+    # IO.inspect(AuthPlug.Helpers.get_baseurl_from_conn(conn), label: "baseurl")
+    # Google Auth Mock makes the state https://www.example.com
+    # so we need to create a new API_KEY with that url:
+    {:ok, key} = %{"name" => "example key", "url" => "https://www.example.com"}
+      |> AuthWeb.ApikeyController.make_apikey(1)
+      |> Auth.Apikey.create_apikey()
+
     conn = get(conn, "/auth/google/callback",
       %{code: "234",
       state: AuthPlug.Helpers.get_baseurl_from_conn(conn) <>
-      "&client_id=" <> AuthPlug.Token.client_id() })
+      "&client_id=" <> key.client_id })
 
     # assert html_response(conn, 200) =~ "nelson@gmail.com"
     assert html_response(conn, 302) =~ "redirected"

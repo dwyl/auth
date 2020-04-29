@@ -48,7 +48,7 @@ defmodule AuthWeb.AuthController do
       name: person.givenName,
       template: "welcome"
     })
-    |> IO.inspect(label: "email")
+    # |> IO.inspect(label: "email")
 
     # IO.inspect(state, label: "state handler/3:53")
 
@@ -80,6 +80,13 @@ defmodule AuthWeb.AuthController do
     |> halt()
   end
 
+
+  @doc """
+  `get_client_secret_from_state/1` gets the client_id from state,
+  attempts to decode_decrypt it and then look it up in apikeys
+  if it finds the corresponding client_secret it returns the client_secret.
+  All other failure conditions return a 0 (zero) which results in a 401.
+  """
   def get_client_secret_from_state(state) do
     query = URI.decode_query(state)
     # IO.inspect(query, label: "query")
@@ -96,7 +103,7 @@ defmodule AuthWeb.AuthController do
           apikeys = Auth.Apikey.list_apikeys_for_person(person_id)
           # IO.inspect(apikeys)
           Enum.filter(apikeys, fn(k) ->
-            k.client_id == client_id # and state =~ k.url
+            k.client_id == client_id and state =~ k.url
           end) |> List.first() |> Map.get(:client_secret)
           # check for URL match!
         end
