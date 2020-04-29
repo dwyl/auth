@@ -13,7 +13,7 @@ defmodule AuthWeb.AuthControllerTest do
   test "google_handler/2 for google auth callback", %{conn: conn} do
     conn = get(conn, "/auth/google/callback",
       %{code: "234", state: "http://localhost:4000" <>
-      "&client_id=" <> AuthPlug.Token.client_id() })
+      "&auth_client_id=" <> AuthPlug.Token.client_id() })
 
     # assert html_response(conn, 200) =~ "nelson@gmail.com"
     assert html_response(conn, 302) =~ "http://localhost"
@@ -30,7 +30,7 @@ defmodule AuthWeb.AuthControllerTest do
     conn = get(conn, "/auth/google/callback",
       %{code: "234",
       state: AuthPlug.Helpers.get_baseurl_from_conn(conn) <>
-      "&client_id=" <> key.client_id })
+      "&auth_client_id=" <> key.client_id })
 
     # assert html_response(conn, 200) =~ "nelson@gmail.com"
     assert html_response(conn, 302) =~ "redirected"
@@ -56,7 +56,7 @@ defmodule AuthWeb.AuthControllerTest do
     invalid_key = String.slice(AuthPlug.Token.client_id(), 0..-2)
     conn = get(conn, "/auth/google/callback",
       %{code: "234", state: "www.example.com/" <>
-      "&client_id=" <> invalid_key })
+      "&auth_client_id=" <> invalid_key })
     # assert html_response(conn, 200) =~ "google account"
     assert html_response(conn, 401) =~ "invalid"
   end
