@@ -96,22 +96,26 @@ defmodule AuthWeb.AuthController do
     IO.inspect(client_id, label: "client_id")
     case not is_nil(client_id) do
       true -> # Lookup client_id in apikeys table
-        person_id = AuthWeb.ApikeyController.decode_decrypt(client_id)
-        # IO.inspect(person_id, label: "person_id")
-        if person_id == 0 do # decode_decrypt fails with state 0
-          # IO.inspect(person_id, label: "person_id:88")
-          0
-        else
-          apikeys = Auth.Apikey.list_apikeys_for_person(person_id)
-          # IO.inspect(apikeys)
-          Enum.filter(apikeys, fn(k) ->
-            k.client_id == client_id and state =~ k.url
-          end) |> List.first() |> Map.get(:client_secret)
-          # check for URL match!
-        end
+        get_client_secret(client_id, state)
 
       false -> # state without client_id is not valid
         0
+    end
+  end
+
+  def get_client_secret(client_id, state) do
+    person_id = AuthWeb.ApikeyController.decode_decrypt(client_id)
+    # IO.inspect(person_id, label: "person_id")
+    if person_id == 0 do # decode_decrypt fails with state 0
+      # IO.inspect(person_id, label: "person_id:88")
+      0
+    else
+      apikeys = Auth.Apikey.list_apikeys_for_person(person_id)
+      # IO.inspect(apikeys)
+      Enum.filter(apikeys, fn(k) ->
+        k.client_id == client_id and state =~ k.url
+      end) |> List.first() |> Map.get(:client_secret)
+
     end
   end
 

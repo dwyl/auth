@@ -3,6 +3,7 @@ defmodule AuthWeb.PageController do
 
   def index(conn, _params) do
     state = get_referer(conn)
+
     oauth_github_url = ElixirAuthGithub.login_url(%{scopes: ["user:email"], state: state})
     oauth_google_url = ElixirAuthGoogle.generate_oauth_url(conn, state)
 
@@ -34,14 +35,23 @@ defmodule AuthWeb.PageController do
           true ->
             query = URI.decode_query(conn.query_string)
             ref = Map.get(query, "referer")
-            client_id = Map.get(query, "client_id")
+            client_id = get_client_id_from_query(conn)
             ref |> append_client_id(client_id)
 
-          false -> # no referer, redirect back to this app.
-            # IO.inspect("false: no referer")
-            AuthPlug.Helpers.get_baseurl_from_conn(conn) <> "/profile"
+          false -> # no referer, redirect back to Auth app.
+            AuthPlug.Helpers.get_baseurl_from_conn(conn)
+            <> "/profile" <> AuthPlug.Token.client_id()
         end
     end
     |> URI.encode |> IO.inspect(label: "referer")
+  end
+
+  def get_client_id_from_query(conn) do
+    case conn.query_string =~ "client_id" do
+      true ->
+        Map.get(URI.decode_query(conn.query_string), "client_id")
+      false -> # no client_id, redirect back to this app.
+        0
+    end
   end
 end
