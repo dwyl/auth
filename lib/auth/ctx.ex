@@ -55,23 +55,7 @@
 #     |> Repo.insert()
 #   end
 #
-#   @doc """
-#   Updates a apikey.
-#
-#   ## Examples
-#
-#       iex> update_apikey(apikey, %{field: new_value})
-#       {:ok, %Apikey{}}
-#
-#       iex> update_apikey(apikey, %{field: bad_value})
-#       {:error, %Ecto.Changeset{}}
-#
-#   """
-#   def update_apikey(%Apikey{} = apikey, attrs) do
-#     apikey
-#     |> Apikey.changeset(attrs)
-#     |> Repo.update()
-#   end
+
 #
 #   @doc """
 #   Deletes a apikey.

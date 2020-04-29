@@ -21,7 +21,8 @@ defmodule Auth.Apikey do
   @doc false
   def changeset(apikey, attrs) do
     apikey
-    |> cast(attrs, [:client_id, :client_secret, :name, :description, :url, :person_id])
+    |> cast(attrs, [:client_id, :client_secret,
+      :name, :description, :url, :person_id])
     |> validate_required([:client_secret])
   end
 
@@ -60,5 +61,23 @@ defmodule Auth.Apikey do
 
   """
   def get_apikey!(id), do: Repo.get!(__MODULE__, id)
+
+  @doc """
+  Updates a apikey.
+
+  ## Examples
+
+      iex> update_apikey(apikey, %{field: new_value})
+      {:ok, %Apikey{}}
+
+      iex> update_apikey(apikey, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_apikey(%Apikey{} = apikey, attrs) do
+    apikey
+    |> changeset(attrs)
+    |> Repo.update()
+  end
 
 end
