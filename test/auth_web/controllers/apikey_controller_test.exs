@@ -114,15 +114,34 @@ defmodule AuthWeb.ApikeyControllerTest do
     #   assert html_response(conn, 200) =~ "New Apikey"
     # end
   end
-  #
-  # describe "edit apikey" do
-  #   setup [:create_apikey]
-  #
-  #   test "renders form for editing chosen apikey", %{conn: conn, apikey: apikey} do
-  #     conn = get(conn, Routes.apikey_path(conn, :edit, apikey))
-  #     assert html_response(conn, 200) =~ "Edit Apikey"
-  #   end
-  # end
+
+  describe "edit apikey" do
+    test "renders form for editing chosen apikey", %{conn: conn} do
+
+      person = Auth.Person.get_person_by_email(@email)
+      conn = AuthPlug.create_jwt_session(conn, person)
+      {:ok, key} = %{"name" => "test key", "url" => "http://localhost:4000"}
+        |> AuthWeb.ApikeyController.make_apikey(person.id)
+        |> Auth.Apikey.create_apikey()
+
+      conn = get(conn, Routes.apikey_path(conn, :edit, key.id))
+      assert html_response(conn, 200) =~ "Edit Apikey"
+    end
+
+    test "attempt to edit a key I don't own > should 404", %{conn: conn} do
+
+      person = Auth.Person.get_person_by_email(@email)
+      wrong_person = Auth.Person.create_person(%{email: "wrong@gmail.com"})
+      conn = AuthPlug.create_jwt_session(conn, wrong_person)
+
+      {:ok, key} = %{"name" => "test key", "url" => "http://localhost:4000"}
+        |> AuthWeb.ApikeyController.make_apikey(person.id)
+        |> Auth.Apikey.create_apikey()
+
+      conn = get(conn, Routes.apikey_path(conn, :edit, key.id))
+      assert html_response(conn, 404) =~ "not found"
+    end
+  end
   #
   # describe "update apikey" do
   #   setup [:create_apikey]
