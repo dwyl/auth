@@ -52,14 +52,13 @@ defmodule AuthWeb.AuthControllerTest do
     # assert html_response(conn, 302) =~ "redirected"
   end
 
-  test "decode_decrypt/1 with invalid client_id" do
-    valid_key = AuthWeb.ApikeyController.encrypt_encode(1)
-    person_id = AuthWeb.ApikeyController.decode_decrypt(valid_key)
-    assert person_id == 1
-
-    invalid_key = String.slice(valid_key, 0..-2)
-    error = AuthWeb.ApikeyController.decode_decrypt(invalid_key)
-    assert error == 0
+  test "google_handler/2 with invalid client_id", %{conn: conn} do
+    invalid_key = String.slice(AuthPlug.Token.client_id(), 0..-2)
+    conn = get(conn, "/auth/google/callback",
+      %{code: "234", state: "www.example.com" <>
+      "&client_id=" <> invalid_key })
+    # assert html_response(conn, 200) =~ "google account"
+    assert html_response(conn, 401) =~ "invalid client_id"
   end
 
 

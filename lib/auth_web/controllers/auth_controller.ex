@@ -57,10 +57,10 @@ defmodule AuthWeb.AuthController do
       true -> # redirect
         case get_client_secret_from_state(state) do
           0 ->
-            IO.inspect("client_secret is 0 (error)")
+            # IO.inspect("client_secret is 0 (error)")
             unauthorized(conn)
           secret ->
-            IO.inspect(secret, label: "secret")
+            # IO.inspect(secret, label: "secret")
             conn
             |> redirect(external: add_jwt_url_param(person, state, secret))
         end
@@ -74,8 +74,10 @@ defmodule AuthWeb.AuthController do
   end
 
   defp unauthorized(conn) do
+    # IO.inspect(conn)
     conn
-    |> put_resp_header("www-authenticate", "Bearer realm=\"Person access\"")
+    # |> put_resp_header("www-authenticate", "Bearer realm=\"Person access\"")
+    |> put_resp_content_type("text/html")
     |> send_resp(401, "invalid client_id")
     |> halt()
   end

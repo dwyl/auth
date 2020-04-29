@@ -44,6 +44,16 @@ defmodule AuthWeb.ApikeyControllerTest do
       assert decrypted == person_id
     end
 
+    test "decode_decrypt/1 with invalid client_id" do
+      valid_key = AuthWeb.ApikeyController.encrypt_encode(1)
+      person_id = AuthWeb.ApikeyController.decode_decrypt(valid_key)
+      assert person_id == 1
+
+      invalid_key = String.slice(valid_key, 0..-2)
+      error = AuthWeb.ApikeyController.decode_decrypt(invalid_key)
+      assert error == 0
+    end
+
     property "Check a batch of int values can be decoded decode_decrypt/1" do
       check all(int <- integer()) do
         assert decode_decrypt(encrypt_encode(int)) == int
