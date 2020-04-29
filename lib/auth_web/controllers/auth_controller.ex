@@ -58,15 +58,16 @@ defmodule AuthWeb.AuthController do
       true -> # redirect
         case get_client_secret_from_state(state) do
           0 ->
-            # IO.inspect("client_secret is 0 (error)")
+            IO.inspect("client_secret is 0 (error)")
             unauthorized(conn)
           secret ->
-            # IO.inspect(secret, label: "secret")
+            IO.inspect(secret, label: "secret")
             conn
+            # |> AuthPlug.create_session(person, secret)
             |> redirect(external: add_jwt_url_param(person, state, secret))
         end
 
-      false -> # display welcome page
+      false -> # display welcome page on Auth site:
         conn
         |> put_view(AuthWeb.PageView)
         |> AuthPlug.create_jwt_session(person)
@@ -92,8 +93,12 @@ defmodule AuthWeb.AuthController do
   """
   def get_client_secret_from_state(state) do
     IO.inspect(state, label: "state:94")
-    query = URI.decode_query(state)
-    IO.inspect(query, label: "query:96")
+    decoded = URI.decode(state)
+    IO.inspect(decoded, label: "decoded:96")
+    query = List.last(String.split(state, "?"))
+    IO.inspect(query, label: "query:98")
+    query = URI.decode_query(query)
+    IO.inspect(query, label: "query:100")
     client_id = Map.get(query, "auth_client_id")
     IO.inspect(client_id, label: "client_id")
     case not is_nil(client_id) do
@@ -107,13 +112,13 @@ defmodule AuthWeb.AuthController do
 
   def get_client_secret(client_id, state) do
     person_id = AuthWeb.ApikeyController.decode_decrypt(client_id)
-    # IO.inspect(person_id, label: "person_id")
+    IO.inspect(person_id, label: "person_id:114")
     if person_id == 0 do # decode_decrypt fails with state 0
-      # IO.inspect(person_id, label: "person_id:88")
+      IO.inspect(person_id, label: "person_id:116")
       0
     else
       apikeys = Auth.Apikey.list_apikeys_for_person(person_id)
-      # IO.inspect(apikeys)
+      IO.inspect(apikeys, label: "apikeys:120")
       Enum.filter(apikeys, fn(k) ->
         k.client_id == client_id and state =~ k.url
       end) |> List.first() |> Map.get(:client_secret)
@@ -125,7 +130,8 @@ defmodule AuthWeb.AuthController do
 
   def add_jwt_url_param(person, state, client_secret) do
 
-    IO.inspect(state, label: "state")
+    IO.inspect(state, label: "state:133")
+    # IO.inspect(client_secret, label: "client_secret:134")
 
     data = %{
       auth_provider: person.auth_provider,
@@ -136,6 +142,8 @@ defmodule AuthWeb.AuthController do
     }
 
     jwt = AuthPlug.Token.generate_jwt!(data, client_secret)
-    URI.decode(state) <> "?jwt=" <> jwt
+    List.first(String.split(URI.decode(state), "?"))
+     <> "?jwt=" <> jwt
+    # |> IO.inspect(label: "state+jwt:146")
   end
 end
