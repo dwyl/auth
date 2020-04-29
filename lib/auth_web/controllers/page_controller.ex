@@ -40,7 +40,7 @@ defmodule AuthWeb.PageController do
 
           false -> # no referer, redirect back to Auth app.
             AuthPlug.Helpers.get_baseurl_from_conn(conn)
-            <> "/profile" <> AuthPlug.Token.client_id()
+            <> "/profile?client_id" <> AuthPlug.Token.client_id()
         end
     end
     |> URI.encode |> IO.inspect(label: "referer")
