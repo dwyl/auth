@@ -21,7 +21,7 @@ defmodule AuthWeb.PageController do
   end
 
   def append_client_id(ref, client_id) do
-    ref <> "?client_id=" <> client_id
+    ref <> "&client_id=" <> client_id
   end
 
   def get_referer(conn) do
@@ -36,20 +36,20 @@ defmodule AuthWeb.PageController do
             query = URI.decode_query(conn.query_string)
             ref = Map.get(query, "referer")
             client_id = get_client_id_from_query(conn)
-            ref |> append_client_id(client_id)
+            ref |> URI.encode |> append_client_id(client_id)
 
           false -> # no referer, redirect back to Auth app.
-            AuthPlug.Helpers.get_baseurl_from_conn(conn)
-            <> "/profile?client_id" <> AuthPlug.Token.client_id()
+            AuthPlug.Helpers.get_baseurl_from_conn(conn) <> "/profile"
+            |> URI.encode
+            |> append_client_id(AuthPlug.Token.client_id())
         end
     end
-    |> URI.encode |> IO.inspect(label: "referer")
   end
 
   def get_client_id_from_query(conn) do
-    case conn.query_string =~ "client_id" do
+    case conn.query_string =~ "auth_client_id" do
       true ->
-        Map.get(URI.decode_query(conn.query_string), "client_id")
+        Map.get(URI.decode_query(conn.query_string), "auth_client_id")
       false -> # no client_id, redirect back to this app.
         0
     end

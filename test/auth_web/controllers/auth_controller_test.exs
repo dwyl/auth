@@ -12,7 +12,7 @@ defmodule AuthWeb.AuthControllerTest do
 
   test "google_handler/2 for google auth callback", %{conn: conn} do
     conn = get(conn, "/auth/google/callback",
-      %{code: "234", state: "http://localhost:4000/" <>
+      %{code: "234", state: "http://localhost:4000" <>
       "&client_id=" <> AuthPlug.Token.client_id() })
 
     # assert html_response(conn, 200) =~ "nelson@gmail.com"

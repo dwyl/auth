@@ -19,6 +19,7 @@ defmodule AuthWeb.AuthController do
   `google_handler/2` handles the callback from Google Auth API redirect.
   """
   def google_handler(conn, %{"code" => code, "state" => state}) do
+    IO.inspect(state, label: "state:22")
     {:ok, token} = ElixirAuthGoogle.get_token(code, conn)
     {:ok, profile} = ElixirAuthGoogle.get_user_profile(token.access_token)
 
@@ -91,8 +92,8 @@ defmodule AuthWeb.AuthController do
   """
   def get_client_secret_from_state(state) do
     query = URI.decode_query(state)
-    # IO.inspect(query, label: "query")
-    client_id = Map.get(query, "client_id")
+    IO.inspect(query, label: "query")
+    client_id = Map.get(query, "auth_client_id")
     IO.inspect(client_id, label: "client_id")
     case not is_nil(client_id) do
       true -> # Lookup client_id in apikeys table
