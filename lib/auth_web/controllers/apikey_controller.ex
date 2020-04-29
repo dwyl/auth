@@ -76,19 +76,24 @@ defmodule AuthWeb.ApikeyController do
     end
   end
 
-  # def update(conn, %{"id" => id, "apikey" => apikey_params}) do
-  #   apikey = Ctx.get_apikey!(id)
-  #
-  #   case Ctx.update_apikey(apikey, apikey_params) do
-  #     {:ok, apikey} ->
-  #       conn
-  #       |> put_flash(:info, "Apikey updated successfully.")
-  #       |> redirect(to: Routes.apikey_path(conn, :show, apikey))
-  #
-  #     {:error, %Ecto.Changeset{} = changeset} ->
-  #       render(conn, "edit.html", apikey: apikey, changeset: changeset)
-  #   end
-  # end
+  @doc """
+    `update/2` updates a given API Key. Checks if the person attempting
+    to update the key is the "owner" of the key before updating.
+  """
+  def update(conn, %{"id" => id, "apikey" => apikey_params}) do
+    apikey = Apikey.get_apikey!(id)
+    
+
+    case Apikey.update_apikey(apikey, apikey_params) do
+      {:ok, apikey} ->
+        conn
+        |> put_flash(:info, "Apikey updated successfully.")
+        |> redirect(to: Routes.apikey_path(conn, :show, apikey))
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        render(conn, "edit.html", apikey: apikey, changeset: changeset)
+    end
+  end
   #
   # def delete(conn, %{"id" => id}) do
   #   apikey = Ctx.get_apikey!(id)
