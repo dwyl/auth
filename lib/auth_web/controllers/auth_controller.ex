@@ -19,7 +19,7 @@ defmodule AuthWeb.AuthController do
   `google_handler/2` handles the callback from Google Auth API redirect.
   """
   def google_handler(conn, %{"code" => code, "state" => state}) do
-    IO.inspect(state, label: "state:22")
+    # IO.inspect(state, label: "state:22")
     {:ok, token} = ElixirAuthGoogle.get_token(code, conn)
     {:ok, profile} = ElixirAuthGoogle.get_user_profile(token.access_token)
 
@@ -58,10 +58,10 @@ defmodule AuthWeb.AuthController do
       true -> # redirect
         case get_client_secret_from_state(state) do
           0 ->
-            IO.inspect("client_secret is 0 (error)")
+            # IO.inspect("client_secret is 0 (error)")
             unauthorized(conn)
           secret ->
-            IO.inspect(secret, label: "secret")
+            # IO.inspect(secret, label: "secret")
             conn
             # |> AuthPlug.create_session(person, secret)
             |> redirect(external: add_jwt_url_param(person, state, secret))
@@ -100,15 +100,13 @@ defmodule AuthWeb.AuthController do
   All other failure conditions return a 0 (zero) which results in a 401.
   """
   def get_client_secret_from_state(state) do
-    IO.inspect(state, label: "state:94")
-    decoded = URI.decode(state)
-    IO.inspect(decoded, label: "decoded:96")
-    query = List.last(String.split(state, "?"))
-    IO.inspect(query, label: "query:98")
-    query = URI.decode_query(query)
-    IO.inspect(query, label: "query:100")
+    # IO.inspect(state, label: "state:94")
+    # decoded = URI.decode(state)
+    # IO.inspect(decoded, label: "decoded:96")
+    query = URI.decode_query(List.last(String.split(state, "?")))
+    # IO.inspect(query, label: "query:100")
     client_id = Map.get(query, "auth_client_id")
-    IO.inspect(client_id, label: "client_id")
+    # IO.inspect(client_id, label: "client_id")
     case not is_nil(client_id) do
       true -> # Lookup client_id in apikeys table
         get_client_secret(client_id, state)
@@ -120,13 +118,13 @@ defmodule AuthWeb.AuthController do
 
   def get_client_secret(client_id, state) do
     person_id = AuthWeb.ApikeyController.decode_decrypt(client_id)
-    IO.inspect(person_id, label: "person_id:114")
+    # IO.inspect(person_id, label: "person_id:114")
     if person_id == 0 do # decode_decrypt fails with state 0
-      IO.inspect(person_id, label: "person_id:116")
+      # IO.inspect(person_id, label: "person_id:116")
       0
     else
       apikeys = Auth.Apikey.list_apikeys_for_person(person_id)
-      IO.inspect(apikeys, label: "apikeys:120")
+      # IO.inspect(apikeys, label: "apikeys:120")
       Enum.filter(apikeys, fn(k) ->
         k.client_id == client_id and state =~ k.url
       end) |> List.first() |> Map.get(:client_secret)
@@ -138,9 +136,8 @@ defmodule AuthWeb.AuthController do
 
   def add_jwt_url_param(person, state, client_secret) do
 
-    IO.inspect(state, label: "state:133")
+    # IO.inspect(state, label: "state:133")
     # IO.inspect(client_secret, label: "client_secret:134")
-
     data = %{
       auth_provider: person.auth_provider,
       givenName: person.givenName,
