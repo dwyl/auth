@@ -3,17 +3,17 @@ defmodule AuthWeb.ApikeyControllerTest do
   use ExUnitProperties
 
   # alias Auth.Apikey
-  import AuthWeb.ApikeyController
+  # alias AuthWeb.ApikeyController, as: Ctrl
   @email System.get_env("ADMIN_EMAIL")
   @create_attrs %{description: "some description", name: "some name", url: "some url"}
   @update_attrs %{client_secret: "updated client sec", description: "some updated desc", name: "updated name", url: "surl"}
   @invalid_attrs %{client_secret: nil, description: nil, key_id: nil, name: nil, url: nil}
 
 
-  describe "Create a DWYL_API_KEY for a given person_id" do
+  describe "Create an AUTH_API_KEY for a given person_id" do
     test "encrypt_encode/1 returns a base58 we can decrypt" do
       person_id = 1
-      key = encrypt_encode(person_id)
+      key = AuthWeb.ApikeyController.encrypt_encode(person_id)
       # |> IO.inspect(label: "key")
 
       decrypted = key
@@ -29,22 +29,22 @@ defmodule AuthWeb.ApikeyControllerTest do
 
     test "decode_decrypt/1 reverses the operation of encrypt_encode/1" do
       person_id = 4869234521
-      key = encrypt_encode(person_id)
-      id = decode_decrypt(key)
+      key = AuthWeb.ApikeyController.encrypt_encode(person_id)
+      id = AuthWeb.ApikeyController.decode_decrypt(key)
       assert person_id == id
     end
 
-    test "create_api_key/1 creates a DWYL_API_KEY" do
+    test "create_api_key/1 creates an AUTH_API_KEY" do
       person_id = 123456789
-      key = create_api_key(person_id)
+      key = AuthWeb.ApikeyController.create_api_key(person_id)
       assert key =~ "/"
     end
 
-    test "decrypt_api_key/1 decrypts a DWYL_API_KEY" do
+    test "decrypt_api_key/1 decrypts an AUTH_API_KEY" do
       person_id = 1234
-      key = create_api_key(person_id) # |> IO.inspect()
+      key = AuthWeb.ApikeyController.create_api_key(person_id) # |> IO.inspect()
       # IO.inspect(String.length(key), label: "String.length(key)")
-      decrypted = decrypt_api_key(key) # |> IO.inspect()
+      decrypted = AuthWeb.ApikeyController.decrypt_api_key(key) # |> IO.inspect()
       assert decrypted == person_id
     end
 
@@ -60,7 +60,8 @@ defmodule AuthWeb.ApikeyControllerTest do
 
     property "Check a batch of int values can be decoded decode_decrypt/1" do
       check all(int <- integer()) do
-        assert decode_decrypt(encrypt_encode(int)) == int
+        assert AuthWeb.ApikeyController.decode_decrypt(
+          AuthWeb.ApikeyController.encrypt_encode(int)) == int
       end
     end
   end
@@ -76,7 +77,7 @@ defmodule AuthWeb.ApikeyControllerTest do
       person = Auth.Person.get_person_by_email(@email)
       conn = AuthPlug.create_jwt_session(conn, %{email: @email, id: person.id})
       conn = get(conn, Routes.apikey_path(conn, :index))
-      assert html_response(conn, 200) =~ "DWYL_API_KEY"
+      assert html_response(conn, 200) =~ "Auth API Keys"
     end
   end
 
@@ -102,7 +103,7 @@ defmodule AuthWeb.ApikeyControllerTest do
       assert redirected_to(conn) == Routes.apikey_path(conn, :show, id)
 
       conn = get(conn, Routes.apikey_path(conn, :show, id))
-      assert html_response(conn, 200) =~ "Your DWYL_API_KEY"
+      assert html_response(conn, 200) =~ "Your AUTH_API_KEY"
     end
 
     # test "renders errors when data is invalid", %{conn: conn} do
@@ -188,21 +189,36 @@ defmodule AuthWeb.ApikeyControllerTest do
       assert html_response(conn, 404) =~ "not found"
     end
   end
-  #
-  # describe "delete apikey" do
-  #   setup [:create_apikey]
-  #
-  #   test "deletes chosen apikey", %{conn: conn, apikey: apikey} do
-  #     conn = delete(conn, Routes.apikey_path(conn, :delete, apikey))
-  #     assert redirected_to(conn) == Routes.apikey_path(conn, :index)
-  #     assert_error_sent 404, fn ->
-  #       get(conn, Routes.apikey_path(conn, :show, apikey))
-  #     end
-  #   end
-  # end
-  #
-  # defp create_apikey(_) do
-  #   apikey = fixture(:apikey)
-  #   {:ok, apikey: apikey}
-  # end
+
+  describe "delete apikey" do
+
+    test "deletes chosen apikey", %{conn: conn} do
+
+      person = Auth.Person.get_person_by_email(@email)
+      conn = AuthPlug.create_jwt_session(conn, person)
+      {:ok, key} = %{"name" => "test key", "url" => "http://localhost:4000"}
+        |> AuthWeb.ApikeyController.make_apikey(person.id)
+        |> Auth.Apikey.create_apikey()
+
+      conn = delete(conn, Routes.apikey_path(conn, :delete, key))
+      assert redirected_to(conn) == Routes.apikey_path(conn, :index)
+
+      assert_error_sent 404, fn ->
+        get(conn, Routes.apikey_path(conn, :show, key))
+      end
+    end
+
+    test "cannot delete a key belonging to someone else! 404", %{conn: conn} do
+      wrong_person = Auth.Person.create_person(%{email: "wrongin@gmail.com"})
+      conn = AuthPlug.create_jwt_session(conn, wrong_person)
+
+      person = Auth.Person.get_person_by_email(@email)
+      {:ok, key} = %{"name" => "test key", "url" => "http://localhost:4000"}
+        |> AuthWeb.ApikeyController.make_apikey(person.id)
+        |> Auth.Apikey.create_apikey()
+
+      conn = delete(conn, Routes.apikey_path(conn, :delete, key))
+      assert html_response(conn, 404) =~ "not found"
+    end
+  end
 end
