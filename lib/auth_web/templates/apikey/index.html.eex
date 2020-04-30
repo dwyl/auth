@@ -1,32 +1,63 @@
-<h1>API Keys</h1>
+<h1 class="tc">Auth API Keys</h1>
+<br />
 
-<table>
+<table style="width:100%;">
   <thead>
     <tr>
-      <th>DWYL_API_KEY</th>
+      <th>AUTH_API_KEY</th>
       <th>Name</th>
       <th>Description</th>
       <th>Url</th>
-
-      <th></th>
     </tr>
   </thead>
   <tbody>
 <%= for apikey <- @apikeys do %>
     <tr>
-      <td><%= apikey.client_id %><%= apikey.client_secret %></td>
+      <td style="width:200px;">
+      <%= apikey.client_id %>/<%= apikey.client_secret %>
+      </td>
       <td><%= apikey.name %></td>
       <td><%= apikey.description %></td>
       <td><%= apikey.url %></td>
 
       <td>
-        <span><%= link "Show", to: Routes.apikey_path(@conn, :show, apikey) %></span>
-        <span><%= link "Edit", to: Routes.apikey_path(@conn, :edit, apikey) %></span>
-        <span><%= link "Delete", to: Routes.apikey_path(@conn, :delete, apikey), method: :delete, data: [confirm: "Are you sure?"] %></span>
+        <!-- <span><%= link "View", to: Routes.apikey_path(@conn, :show, apikey),
+        class: "pointer br2 ba b--dark-blue bg-blue white pa3 ml1 mv1 f4
+                bg-animate hover-bg-dark-blue border-box no-underline"
+         %>
+       </span> -->
+        <span><%= link "Edit", to: Routes.apikey_path(@conn, :edit, apikey),
+        class: "pointer br2 ba b--dark-blue bg-blue white pa3 ml1 mv1 f4
+                bg-animate hover-bg-dark-blue border-box no-underline"
+        %></span>
+        <span>
+        <%= link "Delete", to: Routes.apikey_path(@conn, :delete, apikey), method: :delete,
+        class: "pointer br2 ba b--dark-red bg-red white pa3 ml1 mv1 f4
+                bg-animate hover-bg-dark-red border-box no-underline",
+        data:
+         [confirm: "Are you sure you want to delete this API Key?
+          (This cannot be undone!)"] %>
+        </span>
       </td>
     </tr>
 <% end %>
   </tbody>
 </table>
+<br /><br />
 
-<span><%= link "New Apikey", to: Routes.apikey_path(@conn, :new) %></span>
+<span class="w-100 db">
+<%= link "New Apikey", to: Routes.apikey_path(@conn, :new),
+class: "fr mr4 pointer br2 ba b--dark-green bg-green white pa3 ml1 mv1 f4 shadow-hover
+bg-animate hover-bg-dark-green border-box no-underline" %>
+</span>
+
+<style> /* stackoverflow.com/questions/9789723/css-text-overflow-table-cell */
+td {
+    max-width: 400px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: center;
+    padding: 10px;
+}
+</style>
