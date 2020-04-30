@@ -135,9 +135,6 @@ defmodule AuthWeb.AuthController do
 
 
   def add_jwt_url_param(person, state, client_secret) do
-
-    # IO.inspect(state, label: "state:133")
-    # IO.inspect(client_secret, label: "client_secret:134")
     data = %{
       auth_provider: person.auth_provider,
       givenName: person.givenName,
