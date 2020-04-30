@@ -3,7 +3,7 @@ defmodule AuthWeb.PageControllerTest do
 
   test "GET /", %{conn: conn} do
     conn = get(conn, "/")
-    assert html_response(conn, 200) =~ "login to"
+    assert html_response(conn, 200) =~ "Sign in"
   end
 
   test "GET /profile", %{conn: conn} do
