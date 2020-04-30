@@ -1,30 +1,65 @@
-<h1>Your AUTH_API_KEY</h1>
 
-<div>
+
+<div class="f3 w-60 center">
+  <h1>Your AUTH_API_KEY</h1>
+
   <p>
-    <div style="width:470px; font-size: 1.2em;
+    To securely access your data from outside the dwyl app,
+    you will need to use an API Key. Keep this key safe.
+    Anyone who has the key can access
+    <strong><em>all</em></strong> of your data.
+  </p>
+
+  <p>
+    <div style="font-size: 1.2em;
     overflow-wrap: break-word; font-family: monospace;
     border: 1px solid black; padding: 10px; background-color: #EBEDEF;">
     <%= @apikey.client_id %>/<%= @apikey.client_secret %>
     </div>
   </p>
 
+  <p> Export it as an environment variable:
+    <div style="font-size: 1.2em;
+    overflow-wrap: break-word; font-family: monospace;
+    border: 1px solid black; padding: 10px; background-color: #EBEDEF;">
+    export AUTH_API_KEY=<%= @apikey.client_id %>/<%= @apikey.client_secret %>
+    </div>
+  </p>
+
+
   <p>
     <strong>Key Name:</strong>
-    <%= @apikey.name %>
+    <span class="db ba b--black-80 pa2 bg-light-gray w-100 mt2">
+      <%= @apikey.name %>
+    </span>
   </p>
 
   <p>
     <strong>Description:</strong>
-    <%= @apikey.description %>
+    <span class="db ba b--black-80 pa2 bg-light-gray w-100 mt2">
+      <%= @apikey.description %>
+    </span>
   </p>
 
   <p>
     <strong>URL:</strong>
-    <%= @apikey.url %>
+    <span class="db ba b--black-80 pa2 bg-light-gray w-100 mt2">
+      <%= @apikey.url %>
+    </span>
   </p>
 
-</div>
 
-<span><%= link "Edit", to: Routes.apikey_path(@conn, :edit, @apikey) %></span>
-<span><%= link "Back", to: Routes.apikey_path(@conn, :index) %></span>
+<span>
+  <%= link "< Back", to: Routes.apikey_path(@conn, :index),
+  class: "pointer br2 ba b--orange bg-gold white pa3 ml1 mv1 f4
+  shadow-hover bg-animate hover-bg-orange border-box no-underline"
+  %>
+</span>
+<span>
+  <%= link "Edit", to: Routes.apikey_path(@conn, :edit, @apikey),
+  class: "pointer br2 ba b--dark-green bg-green white pa3 ml1 mv1 f4
+  shadow-hover bg-animate hover-bg-dark-green border-box no-underline"
+  %>
+</span>
+
+</div>

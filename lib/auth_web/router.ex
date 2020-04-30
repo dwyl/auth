@@ -26,12 +26,12 @@ defmodule AuthWeb.Router do
     plug(AuthPlug, %{auth_url: "https://dwylauth.herokuapp.com"})
   end
 
-  scope "/profile", AuthWeb do
+  scope "/", AuthWeb do
     pipe_through :browser
     pipe_through :auth
 
-    get "/", PageController, :admin
-    resources "/apikeys", ApikeyController
+    get "/profile", PageController, :admin
+    resources "/settings/apikeys", ApikeyController
   end
 
   # Other scopes may use custom stacks.

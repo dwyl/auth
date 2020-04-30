@@ -6,20 +6,24 @@
   <% end %>
 
   <%= label f, :name%>
-  <%= text_input f, :name, class: "db w-100 mt2 pa2 ba b--dark-grey"%>
+  <%= text_input f, :name, class: "db w-100 mt2 pa2 ba b--dark-grey",
+    placeholder: "A distinctive name"%>
   <%= error_tag f, :name %>
   <br />
   <%= label f, :description, class: "mt3" %>
-  <%= textarea f, :description, class: "db w-100 mt2 pa2 ba b--dark-grey" %>
+  <%= textarea f, :description, class: "db w-100 mt2 pa2 ba b--black",
+    placeholder: "Be as descriptive as possible." %>
   <%= error_tag f, :description %>
   <br />
   <%= label f, :url, class: "pt3" %>
-  <%= text_input f, :url, class: "db w-100 mt2 pa2 ba b--dark-grey" %>
+  <%= text_input f, :url, class: "db w-100 mt2 pa2 ba b--dark-grey",
+  placeholder: "The URL of your app e.g: http://localhost:4000 or dwyl.com"
+  %>
   <%= error_tag f, :url %>
 
   <div class="mt2">
     <%= submit "Save",
-    class: "pointer fr br2 ba b--dark-green bg-green white pa3 ml1 mv1 f4
+    class: "pointer br2 ba b--dark-green bg-green white pa3 ml1 mv1 f4
     shadow-hover bg-animate hover-bg-dark-green border-box no-underline"
     %>
   </div>
