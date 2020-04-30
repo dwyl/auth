@@ -37,7 +37,11 @@ defmodule Auth.Seeds do
 
   def create_apikey_for_admin(person) do
 
-    {:ok, key} = %{"name" => "default key", "url" => "http://localhost:4000"}
+    {:ok, key} = %{
+      "name" => "system admin key", 
+      "description" => "Created by /priv/repo/seeds.exs during setup."
+      "url" => "http://localhost:4000"
+    }
     |> AuthWeb.ApikeyController.make_apikey(person.id)
     # |> IO.inspect(label: "apikey_params")
     |> Auth.Apikey.create_apikey()
