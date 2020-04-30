@@ -80,4 +80,19 @@ defmodule Auth.Apikey do
     |> Repo.update()
   end
 
+  @doc """
+  Deletes a apikey.
+
+  ## Examples
+
+      iex> delete_apikey(apikey)
+      {:ok, %Apikey{}}
+
+      iex> delete_apikey(apikey)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_apikey(%Apikey{} = apikey) do
+    Repo.delete(apikey)
+  end
 end

@@ -65,10 +65,9 @@ defmodule AuthWeb.ApikeyController do
   end
 
   def edit(conn, %{"id" => id}) do
-    person_id = conn.assigns.decoded.id
     apikey = Auth.Apikey.get_apikey!(id)
     # IO.inspect(apikey, label: "apikey")
-    if apikey.person_id == person_id do
+    if apikey.person_id == conn.assigns.decoded.id do
       changeset = Auth.Apikey.change_apikey(apikey)
       render(conn, "edit.html", apikey: apikey, changeset: changeset)
     else
@@ -82,9 +81,8 @@ defmodule AuthWeb.ApikeyController do
   """
   def update(conn, %{"id" => id, "apikey" => apikey_params}) do
     apikey = Apikey.get_apikey!(id)
-    person_id = conn.assigns.decoded.id
     # check that the person attempting to update the key owns it!
-    if apikey.person_id == person_id do
+    if apikey.person_id == conn.assigns.decoded.id do
       case Apikey.update_apikey(apikey, apikey_params) do
         {:ok, apikey} ->
           conn
@@ -98,13 +96,17 @@ defmodule AuthWeb.ApikeyController do
       AuthWeb.AuthController.not_found(conn, "API KEY " <> id <> " not found." )
     end
   end
-  #
-  # def delete(conn, %{"id" => id}) do
-  #   apikey = Ctx.get_apikey!(id)
-  #   {:ok, _apikey} = Ctx.delete_apikey(apikey)
-  #
-  #   conn
-  #   |> put_flash(:info, "Apikey deleted successfully.")
-  #   |> redirect(to: Routes.apikey_path(conn, :index))
-  # end
+
+  def delete(conn, %{"id" => id}) do
+    apikey = Apikey.get_apikey!(id)
+    # check that the person attempting to delete the key owns it!
+    if apikey.person_id == conn.assigns.decoded.id do
+      {:ok, _apikey} = Apikey.delete_apikey(apikey)
+      conn
+      |> put_flash(:info, "Apikey deleted successfully.")
+      |> redirect(to: Routes.apikey_path(conn, :index))
+    else
+      AuthWeb.AuthController.not_found(conn, "API KEY " <> id <> " not found.")
+    end
+  end
 end
