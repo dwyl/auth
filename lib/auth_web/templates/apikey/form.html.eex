@@ -5,19 +5,22 @@
     </div>
   <% end %>
 
-  <%= label f, :name %>
-  <%= text_input f, :name %>
+  <%= label f, :name%>
+  <%= text_input f, :name, class: "db w-100 mt2 pa2 ba b--dark-grey"%>
   <%= error_tag f, :name %>
-
-  <%= label f, :description %>
-  <%= textarea f, :description %>
+  <br />
+  <%= label f, :description, class: "mt3" %>
+  <%= textarea f, :description, class: "db w-100 mt2 pa2 ba b--dark-grey" %>
   <%= error_tag f, :description %>
-
-  <%= label f, :url %>
-  <%= text_input f, :url %>
+  <br />
+  <%= label f, :url, class: "pt3" %>
+  <%= text_input f, :url, class: "db w-100 mt2 pa2 ba b--dark-grey" %>
   <%= error_tag f, :url %>
 
-  <div>
-    <%= submit "Save" %>
+  <div class="mt2">
+    <%= submit "Save",
+    class: "pointer fr br2 ba b--dark-green bg-green white pa3 ml1 mv1 f4
+    shadow-hover bg-animate hover-bg-dark-green border-box no-underline"
+    %>
   </div>
 <% end %>

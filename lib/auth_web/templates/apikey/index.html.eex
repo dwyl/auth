@@ -1,9 +1,9 @@
-<h1 class="tc">Auth API Keys</h1>
+<h1 class="tc f1">Auth API Keys</h1>
 <br />
 
-<table style="width:100%;">
+<table class="w-100 f3">
   <thead>
-    <tr>
+    <tr class="f3">
       <th>AUTH_API_KEY</th>
       <th>Name</th>
       <th>Description</th>
@@ -47,7 +47,7 @@
 
 <span class="w-100 db">
 <%= link "New Apikey", to: Routes.apikey_path(@conn, :new),
-class: "fr mr4 pointer br2 ba b--dark-green bg-green white pa3 ml1 mv1 f4 shadow-hover
+class: "center mr5 pointer br2 ba b--dark-green bg-green white pa3 ml1 mv1 f2 shadow-hover
 bg-animate hover-bg-dark-green border-box no-underline" %>
 </span>
 

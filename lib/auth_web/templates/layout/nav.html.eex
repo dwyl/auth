@@ -22,11 +22,12 @@
      <li class="pl5 pl6-m di-l tl pb2-m">
        <a href="#contact" id="contact-link" class="white link">Contact</a>
      </li>
-   -->
-     <li class="pl6-m tl dn-l pb3"> <!-- example of mobile-only menu item -->
+
+     <li class="pl6-m tl dn-l pb3"> <!-- example of mobile-only menu item
        <a href="https://youtu.be/dQw4w9WgXcQ"
          class="white link">S'up?</a>
      </li>
+-->
    </ul>
  </nav>
 
