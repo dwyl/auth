@@ -3,7 +3,7 @@ defmodule AuthWeb.ApikeyController do
   alias Auth.Apikey
 
   def index(conn, _params) do
-    person_id = conn.assigns.decoded.id
+    person_id = conn.assigns.person.id
     apikeys = Apikey.list_apikeys_for_person(person_id)
     render(conn, "index.html", apikeys: apikeys)
   end
@@ -50,7 +50,7 @@ defmodule AuthWeb.ApikeyController do
   def create(conn, %{"apikey" => apikey_params}) do
     {:ok, apikey} =
       apikey_params
-      |> make_apikey(conn.assigns.decoded.id)
+      |> make_apikey(conn.assigns.person.id)
       |> Apikey.create_apikey()
 
     conn
@@ -67,7 +67,7 @@ defmodule AuthWeb.ApikeyController do
   def edit(conn, %{"id" => id}) do
     apikey = Auth.Apikey.get_apikey!(id)
     # IO.inspect(apikey, label: "apikey")
-    if apikey.person_id == conn.assigns.decoded.id do
+    if apikey.person_id == conn.assigns.person.id do
       changeset = Auth.Apikey.change_apikey(apikey)
       render(conn, "edit.html", apikey: apikey, changeset: changeset)
     else
@@ -82,7 +82,7 @@ defmodule AuthWeb.ApikeyController do
   def update(conn, %{"id" => id, "apikey" => apikey_params}) do
     apikey = Apikey.get_apikey!(id)
     # check that the person attempting to update the key owns it!
-    if apikey.person_id == conn.assigns.decoded.id do
+    if apikey.person_id == conn.assigns.person.id do
       case Apikey.update_apikey(apikey, apikey_params) do
         {:ok, apikey} ->
           conn
@@ -100,7 +100,7 @@ defmodule AuthWeb.ApikeyController do
   def delete(conn, %{"id" => id}) do
     apikey = Apikey.get_apikey!(id)
     # check that the person attempting to delete the key owns it!
-    if apikey.person_id == conn.assigns.decoded.id do
+    if apikey.person_id == conn.assigns.person.id do
       {:ok, _apikey} = Apikey.delete_apikey(apikey)
       conn
       |> put_flash(:info, "Apikey deleted successfully.")
