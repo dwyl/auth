@@ -21,14 +21,14 @@
       <td><%= apikey.url %></td>
 
       <td>
-        <!-- <span><%= link "View", to: Routes.apikey_path(@conn, :show, apikey),
+        <span><%= link "View", to: Routes.apikey_path(@conn, :show, apikey),
         class: "pointer br2 ba b--dark-blue bg-blue white pa3 ml1 mv1 f4
                 bg-animate hover-bg-dark-blue border-box no-underline"
          %>
-       </span> -->
+       </span>
         <span><%= link "Edit", to: Routes.apikey_path(@conn, :edit, apikey),
-        class: "pointer br2 ba b--dark-blue bg-blue white pa3 ml1 mv1 f4
-                bg-animate hover-bg-dark-blue border-box no-underline"
+        class: "pointer br2 ba b--orange bg-gold white pa3 ml1 mv1 f4
+                bg-animate hover-bg-orange border-box no-underline"
         %></span>
         <span>
         <%= link "Delete", to: Routes.apikey_path(@conn, :delete, apikey), method: :delete,
@@ -47,8 +47,8 @@
 
 <span class="w-100 db">
 <%= link "New Apikey", to: Routes.apikey_path(@conn, :new),
-class: "center mr5 pointer br2 ba b--dark-green bg-green white pa3 ml1 mv1 f2 shadow-hover
-bg-animate hover-bg-dark-green border-box no-underline" %>
+class: "center mr5 pointer br2 ba b--dark-green bg-green white pa3 ml1 mv1 f3
+shadow-hover bg-animate hover-bg-dark-green border-box no-underline" %>
 </span>
 
 <style> /* stackoverflow.com/questions/9789723/css-text-overflow-table-cell */
