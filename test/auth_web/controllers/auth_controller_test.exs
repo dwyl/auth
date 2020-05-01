@@ -62,11 +62,11 @@ defmodule AuthWeb.AuthControllerTest do
   end
 
   test "login_register_handler/2", %{conn: conn} do
-    invalid_key = String.slice(AuthPlug.Token.client_id(), 0..-2)
-    conn = get(conn, "/auth/google/callback",
-      %{code: "234", state: "www.example.com/" <>
-      "&auth_client_id=" <> invalid_key })
+    conn = post(conn, "/people/register",
+      %{email: "jimmy@dwyl.com", state: "www.example.com/" <>
+      "&auth_client_id=" <> AuthPlug.Token.client_id() })
+    IO.inspect(conn)
     # assert html_response(conn, 200) =~ "google account"
-    assert html_response(conn, 401) =~ "invalid"
+    # assert html_response(conn, 401) =~ "invalid"
   end
 end
