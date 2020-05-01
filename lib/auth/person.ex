@@ -64,6 +64,11 @@ defmodule Auth.Person do
     end
   end
 
+  def login_register_changeset() do
+    %Person{}
+    |> cast(%{}, [:email])
+  end
+
   @doc """
   `transform_github_profile_data_to_person/1` transforms the profile data
   received from invoking `ElixirAuthGithub.github_auth/1`

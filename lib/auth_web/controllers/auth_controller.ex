@@ -30,8 +30,17 @@ defmodule AuthWeb.AuthController do
     handler(conn, person, state)
   end
 
+  def login_register_handler(conn, params) do
+    IO.inspect(params, label: "params")
 
-  # def email_password_handler(conn, params) do
+    conn
+    |> put_resp_content_type("text/html")
+    |> send_resp(200, "login_register_handler")
+    |> halt()
+  end
+
+
+  # def email_handler(conn, params) do
   #
   #   # GOTO: https://toranbillups.com/blog/archive/2018/11/18/implementing-basic-authentication/
   # end

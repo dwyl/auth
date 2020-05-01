@@ -1,6 +1,6 @@
 <div class="phx-hero w-80 center">
   <h1 class="center tc">Please Sign in to Continue</h1>
-  <p class="center tc">Login using your GitHub or Google Account: </p>
+  <p class="center tc f3">Use your GitHub or Google Account: </p>
 
   <div style="display:flex; flex-direction:column; width:22em; margin: 20px auto;">
     <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap">
@@ -43,6 +43,26 @@
       </div>
     </a>
   <div>
+
+  <div class="center">
+    <p class="center tc pt2 f3"><u>Or</u> use your email address: </p>
+
+    <%= form_for @changeset, @action,  fn f -> %>
+      <%= text_input f, :email, class:
+      "db w-100 mt2 pa2 ba b--dark-grey f3",
+        placeholder: "your@email.com"%>
+      <%= error_tag f, :email %>
+      <br />
+
+      <%= submit "Login / Register",
+        class: "pointer br2 ba b--dark-green bg-green white pa3 ml1 mv1 f3
+        shadow-hover bg-animate hover-bg-dark-green border-box no-underline db",
+        style: "margin:0 auto;"
+      %>
+    <% end %>
+
+
+  </div>
 </div>
 <!-- Wake the Email Heroku App github.com/dwyl/auth/issues/50 -->
 <img src="https://dwylmail.herokuapp.com/pixel" />

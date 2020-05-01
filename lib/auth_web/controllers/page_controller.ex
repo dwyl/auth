@@ -7,9 +7,16 @@ defmodule AuthWeb.PageController do
     oauth_github_url = ElixirAuthGithub.login_url(%{scopes: ["user:email"], state: state})
     oauth_google_url = ElixirAuthGoogle.generate_oauth_url(conn, state)
 
+    changeset = Auth.Person.login_register_changeset()
+    # Map.put(assigns, :action,
+    #   Routes.apikey_path(@conn, :create))
+    conn = assign(conn, :action,
+      Routes.auth_path(conn, :login_register_handler))
+
     render(conn, "index.html",
       oauth_github_url: oauth_github_url,
-      oauth_google_url: oauth_google_url
+      oauth_google_url: oauth_google_url,
+      changeset: changeset
     )
   end
 
