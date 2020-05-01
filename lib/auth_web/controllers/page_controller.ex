@@ -16,7 +16,8 @@ defmodule AuthWeb.PageController do
     render(conn, "index.html",
       oauth_github_url: oauth_github_url,
       oauth_google_url: oauth_google_url,
-      changeset: changeset
+      changeset: changeset,
+      state: state
     )
   end
 

@@ -48,11 +48,13 @@
     <p class="center tc pt2 f3"><u>Or</u> use your email address: </p>
 
     <%= form_for @changeset, @action,  fn f -> %>
-      <%= text_input f, :email, class:
+      <%= email_input f, :email, class:
       "db w-100 mt2 pa2 ba b--dark-grey f3",
         placeholder: "your@email.com"%>
       <%= error_tag f, :email %>
       <br />
+      <%= hidden_input f, :state, id: "state", value: @state %>
+
 
       <%= submit "Login / Register",
         class: "pointer br2 ba dwyl-bg-mint white pa3 ml1 mv1 f3
