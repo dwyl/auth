@@ -55,12 +55,16 @@
       <br />
 
       <%= submit "Login / Register",
-        class: "pointer br2 ba b--dark-green bg-green white pa3 ml1 mv1 f3
+        class: "pointer br2 ba dwyl-bg-mint white pa3 ml1 mv1 f3
         shadow-hover bg-animate hover-bg-dark-green border-box no-underline db",
-        style: "margin:0 auto;"
+        style: "margin:0 auto; border-color: #318d7b;"
       %>
     <% end %>
-
+    <style>
+    .dwyl-bg-mint {
+      background-color: #4BC0A9;
+    }
+    </style>
 
   </div>
 </div>
