@@ -23,7 +23,7 @@ defmodule AuthWeb.AuthControllerTest do
     person = Auth.Person.create_person(data) # |> IO.inspect(label: "person")
     conn = AuthPlug.create_jwt_session(conn, Map.merge(data, %{id: person.id}))
     conn = get(conn, "/profile", %{})
-    assert html_response(conn, 200) =~ "google account"
+    assert html_response(conn, 200) =~ "Google account"
     # assert html_response(conn, 302) =~ "redirected"
   end
 
@@ -90,7 +90,7 @@ defmodule AuthWeb.AuthControllerTest do
     conn = get(conn, "/auth/google/callback",
       %{code: "234", state: nil})
 
-    assert html_response(conn, 200) =~ "google account"
+    assert html_response(conn, 200) =~ "Google account"
     # assert html_response(conn, 302) =~ "redirected"
   end
 
