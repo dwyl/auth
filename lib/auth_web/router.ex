@@ -16,7 +16,7 @@ defmodule AuthWeb.Router do
   scope "/", AuthWeb do
     pipe_through :browser
 
-    get "/", PageController, :index
+    get "/", AuthController, :index
     get "/auth/github/callback", AuthController, :github_handler
     get "/auth/google/callback", AuthController, :google_handler
     post "/people/register", AuthController, :login_register_handler
@@ -31,7 +31,7 @@ defmodule AuthWeb.Router do
     pipe_through :browser
     pipe_through :auth
 
-    get "/profile", PageController, :admin
+    get "/profile", AuthController, :admin
     resources "/settings/apikeys", ApikeyController
   end
 

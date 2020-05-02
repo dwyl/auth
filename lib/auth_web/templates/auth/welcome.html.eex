@@ -1,4 +1,4 @@
-<section class="phx-hero">
+<section class="phx-hero w-100 center ph3 debug">
   <h1> Welcome <%= @conn.assigns.person.givenName %>!
   <img width="32px" src="<%= @conn.assigns.person.picture %>" />
   </h1>

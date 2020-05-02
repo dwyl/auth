@@ -2,6 +2,12 @@ defmodule AuthWeb.AuthController do
   use AuthWeb, :controller
   alias Auth.Person
 
+  # https://github.com/dwyl/auth/issues/46
+  def admin(conn, _params) do
+    conn
+    |> render(:welcome)
+  end
+
   def index(conn, params) do
     email = Map.get(params, "email")
     state = get_referer(conn)
@@ -148,7 +154,6 @@ defmodule AuthWeb.AuthController do
 
       false -> # display welcome page on Auth site:
         conn
-        |> put_view(AuthWeb.PageView)
         |> AuthPlug.create_jwt_session(person)
         |> render(:welcome, person: person)
     end

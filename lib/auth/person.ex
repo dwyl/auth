@@ -64,9 +64,9 @@ defmodule Auth.Person do
     end
   end
 
-  def login_register_changeset() do
+  def login_register_changeset(attrs) do
     %Person{}
-    |> cast(%{}, [:email])
+    |> cast(attrs, [:email])
   end
 
   @doc """
