@@ -10,8 +10,7 @@
   <br />
   <a href="/settings/apikeys"
   class="pointer ba border-box dwyl-bg-mint white pa3 ml1 mv1 f3
-  shadow-hover bg-animate hover-dwyl-teal-darkest no-underline"
-  >
+  shadow-hover bg-animate hover-dwyl-teal-darkest no-underline">
   Manage API Keys
   </a>
 </section>
