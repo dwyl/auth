@@ -1,3 +1,10 @@
 /* This file is for your main application css. */
 
-@import "./phoenix.css";
+/* @import "./phoenix.css"; */
+
+.dwyl-bg-mint {
+  background-color: #339999;
+}
+.hover-dwyl-teal-darkest:hover,  .hover-dwyl-teal-darkest:focus {
+  background-color: #318d7b;
+}
