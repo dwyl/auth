@@ -1,8 +1,8 @@
-<div class="phx-hero w-80 center">
+<div class="phx-hero w-100 center">
   <h1 class="center tc">Please Sign in to Continue</h1>
-  <p class="center tc f3">Use your GitHub or Google Account: </p>
+  <p class="center tc f3">Use GitHub or Google: </p>
 
-  <div style="display:flex; flex-direction:column; width:22em; margin: 20px auto;">
+  <div style="display:flex; flex-direction:column; width:21em; margin: 20px auto;">
     <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap">
     <a href="<%= @oauth_github_url %>"
       style="display:inline-flex; align-items:center; min-height:60px;
@@ -45,11 +45,11 @@
   <div>
 
   <div class="center">
-    <p class="center tc pt2 f3"><u>Or</u> use your email address: </p>
+    <p class="center tc pt2 f3"><u>Or</u> your email address: </p>
 
     <%= form_for @changeset, @action,  fn f -> %>
       <%= email_input f, :email, class:
-      "db w-100 mt2 pa2 ba b--dark-grey f3",
+      "db w-100 mt2 pa3 ba b--dark-grey f3",
         placeholder: "your@email.com"%>
       <%= error_tag f, :email %>
       <br />
@@ -57,14 +57,17 @@
 
 
       <%= submit "Login / Register",
-        class: "pointer br2 ba dwyl-bg-mint white pa3 ml1 mv1 f3
-        shadow-hover bg-animate hover-bg-dark-green border-box no-underline db",
+        class: "w-100 pointer ba border-box dwyl-bg-mint white pa3 ml1 mv1 f3
+        shadow-hover bg-animate hover-dwyl-teal-darkest no-underline db",
         style: "margin:0 auto; border-color: #318d7b;"
       %>
     <% end %>
     <style>
     .dwyl-bg-mint {
-      background-color: #4BC0A9;
+      background-color: #339999;
+    }
+    .hover-dwyl-teal-darkest:hover,  .hover-dwyl-teal-darkest:focus {
+      background-color: #318d7b;
     }
     </style>
 
