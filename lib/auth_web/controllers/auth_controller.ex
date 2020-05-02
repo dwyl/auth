@@ -2,6 +2,59 @@ defmodule AuthWeb.AuthController do
   use AuthWeb, :controller
   alias Auth.Person
 
+  def index(conn, params) do
+    email = Map.get(params, "email")
+    state = get_referer(conn)
+
+    oauth_github_url = ElixirAuthGithub.login_url(%{scopes: ["user:email"],
+      state: state})
+    oauth_google_url = ElixirAuthGoogle.generate_oauth_url(conn, state)
+
+    conn
+    |> assign(:action, Routes.auth_path(conn, :login_register_handler))
+    |> render("index.html",
+      oauth_github_url: oauth_github_url,
+      oauth_google_url: oauth_google_url,
+      changeset: Auth.Person.login_register_changeset(%{email: email}),
+      state: state
+    )
+  end
+
+  def append_client_id(ref, client_id) do
+    ref <> "?auth_client_id=" <> client_id
+  end
+
+  def get_referer(conn) do
+    # https://stackoverflow.com/questions/37176911/get-http-referrer
+    case List.keyfind(conn.req_headers, "referer", 0) do
+      {"referer", referer} ->
+        referer
+
+      nil -> # referer not in headers, check URL query:
+        case conn.query_string =~ "referer" do
+          true ->
+            query = URI.decode_query(conn.query_string)
+            ref = Map.get(query, "referer")
+            client_id = get_client_id_from_query(conn)
+            ref |> URI.encode |> append_client_id(client_id)
+
+          false -> # no referer, redirect back to Auth app.
+            AuthPlug.Helpers.get_baseurl_from_conn(conn) <> "/profile"
+            |> URI.encode
+            |> append_client_id(AuthPlug.Token.client_id())
+        end
+    end
+  end
+
+  def get_client_id_from_query(conn) do
+    case conn.query_string =~ "auth_client_id" do
+      true ->
+        Map.get(URI.decode_query(conn.query_string), "auth_client_id")
+      false -> # no client_id, redirect back to this app.
+        0
+    end
+  end
+
   @doc """
   `github_auth/2` handles the callback from GitHub Auth API redirect.
   """
@@ -30,13 +83,30 @@ defmodule AuthWeb.AuthController do
     handler(conn, person, state)
   end
 
+
+  @doc """
+  `login_register_handler/2` is a hybrid of traditional registration and login.
+  If the person has already registered, we treat it as a login attempt and
+  present them with a password field/form to complete.
+  If the person does *not* exist (or has not yet verified their email address),
+  we show them a welcome screen informing them that a verification email
+  was sent to their address. When they click it they will see a password (reset)
+  form where they can define a new password for their account.
+  """
   def login_register_handler(conn, params) do
     IO.inspect(params, label: "params")
+    email = Map.get(params, "email")
+    state = Map.get(params, "state")
 
-    conn
-    |> put_resp_content_type("text/html")
-    |> send_resp(200, "login_register_handler")
-    |> halt()
+    # email is blank or invalid:
+    if is_nil(email) or not Fields.Validate.email(email) do
+      index(conn, params)
+    else
+      conn
+      |> put_resp_content_type("text/html")
+      |> send_resp(200, "login_register_handler")
+      |> halt()
+    end
   end
 
 
