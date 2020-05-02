@@ -62,13 +62,13 @@
         style: "margin:0 auto; border-color: #318d7b;"
       %>
     <% end %>
-    <style> <!-- feel free to move this to a css stylesheet if you want -->
-      .dwyl-bg-mint {
-        background-color: #339999;
-      }
-      .hover-dwyl-teal-darkest:hover,  .hover-dwyl-teal-darkest:focus {
-        background-color: #318d7b;
-      }
+    <style>
+    .dwyl-bg-mint {
+      background-color: #339999;
+    }
+    .hover-dwyl-teal-darkest:hover,  .hover-dwyl-teal-darkest:focus {
+      background-color: #318d7b;
+    }
     </style>
 
   </div>
