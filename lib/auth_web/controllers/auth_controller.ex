@@ -9,8 +9,33 @@ defmodule AuthWeb.AuthController do
   end
 
   def index(conn, params) do
-    email = Map.get(params, "email")
-    state = get_referer(conn)
+    params_person = Map.get(params, "person")
+    email = if not is_nil(params_person)
+      and not is_nil(Map.get(params_person, "email")) do
+        Map.get(Map.get(params, "person"), "email")
+    else
+      nil
+    end
+
+    # TODO: add friendly error message when email is invalid
+    # IO.inspect(Fields.Validate.email(email), label: "Fields.Validate.email(email)")
+    # errors = if not is_nil(email) and not Fields.Validate.email(email) do
+    #   [email: "email address is invalid"]
+    # else
+    #   []
+    # end
+    #
+    # IO.inspect(email, label: "email")
+    # IO.inspect(errors, label: "errors")
+
+
+    state = if not is_nil(params_person)
+      and not is_nil(Map.get(params_person, "state")) do
+        Map.get(params_person, "state")
+    else
+      get_referer(conn) # get from headers
+    end
+
 
     oauth_github_url = ElixirAuthGithub.login_url(%{scopes: ["user:email"],
       state: state})
@@ -22,7 +47,8 @@ defmodule AuthWeb.AuthController do
       oauth_github_url: oauth_github_url,
       oauth_google_url: oauth_google_url,
       changeset: Auth.Person.login_register_changeset(%{email: email}),
-      state: state
+      state: state,
+      # errors: errors
     )
   end
 
@@ -53,6 +79,7 @@ defmodule AuthWeb.AuthController do
   end
 
   def get_client_id_from_query(conn) do
+    IO.inspect(conn.query_string, label: "conn.query_string")
     case conn.query_string =~ "auth_client_id" do
       true ->
         Map.get(URI.decode_query(conn.query_string), "auth_client_id")
@@ -100,19 +127,44 @@ defmodule AuthWeb.AuthController do
   form where they can define a new password for their account.
   """
   def login_register_handler(conn, params) do
-    IO.inspect(params, label: "params")
-    email = Map.get(params, "email")
-    state = Map.get(params, "state")
-
+    IO.inspect(params, label: "params:130")
+    params_person = Map.get(params, "person")
+    email = Map.get(params_person, "email")
+    state = Map.get(params_person, "state")
+    IO.inspect(email, label: "email")
     # email is blank or invalid:
     if is_nil(email) or not Fields.Validate.email(email) do
-      index(conn, params)
+      conn # re-render the login/register form:
+      |> index(params)
     else
+      # check if the email exists in the people table:
+      person = case Auth.Person.get_person_by_email(email) do
+        person ->
+          person
+        nil ->
+          person = Auth.Person.create_person(%{email: email})
+          IO.inspect(person, label: "person:146")
+          Auth.Email.sendemail(%{
+            email: email,
+            link: make_verify_link(conn, person, state)
+          }) |>  IO.inspect(label: "sendemail")
+
+          person
+      end
+      IO.inspect(person)
+      # respond
       conn
       |> put_resp_content_type("text/html")
       |> send_resp(200, "login_register_handler")
       |> halt()
     end
+  end
+
+  def make_verify_link(conn, person, state) do
+    AuthPlug.Helpers.get_baseurl_from_conn(conn)
+    <> "/person/verify"
+    <> AuthWeb.ApikeyController.encrypt_encode(person.id)
+    <> "?" <> state
   end
 
 

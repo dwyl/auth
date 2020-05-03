@@ -152,17 +152,14 @@ defmodule Auth.Person do
   end
 
   # @doc """
-  # Changeset function used for email/password registration
-  # Define email hash and password hash
+  # Changeset function used for email registration.
   # """
-  # def changeset_registration(profile, attrs) do
-  #   profile
-  #   |> cast(attrs, [:email, :password])
-  #   |> validate_required([:email, :password])
-  #   |> validate_length(:password, min: 6, max: 100)
+  # def changeset_registration(attrs) do
+  #   %Person{}
+  #   |> cast(attrs, [:email])
+  #   |> validate_required([:email])
   #   |> unique_constraint(:email)
   #   |> put_email_hash()
-  #   |> put_pass_hash()
   # end
 
   defp put_email_hash(changeset) do
