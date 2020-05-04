@@ -85,8 +85,9 @@ defmodule AuthWeb.AuthControllerTest do
       picture: "https://youtu.be/naoknj1ebqI",
       auth_provider: "google"
     }
-    person = Auth.Person.create_person(data) # |> IO.inspect(label: "person")
-    conn = AuthPlug.create_jwt_session(conn, Map.merge(data, person))
+    person = Auth.Person.upsert_person(data) # |> IO.inspect(label: "person")
+    # IO.inspect(person, label: "google_handler/2 test person:89")
+    conn = AuthPlug.create_jwt_session(conn, person)
     conn = get(conn, "/auth/google/callback",
       %{code: "234", state: nil})
 

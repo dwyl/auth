@@ -32,6 +32,7 @@ defmodule Auth.Person do
   def changeset(person, attrs) do
     person
     |> cast(attrs, [
+      :id,
       :username,
       :email,
       :givenName,
@@ -106,7 +107,7 @@ defmodule Auth.Person do
   end
 
   def create_github_person(profile) do
-    transform_github_profile_data_to_person(profile) |> create_person()
+    transform_github_profile_data_to_person(profile) |> upsert_person()
   end
 
   @doc """
@@ -141,7 +142,7 @@ defmodule Auth.Person do
     }
   """
   def transform_google_profile_data_to_person(profile) do
-    # IO.inspect(profile, label: "profile")
+    # IO.inspect(profile, label: "profile:145")
     Map.merge(profile, %{
       familyName: profile.family_name,
       givenName: profile.given_name,
@@ -152,7 +153,7 @@ defmodule Auth.Person do
 
   def create_google_person(profile) do
     transform_google_profile_data_to_person(profile)
-    |> create_person()
+    |> upsert_person()
     # |> IO.inspect(label: "create_person:")
   end
 
@@ -168,6 +169,7 @@ defmodule Auth.Person do
   # end
 
   defp put_email_hash(changeset) do
+
     put_change(changeset, :email_hash, changeset.changes.email)
     # |> IO.inspect(label: "changeset with :email_hash")
   end
@@ -187,6 +189,15 @@ defmodule Auth.Person do
     end
   end
 
+  def verify_person_by_id(id) do
+    %{id: id, status: get_status_verified()} |> upsert_person()
+  end
+
+  def get_person_by_id(id) do
+    __MODULE__
+    |> Repo.get_by(id: id)
+  end
+
   # defp put_pass_hash(changeset) do
   #   case changeset do
   #     %Ecto.Changeset{valid?: true, changes: %{password: pass}} ->
@@ -203,5 +214,20 @@ defmodule Auth.Person do
   def get_person_by_email(email) do
     __MODULE__
     |> Repo.get_by(email_hash: email)
+  end
+
+  def upsert_person(person) do
+    # IO.inspect(person.email, label: "person.email:220")
+    case get_person_by_email(person.email) do
+      nil ->
+        create_person(person)
+
+      ep -> # existing person
+        merged = Map.merge(AuthPlug.Helpers.strip_struct_metadata(ep), person)
+        {:ok, person} = changeset(%Person{id: ep.id}, merged)
+        |> Repo.update()
+
+        person
+    end
   end
 end

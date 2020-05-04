@@ -139,7 +139,7 @@ defmodule AuthWeb.AuthController do
     else
       IO.puts("email is NOT nil: " <>  email)
       person = Auth.Person.get_person_by_email(email)
-      IO.inspect(person, label: "person:142")
+      # IO.inspect(person, label: "person:142")
       # check if the email exists in the people table:
       person = if is_nil(person) do
         person = Auth.Person.create_person(%{
@@ -156,7 +156,7 @@ defmodule AuthWeb.AuthController do
       else
         person
       end
-      IO.inspect(person, label: "person:156")
+      # IO.inspect(person, label: "person:156")
       if not is_nil(person.status) and person.status == 1 do # verified
         conn
         |> assign(:action, Routes.auth_path(conn, :login_register_handler))
@@ -183,16 +183,18 @@ defmodule AuthWeb.AuthController do
   end
 
   def verify_email(conn, params) do
-    IO.inspect(params, label: "params:196")
+    IO.inspect(params, label: "params:186")
     referer = params["referer"]
-    IO.inspect(referer, label: "referer:198")
+    IO.inspect(referer, label: "referer:188")
     person_id = AuthWeb.ApikeyController.decode_decrypt(params["id"])
     IO.inspect(person_id, label: "person_id:190")
+    person = Auth.Person.verify_person_by_id(person_id)
 
-    auth_client_id = get_client_id_from_query(conn)
-    IO.inspect(auth_client_id, label: "auth_client_id:200")
+    client_secret = get_client_secret_from_state(referer)
+    IO.inspect(client_secret, label: "client_secret:193")
     # ref = get_referer(conn)
     # IO.inspect(ref, label: "referer:188")
+
     conn
     |> put_resp_content_type("text/html")
     |> send_resp(200, "verify_email")
