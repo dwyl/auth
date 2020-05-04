@@ -217,7 +217,6 @@ defmodule Auth.Person do
   end
 
   def upsert_person(person) do
-    # IO.inspect(person.email, label: "person.email:220")
     case get_person_by_email(person.email) do
       nil ->
         create_person(person)
