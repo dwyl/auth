@@ -69,6 +69,11 @@ defmodule Auth.Person do
     |> cast(attrs, [:email])
   end
 
+  def password_prompt_changeset(attrs) do
+    %Person{}
+    |> cast(attrs, [:email, :password])
+  end
+
   @doc """
   `transform_github_profile_data_to_person/1` transforms the profile data
   received from invoking `ElixirAuthGithub.github_auth/1`
@@ -167,9 +172,19 @@ defmodule Auth.Person do
     # |> IO.inspect(label: "changeset with :email_hash")
   end
 
+  def get_status_verified do
+    status = Auth.Status.upsert_status("verified")
+    status.id
+  end
+
   def put_email_status_verified(changeset) do
-    status_verified = Auth.Status.upsert_status("verified")
-    put_change(changeset, :status, status_verified.id)
+    # IO.inspect(changeset, label: "changeset")
+    provider = changeset.changes.auth_provider
+    if provider == "google" or provider == "github" do
+      put_change(changeset, :status, get_status_verified())
+    else
+      changeset
+    end
   end
 
   # defp put_pass_hash(changeset) do

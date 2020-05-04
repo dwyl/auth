@@ -134,37 +134,69 @@ defmodule AuthWeb.AuthController do
     IO.inspect(email, label: "email")
     # email is blank or invalid:
     if is_nil(email) or not Fields.Validate.email(email) do
-      conn # re-render the login/register form:
+      conn # email invalid, re-render the login/register form:
       |> index(params)
     else
+      IO.puts("email is NOT nil: " <>  email)
+      person = Auth.Person.get_person_by_email(email)
+      IO.inspect(person, label: "person:142")
       # check if the email exists in the people table:
-      person = case Auth.Person.get_person_by_email(email) do
-        person ->
-          person
-        nil ->
-          person = Auth.Person.create_person(%{email: email})
-          IO.inspect(person, label: "person:146")
-          Auth.Email.sendemail(%{
-            email: email,
-            link: make_verify_link(conn, person, state)
-          }) |>  IO.inspect(label: "sendemail")
+      person = if is_nil(person) do
+        person = Auth.Person.create_person(%{
+          email: email,
+          auth_provider: "email"
+        })
+        # IO.inspect(person, label: "person:146")
+        Auth.Email.sendemail(%{ email: email, template: "verify",
+          link: make_verify_link(conn, person, state),
+          subject: "Please Verify Your Email Address"
+        })
 
-          person
+        person
+      else
+        person
       end
-      IO.inspect(person)
-      # respond
-      conn
-      |> put_resp_content_type("text/html")
-      |> send_resp(200, "login_register_handler")
-      |> halt()
+      IO.inspect(person, label: "person:156")
+      if not is_nil(person.status) and person.status == 1 do # verified
+        conn
+        |> assign(:action, Routes.auth_path(conn, :login_register_handler))
+        |> render("password-prompt.html",
+          changeset: Auth.Person.password_prompt_changeset(%{email: email}),
+          state: state,
+          person_id: AuthWeb.ApikeyController.encrypt_encode(person.id) # hide
+        )
+      else
+        # respond
+        conn
+        |> put_resp_content_type("text/html")
+        |> send_resp(200, "login_register_handler " <> email)
+        |> halt()
+      end
     end
   end
 
   def make_verify_link(conn, person, state) do
     AuthPlug.Helpers.get_baseurl_from_conn(conn)
-    <> "/person/verify"
+    <> "/auth/verify?id="
     <> AuthWeb.ApikeyController.encrypt_encode(person.id)
-    <> "?" <> state
+    <> "&referer=" <> state
+  end
+
+  def verify_email(conn, params) do
+    IO.inspect(params, label: "params:196")
+    referer = params["referer"]
+    IO.inspect(referer, label: "referer:198")
+    person_id = AuthWeb.ApikeyController.decode_decrypt(params["id"])
+    IO.inspect(person_id, label: "person_id:190")
+    
+    auth_client_id = get_client_id_from_query(conn)
+    IO.inspect(auth_client_id, label: "auth_client_id:200")
+    # ref = get_referer(conn)
+    # IO.inspect(ref, label: "referer:188")
+    conn
+    |> put_resp_content_type("text/html")
+    |> send_resp(200, "verify_email")
+    |> halt()
   end
 
 

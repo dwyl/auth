@@ -19,7 +19,8 @@ defmodule AuthWeb.Router do
     get "/", AuthController, :index
     get "/auth/github/callback", AuthController, :github_handler
     get "/auth/google/callback", AuthController, :google_handler
-    post "/people/register", AuthController, :login_register_handler
+    get "/auth/verify", AuthController, :verify_email
+    post "/auth/register", AuthController, :login_register_handler
   end
 
 
