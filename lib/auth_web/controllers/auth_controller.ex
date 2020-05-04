@@ -9,7 +9,7 @@ defmodule AuthWeb.AuthController do
   end
 
   def index(conn, params) do
-    email = Map.get(params, "email")
+    email = params["email"] 
     state = get_referer(conn)
 
     oauth_github_url = ElixirAuthGithub.login_url(%{scopes: ["user:email"],
