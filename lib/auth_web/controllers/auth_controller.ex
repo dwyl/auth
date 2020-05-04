@@ -100,7 +100,7 @@ defmodule AuthWeb.AuthController do
   form where they can define a new password for their account.
   """
   def login_register_handler(conn, params) do
-    IO.inspect(params, label: "params")
+    # IO.inspect(params, label: "params")
     email = Map.get(params, "email")
     state = Map.get(params, "state")
 
