@@ -188,7 +188,7 @@ defmodule AuthWeb.AuthController do
     IO.inspect(referer, label: "referer:198")
     person_id = AuthWeb.ApikeyController.decode_decrypt(params["id"])
     IO.inspect(person_id, label: "person_id:190")
-    
+
     auth_client_id = get_client_id_from_query(conn)
     IO.inspect(auth_client_id, label: "auth_client_id:200")
     # ref = get_referer(conn)

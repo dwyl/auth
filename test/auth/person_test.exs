@@ -3,7 +3,7 @@ defmodule Auth.PersonTest do
   alias Auth.{Person}
 
   test "create_person/1" do
-    alex = %{email: "alex@gmail.com"}
+    alex = %{email: "alex@gmail.com", auth_provider: "email"}
     person = Person.create_person(alex)
     assert person.id > 1
 

@@ -104,20 +104,23 @@ defmodule AuthWeb.AuthControllerTest do
   end
 
   test "login_register_handler/2 with invalid email", %{conn: conn} do
-    conn = post(conn, "/people/register",
+    conn = post(conn, "/auth/register", %{"person" =>
       %{email: "invalid", state: "www.example.com/" <>
-      "&auth_client_id=" <> AuthPlug.Token.client_id() })
-    IO.inspect(conn)
-    # assert html_response(conn, 200) =~ "email"
+      "&auth_client_id=" <> AuthPlug.Token.client_id() }
+    })
+    # IO.inspect(conn)
+    assert html_response(conn, 200) =~ "email" # re-render the index
     # assert html_response(conn, 401) =~ "invalid"
   end
 
-  test "login_register_handler/2", %{conn: conn} do
-    conn = post(conn, "/people/register",
+  test "login_register_handler/2 with valid email", %{conn: conn} do
+    conn = post(conn, "/auth/register", %{"person" =>
       %{email: "jimmy@dwyl.com", state: "www.example.com/" <>
-      "&auth_client_id=" <> AuthPlug.Token.client_id() })
+      "&auth_client_id=" <> AuthPlug.Token.client_id() }
+    })
+    # TODO: show password form!
     # IO.inspect(conn)
-    # assert html_response(conn, 200) =~ "email"
+    assert html_response(conn, 200) =~ "login_register_handler"
     # assert html_response(conn, 401) =~ "invalid"
   end
 end

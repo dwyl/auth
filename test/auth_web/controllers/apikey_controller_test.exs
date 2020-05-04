@@ -131,7 +131,10 @@ defmodule AuthWeb.ApikeyControllerTest do
     test "attempt to edit a key I don't own > should 404", %{conn: conn} do
 
       person = Auth.Person.get_person_by_email(@email)
-      wrong_person = Auth.Person.create_person(%{email: "wrong@gmail.com"})
+      wrong_person = Auth.Person.create_person(%{
+        email: "wrong@gmail.com",
+        auth_provider: "email"
+      })
       conn = AuthPlug.create_jwt_session(conn, wrong_person)
 
       {:ok, key} = %{"name" => "test key", "url" => "http://localhost:4000"}
@@ -177,7 +180,10 @@ defmodule AuthWeb.ApikeyControllerTest do
 
       person = Auth.Person.get_person_by_email(@email)
       # create session with wrong person:
-      wrong_person = Auth.Person.create_person(%{email: "wronger@gmail.com"})
+      wrong_person = Auth.Person.create_person(%{
+        email: "wronger@gmail.com",
+        auth_provider: "email"
+      })
       conn = AuthPlug.create_jwt_session(conn, wrong_person)
 
       {:ok, key} = %{"name" => "test key",
@@ -209,7 +215,10 @@ defmodule AuthWeb.ApikeyControllerTest do
     end
 
     test "cannot delete a key belonging to someone else! 404", %{conn: conn} do
-      wrong_person = Auth.Person.create_person(%{email: "wrongin@gmail.com"})
+      wrong_person = Auth.Person.create_person(%{
+        email: "wrongin@gmail.com",
+        auth_provider: "email"
+      })
       conn = AuthPlug.create_jwt_session(conn, wrong_person)
 
       person = Auth.Person.get_person_by_email(@email)
