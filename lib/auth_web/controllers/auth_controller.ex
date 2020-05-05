@@ -190,15 +190,18 @@ defmodule AuthWeb.AuthController do
     IO.inspect(person_id, label: "person_id:190")
     person = Auth.Person.verify_person_by_id(person_id)
 
-    client_secret = get_client_secret_from_state(referer)
-    IO.inspect(client_secret, label: "client_secret:193")
+    secret = get_client_secret_from_state(referer)
+    IO.inspect(secret, label: "secret:196")
     # ref = get_referer(conn)
     # IO.inspect(ref, label: "referer:188")
 
     conn
-    |> put_resp_content_type("text/html")
-    |> send_resp(200, "verify_email")
-    |> halt()
+    # |> AuthPlug.create_session(person, secret)
+    |> redirect(external: add_jwt_url_param(person, referer, secret))
+    # conn
+    # |> put_resp_content_type("text/html")
+    # |> send_resp(200, "verify_email")
+    # |> halt()
   end
 
 

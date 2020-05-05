@@ -42,7 +42,8 @@ defmodule Auth.Person do
       :locale,
       :picture,
       :username,
-      :auth_provider
+      :auth_provider,
+      :status
     ])
     |> validate_required([:email])
     |> put_email_hash()
@@ -190,7 +191,8 @@ defmodule Auth.Person do
   end
 
   def verify_person_by_id(id) do
-    %{id: id, status: get_status_verified()} |> upsert_person()
+    person = get_person_by_id(id)
+    %{email: person.email, status: get_status_verified()} |> upsert_person()
   end
 
   def get_person_by_id(id) do
@@ -226,7 +228,7 @@ defmodule Auth.Person do
         {:ok, person} = changeset(%Person{id: ep.id}, merged)
         |> Repo.update()
 
-        person
+        person # |> IO.inspect(label: "updated person:230")
     end
   end
 end
