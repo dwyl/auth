@@ -71,7 +71,7 @@ defmodule Auth.Person do
     |> cast(attrs, [:email])
   end
 
-  def password_prompt_changeset(attrs) do
+  def password_new_changeset(attrs) do
     %Person{}
     |> cast(attrs, [:email, :password])
   end

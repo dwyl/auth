@@ -21,6 +21,8 @@ defmodule AuthWeb.Router do
     get "/auth/google/callback", AuthController, :google_handler
     get "/auth/verify", AuthController, :verify_email
     post "/auth/register", AuthController, :login_register_handler
+    get "/auth/password/new", AuthController, :password_input
+    post "/auth/password/create", AuthController, :password_create
   end
 
 

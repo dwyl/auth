@@ -47,7 +47,7 @@ defmodule AuthWeb.AuthController do
       oauth_github_url: oauth_github_url,
       oauth_google_url: oauth_google_url,
       changeset: Auth.Person.login_register_changeset(%{email: email}),
-      state: state,
+      state: state
       # errors: errors
     )
   end
@@ -127,11 +127,11 @@ defmodule AuthWeb.AuthController do
   form where they can define a new password for their account.
   """
   def login_register_handler(conn, params) do
-    IO.inspect(params, label: "params:130")
+    # IO.inspect(params, label: "params:130")
     params_person = Map.get(params, "person")
     email = Map.get(params_person, "email")
     state = Map.get(params_person, "state")
-    IO.inspect(email, label: "email")
+    # IO.inspect(email, label: "email")
     # email is blank or invalid:
     if is_nil(email) or not Fields.Validate.email(email) do
       conn # email invalid, re-render the login/register form:
@@ -156,15 +156,19 @@ defmodule AuthWeb.AuthController do
       else
         person
       end
-      # IO.inspect(person, label: "person:156")
-      if not is_nil(person.status) and person.status == 1 do # verified
-        conn
-        |> assign(:action, Routes.auth_path(conn, :login_register_handler))
-        |> render("password-prompt.html",
-          changeset: Auth.Person.password_prompt_changeset(%{email: email}),
-          state: state,
-          person_id: AuthWeb.ApikeyController.encrypt_encode(person.id) # hide
-        )
+      IO.inspect(person, label: "person:159")
+      if is_nil(person.status) do # person has not verified their email address
+        # display message in UI instructing them to check their email and click
+        # & prompt to define a password.
+        message = """
+        You have registered with your email: #{email}.
+        Please check your email and click the link to verify your address.
+        """
+        conn # redirect with info & params: stackoverflow.com/questions/48733360
+          |> put_flash(:info, message)
+          |> redirect(to: Routes.auth_path(conn, :password_input,
+            state: state, email: email, person_id: person.id))
+
       else
         # respond
         conn
@@ -182,33 +186,35 @@ defmodule AuthWeb.AuthController do
     <> "&referer=" <> state
   end
 
-  def verify_email(conn, params) do
-    IO.inspect(params, label: "params:186")
-    referer = params["referer"]
-    IO.inspect(referer, label: "referer:188")
-    person_id = AuthWeb.ApikeyController.decode_decrypt(params["id"])
-    IO.inspect(person_id, label: "person_id:190")
-    person = Auth.Person.verify_person_by_id(person_id)
+  def password_input(conn, params) do
+    IO.inspect(params, label: "params:197")
+    conn
+    |> assign(:action, Routes.auth_path(conn, :password_create))
+    |> render("password-prompt.html",
+      changeset: Auth.Person.password_new_changeset(%{email: params["email"]}),
+      state: params["state"], # so we can redirect after creatig a password
+      person_id: AuthWeb.ApikeyController.encrypt_encode(params["person_id"])
+    )
+  end
 
-    secret = get_client_secret_from_state(referer)
-    IO.inspect(secret, label: "secret:196")
-    # ref = get_referer(conn)
-    # IO.inspect(ref, label: "referer:188")
+  def password_create(conn, params) do
+    IO.inspect(params, label: "params:201")
 
     conn
-    # |> AuthPlug.create_session(person, secret)
-    |> redirect(external: add_jwt_url_param(person, referer, secret))
-    # conn
-    # |> put_resp_content_type("text/html")
-    # |> send_resp(200, "verify_email")
-    # |> halt()
+    |> put_resp_content_type("text/html")
+    |> send_resp(200, "password_create")
+    |> halt()
   end
 
 
-  # def email_handler(conn, params) do
-  #
-  #   # GOTO: https://toranbillups.com/blog/archive/2018/11/18/implementing-basic-authentication/
-  # end
+  def verify_email(conn, params) do
+    referer = params["referer"]
+    person = Auth.Person.verify_person_by_id(params["id"])
+    secret = get_client_secret_from_state(referer)
+    conn
+    |> redirect(external: add_jwt_url_param(person, referer, secret))
+  end
+
 
 
   @doc """
@@ -216,7 +222,6 @@ defmodule AuthWeb.AuthController do
   if the state is defined, redirect to it.
   """
   def handler(conn, person, state) do
-    # IO.inspect(person, label: "handler/3 > person")
     # Send welcome email:
     Auth.Email.sendemail(%{
       email: person.email,
