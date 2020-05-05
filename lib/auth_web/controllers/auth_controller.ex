@@ -162,7 +162,8 @@ defmodule AuthWeb.AuthController do
         # & prompt to define a password.
         message = """
         You have registered with your email: #{email}.
-        Please check your email and click the link to verify your address.
+        We have sent you an email with a link to confirm your address.
+        Please check your email inbox for our message and click the link.
         """
         conn # redirect with info & params: stackoverflow.com/questions/48733360
           |> put_flash(:info, message)
