@@ -195,14 +195,19 @@ defmodule AuthWeb.AuthController do
     |> render("password-prompt.html",
       changeset: Auth.Person.password_new_changeset(%{email: params["email"]}),
       state: params["state"], # so we can redirect after creatig a password
-      person_id: AuthWeb.ApikeyController.encrypt_encode(params["person_id"])
+      email: AuthWeb.ApikeyController.encrypt_encode(params["email"])
     )
   end
 
   def password_create(conn, params) do
     IO.inspect(params, label: "params:201")
     params_person = params["person"]
-    person_id = AuthWeb.ApikeyController.decode_decrypt(params_person["person_id"])
+    email = Auth.Person.decrypt_email(params_person["email"])
+    IO.inspect(email, label: "email:206")
+    password = params_person["password"]
+    IO.inspect(password, label: "password:208")
+    person = Auth.Person.upsert_person(%{email: email, password: password})
+    IO.inspect(person, label: "person")
 
     conn
     |> put_resp_content_type("text/html")

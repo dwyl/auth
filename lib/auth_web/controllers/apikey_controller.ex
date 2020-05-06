@@ -21,7 +21,7 @@ defmodule AuthWeb.ApikeyController do
     encrypt_encode(person_id) <> "/" <> encrypt_encode(person_id)
   end
 
-  @doc"""
+  @doc """
   `decode_decrypt/1` accepts a `key` and attempts to Base58.decode
   followed by AES.decrypt it. If decode or decrypt fails, return 0 (zero).
   """

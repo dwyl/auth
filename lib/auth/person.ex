@@ -37,6 +37,7 @@ defmodule Auth.Person do
       :email,
       :givenName,
       :familyName,
+      :password,
       :password_hash,
       :key_id,
       :locale,
@@ -171,6 +172,7 @@ defmodule Auth.Person do
   # end
 
   defp put_email_hash(changeset) do
+    IO.inspect(changeset, label: "changeset")
     put_change(changeset, :email_hash, changeset.changes.email)
     # |> IO.inspect(label: "changeset with :email_hash")
   end
@@ -201,6 +203,7 @@ defmodule Auth.Person do
   end
 
   defp put_pass_hash(changeset) do
+    IO.inspect(changeset, label: "changeset put_pass_hash:205")
     case changeset do
       %Ecto.Changeset{valid?: true, changes: %{password: pass}} ->
         put_change(changeset, :password_hash, pass)
@@ -218,7 +221,11 @@ defmodule Auth.Person do
     |> Repo.get_by(email_hash: email)
   end
 
+  @doc """
+  `upsert_person/1` inserts or updates a person record.
+  """
   def upsert_person(person) do
+    IO.inspect(person, label: "person:226")
     case get_person_by_email(person.email) do
       nil ->
         create_person(person)
@@ -226,6 +233,7 @@ defmodule Auth.Person do
       ep -> # existing person
         merged = Map.merge(AuthPlug.Helpers.strip_struct_metadata(ep), person)
         {:ok, person} = changeset(%Person{id: ep.id}, merged)
+        |> IO.inspect(label: "changeset transformed:234")
         |> Repo.update()
 
         person # |> IO.inspect(label: "updated person:230")
@@ -233,7 +241,7 @@ defmodule Auth.Person do
   end
 
 
-  @doc"""
+  @doc """
   `decrypt_email/1` accepts a `cyphertext` and attempts to Base58.decode
   followed by AES.decrypt it. If decode or decrypt fails, return 0 (zero).
   """
