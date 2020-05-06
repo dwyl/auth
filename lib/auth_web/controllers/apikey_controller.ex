@@ -13,8 +13,8 @@ defmodule AuthWeb.ApikeyController do
     render(conn, "new.html", changeset: changeset)
   end
 
-  def encrypt_encode(person_id) do
-    Fields.AES.encrypt(person_id) |> Base58.encode
+  def encrypt_encode(plaintext) do
+    Fields.AES.encrypt(plaintext) |> Base58.encode
   end
 
   def create_api_key(person_id) do
