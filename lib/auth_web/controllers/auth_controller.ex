@@ -93,10 +93,10 @@ defmodule AuthWeb.AuthController do
   """
   def github_handler(conn, %{"code" => code, "state" => state}) do
     {:ok, profile} = ElixirAuthGithub.github_auth(code)
-    # IO.inspect(profile, label: "github profile")
+    IO.inspect(profile, label: "github profile:96")
     # save profile to people:
     person = Person.create_github_person(profile)
-    # IO.inspect(person, label: "github profile > person")
+    IO.inspect(person, label: "github profile > person:99")
     # render or redirect:
     handler(conn, person, state)
   end
@@ -116,6 +116,61 @@ defmodule AuthWeb.AuthController do
     handler(conn, person, state)
   end
 
+
+
+  @doc """
+  `handler/3` responds to successful auth requests.
+  if the state is defined, redirect to it.
+  """
+  def handler(conn, person, state) do
+    # Send welcome email:
+    Auth.Email.sendemail(%{
+      email: person.email,
+      name: person.givenName,
+      template: "welcome"
+    })
+    redirect_or_render(conn, person, state)
+  end
+
+  def redirect_or_render(conn, person, state) do
+    # check if valid state (HTTP referer) is defined:
+    case not is_nil(state) do
+      true -> # redirect
+        case get_client_secret_from_state(state) do
+          0 ->
+            # IO.inspect("client_secret is 0 (error)")
+            unauthorized(conn)
+          secret ->
+            # IO.inspect(secret, label: "secret")
+            conn
+            # |> AuthPlug.create_session(person, secret)
+            |> redirect(external: add_jwt_url_param(person, state, secret))
+        end
+
+      false -> # display welcome page on Auth site:
+        conn
+        |> AuthPlug.create_jwt_session(person)
+        |> render(:welcome, person: person)
+    end
+  end
+
+
+  def unauthorized(conn) do
+    # IO.inspect(conn)
+    conn
+    # |> put_resp_header("www-authenticate", "Bearer realm=\"Person access\"")
+    |> put_resp_content_type("text/html")
+    |> send_resp(401, "invalid AUTH_API_KEY/client_id please check.")
+    |> halt()
+  end
+
+  # TODO: refactor this to render a template with a nice layout.
+  def not_found(conn, message) do
+    conn
+    |> put_resp_content_type("text/html")
+    |> send_resp(404, message)
+    |> halt()
+  end
 
   @doc """
   `login_register_handler/2` is a hybrid of traditional registration and login.
@@ -208,11 +263,10 @@ defmodule AuthWeb.AuthController do
     IO.inspect(password, label: "password:208")
     person = Auth.Person.upsert_person(%{email: email, password: password})
     IO.inspect(person, label: "person")
-
-    conn
-    |> put_resp_content_type("text/html")
-    |> send_resp(200, "password_create")
-    |> halt()
+    #
+    state = params_person["state"]
+    IO.inspect(state, label: "state:268")
+    redirect_or_render(conn, person, state)
   end
 
 
@@ -222,61 +276,6 @@ defmodule AuthWeb.AuthController do
     secret = get_client_secret_from_state(referer)
     conn
     |> redirect(external: add_jwt_url_param(person, referer, secret))
-  end
-
-
-
-  @doc """
-  `handler/3` responds to successful auth requests.
-  if the state is defined, redirect to it.
-  """
-  def handler(conn, person, state) do
-    # Send welcome email:
-    Auth.Email.sendemail(%{
-      email: person.email,
-      name: person.givenName,
-      template: "welcome"
-    })
-    # |> IO.inspect(label: "email")
-
-    # IO.inspect(state, label: "state handler/3:53")
-
-    # check if valid state (HTTP referer) is defined:
-    case not is_nil(state) do
-      true -> # redirect
-        case get_client_secret_from_state(state) do
-          0 ->
-            # IO.inspect("client_secret is 0 (error)")
-            unauthorized(conn)
-          secret ->
-            # IO.inspect(secret, label: "secret")
-            conn
-            # |> AuthPlug.create_session(person, secret)
-            |> redirect(external: add_jwt_url_param(person, state, secret))
-        end
-
-      false -> # display welcome page on Auth site:
-        conn
-        |> AuthPlug.create_jwt_session(person)
-        |> render(:welcome, person: person)
-    end
-  end
-
-  def unauthorized(conn) do
-    # IO.inspect(conn)
-    conn
-    # |> put_resp_header("www-authenticate", "Bearer realm=\"Person access\"")
-    |> put_resp_content_type("text/html")
-    |> send_resp(401, "invalid AUTH_API_KEY/client_id please check.")
-    |> halt()
-  end
-
-  # TODO: refactor this to render a template with a nice layout.
-  def not_found(conn, message) do
-    conn
-    |> put_resp_content_type("text/html")
-    |> send_resp(404, message)
-    |> halt()
   end
 
 
