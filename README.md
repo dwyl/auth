@@ -214,6 +214,15 @@ https://github.com/dwyl/elixir-auth-google
 
 <br />
 
+### Email + Password Registration / Login
+
+This diagram depicts the flow: 
+
+<img width="1470" alt="registration-login-email-password-flow-diagram" src="https://user-images.githubusercontent.com/194400/81224631-e8891b80-8fdf-11ea-8e75-e3751d407b38.png">
+
+[Edit this diagram](https://docs.google.com/presentation/d/1PUKzbRQOEgHaOmaEheU7T3AHQhRT8mhGuqVKotEJkM0/edit#slide=id.g7745f61495_0_0)
+
+
 
 ### Email
 
@@ -255,7 +264,7 @@ _This_ repo/project is for people who _do_ want to think about auth,
 want to _know_ where sensitive data is stored and want to
 be able to extend the code if they choose to.
 
-### Phoenix Has a Session System, Does this Use It?
+### Phoenix Has a Session System, Does this _Use_ It?
 
 Phoenix has a built-in mechanism for sessions:
 http://www.phoenixframework.org/docs/sessions
