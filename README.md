@@ -216,7 +216,7 @@ https://github.com/dwyl/elixir-auth-google
 
 ### Email + Password Registration / Login
 
-This diagram depicts the flow: 
+This diagram depicts the flow:
 
 <img width="1470" alt="registration-login-email-password-flow-diagram" src="https://user-images.githubusercontent.com/194400/81224631-e8891b80-8fdf-11ea-8e75-e3751d407b38.png">
 

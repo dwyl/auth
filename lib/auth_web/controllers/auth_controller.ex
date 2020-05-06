@@ -159,16 +159,17 @@ defmodule AuthWeb.AuthController do
       IO.inspect(person, label: "person:159")
       if is_nil(person.status) do # person has not verified their email address
         # display message in UI instructing them to check their email and click
-        # & prompt to define a password.
+        # verify their email & prompt to define a password.
         message = """
         You have registered with your email: #{email}.
         We have sent you an email with a link to confirm your address.
-        Please check your email inbox for our message and click the link.
+        Please check your email inbox for our message,
+        open it and click the link.
         """
         conn # redirect with info & params: stackoverflow.com/questions/48733360
           |> put_flash(:info, message)
           |> redirect(to: Routes.auth_path(conn, :password_input,
-            state: state, email: email, person_id: person.id))
+            state: state, email: email, email: person.email))
 
       else
         # respond
@@ -200,6 +201,8 @@ defmodule AuthWeb.AuthController do
 
   def password_create(conn, params) do
     IO.inspect(params, label: "params:201")
+    params_person = params["person"]
+    person_id = AuthWeb.ApikeyController.decode_decrypt(params_person["person_id"])
 
     conn
     |> put_resp_content_type("text/html")
@@ -319,7 +322,8 @@ defmodule AuthWeb.AuthController do
       givenName: person.givenName,
       id: person.id,
       picture: person.picture,
-      status: person.status
+      status: person.status,
+      email: person.email
     }
 
     jwt = AuthPlug.Token.generate_jwt!(data, client_secret)

@@ -56,9 +56,9 @@
 
 
       <%= submit "Login / Register",
-        class: "w-100 pointer ba border-box dwyl-bg-mint white pa3 ml1 mv1 f3
-        shadow-hover bg-animate hover-dwyl-teal-darkest no-underline db",
-        style: "margin:0 auto; border-color: #318d7b;"
+        class: "w-100 pointer ba dwyl-bg-teal f3 white border-dwyl-teal
+        pa3 shadow-hover bg-animate hover-dwyl-teal-darkest no-underline db",
+        style: "margin:0 auto;"
       %>
     <% end %>
   </div>

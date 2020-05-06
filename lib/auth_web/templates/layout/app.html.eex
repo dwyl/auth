@@ -13,9 +13,8 @@
 
     <%= render "nav.html", assigns %>
 
-    <main role="main" class="container pt5">
-      <p class="alert alert-info ba b--dark-green bg-light-green dark-green lh-copy
-        pa2 ml1 mv1 bg-animate hover-bg-dark-green hover-white w-70 ml1 f3 center"
+    <main role="main" class="container pt4">
+      <p class="alert alert-info f4 mh3"
         role="alert"><%= get_flash(@conn, :info) %></p>
       <p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
       <%= render @view_module, @view_template, assigns %>
