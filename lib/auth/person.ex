@@ -231,4 +231,19 @@ defmodule Auth.Person do
         person # |> IO.inspect(label: "updated person:230")
     end
   end
+
+
+  @doc"""
+  `decrypt_email/1` accepts a `cyphertext` and attempts to Base58.decode
+  followed by AES.decrypt it. If decode or decrypt fails, return 0 (zero).
+  """
+  def decrypt_email(cyphertext) do
+    try do
+      cyphertext |> Base58.decode |> Fields.AES.decrypt()
+    rescue
+      ArgumentError ->
+        # IO.puts("AES.decrypt() unable to decrypt client_id")
+        0
+    end
+  end
 end
