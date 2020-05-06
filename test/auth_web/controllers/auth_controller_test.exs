@@ -121,7 +121,8 @@ defmodule AuthWeb.AuthControllerTest do
     })
     # TODO: show password form!
     # IO.inspect(conn)
-    assert html_response(conn, 200) =~ "login_register_handler"
+    assert html_response(conn, 302) =~ "redirected"
+    # assert html_response(conn, 200) =~ "login_register_handler"
     # assert html_response(conn, 401) =~ "invalid"
   end
 end
