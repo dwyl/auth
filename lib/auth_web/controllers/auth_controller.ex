@@ -255,18 +255,11 @@ defmodule AuthWeb.AuthController do
   end
 
   def password_create(conn, params) do
-    IO.inspect(params, label: "params:201")
-    params_person = params["person"]
-    email = Auth.Person.decrypt_email(params_person["email"])
-    IO.inspect(email, label: "email:206")
-    password = params_person["password"]
-    IO.inspect(password, label: "password:208")
-    person = Auth.Person.upsert_person(%{email: email, password: password})
-    IO.inspect(person, label: "person")
-    #
-    state = params_person["state"]
-    IO.inspect(state, label: "state:268")
-    redirect_or_render(conn, person, state)
+    # IO.inspect(params, label: "params:201")
+    p = params["person"]
+    email = Auth.Person.decrypt_email(p["email"])
+    person = Auth.Person.upsert_person(%{email: email, password: p["password"]})
+    redirect_or_render(conn, person, p["state"])
   end
 
 
