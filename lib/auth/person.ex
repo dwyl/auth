@@ -47,6 +47,7 @@ defmodule Auth.Person do
     ])
     |> validate_required([:email])
     |> put_email_hash()
+    |> put_pass_hash()
   end
 
   def create_person(person) do
@@ -170,7 +171,6 @@ defmodule Auth.Person do
   # end
 
   defp put_email_hash(changeset) do
-
     put_change(changeset, :email_hash, changeset.changes.email)
     # |> IO.inspect(label: "changeset with :email_hash")
   end
@@ -200,15 +200,15 @@ defmodule Auth.Person do
     |> Repo.get_by(id: id)
   end
 
-  # defp put_pass_hash(changeset) do
-  #   case changeset do
-  #     %Ecto.Changeset{valid?: true, changes: %{password: pass}} ->
-  #       put_change(changeset, :password_hash, pass)
-  #
-  #     _ ->
-  #       changeset
-  #   end
-  # end
+  defp put_pass_hash(changeset) do
+    case changeset do
+      %Ecto.Changeset{valid?: true, changes: %{password: pass}} ->
+        put_change(changeset, :password_hash, pass)
+
+      _ ->
+        changeset
+    end
+  end
 
   @doc """
   `get_person_by_email/1` returns the person based on email address.
