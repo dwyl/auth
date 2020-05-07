@@ -183,9 +183,9 @@ defmodule AuthWeb.AuthController do
   """
   def login_register_handler(conn, params) do
     # IO.inspect(params, label: "params:130")
-    params_person = Map.get(params, "person")
-    email = Map.get(params_person, "email")
-    state = Map.get(params_person, "state")
+    p = params["person"]
+    email = p["email"]
+    state = p["state"]
     # IO.inspect(email, label: "email")
     # email is blank or invalid:
     if is_nil(email) or not Fields.Validate.email(email) do
