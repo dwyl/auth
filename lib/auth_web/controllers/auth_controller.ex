@@ -211,30 +211,50 @@ defmodule AuthWeb.AuthController do
       else
         person
       end
-      IO.inspect(person, label: "person:159")
-      if is_nil(person.status) do # person has not verified their email address
-        # display message in UI instructing them to check their email and click
-        # verify their email & prompt to define a password.
-        message = """
-        You have registered with your email: #{email}.
-        We have sent you an email with a link to confirm your address.
-        Please check your email inbox for our message,
-        open it and click the link.
-        """
-        conn # redirect with info & params: stackoverflow.com/questions/48733360
-          |> put_flash(:info, message)
-          |> redirect(to: Routes.auth_path(conn, :password_input,
-            state: state, email: email, email: person.email))
 
-      else
-        # respond
-        conn
-        |> put_resp_content_type("text/html")
-        |> send_resp(200, "login_register_handler " <> email)
-        |> halt()
+      cond do
+        is_nil(person.status) and is_nil(person.password_hash) ->
+          # person has not verified their email address or created a password
+          message = """
+          You registered with the email address: #{email}. An email was sent
+          to you with a link to confirm your address. Please check your email
+          inbox for our message, open it and click the link.
+          """
+          render_password_form(conn, email, message, state, "password_create")
+
+        person.status > 0 and is_nil(person.password_hash) ->
+          # has verified but not yet defined a password
+          render_password_form(conn, email, "", state, "password_create")
+
+        is_nil(person.status) and not is_nil(person.password_hash) ->
+          # person has not yet verified their email but has defined a password
+          message = """
+          You registered with the email address: #{email}. An email was sent
+          to you with a link to confirm your address. Please check your email
+          inbox for our message, open it and click the link.
+          You can still login using the password you saved.
+          """
+          render_password_form(conn, email, message, state, "password_prompt")
+
+        person.status > 0 and not is_nil(person.password_hash) ->
+          # render password prompt without any put_flash message
+          render_password_form(conn, email, "", state, "password_prompt")
+
       end
     end
   end
+
+  def render_password_form(conn, email, message, state, template) do
+    conn
+      |> put_flash(:info, message)
+      |> assign(:action, Routes.auth_path(conn, :password_create))
+      |> render(template <> ".html",
+        changeset: Auth.Person.password_new_changeset(%{email: email}),
+        state: state, # so we can redirect after creatig a password
+        email: AuthWeb.ApikeyController.encrypt_encode(email)
+      )
+  end
+
 
   def make_verify_link(conn, person, state) do
     AuthPlug.Helpers.get_baseurl_from_conn(conn)
@@ -254,18 +274,44 @@ defmodule AuthWeb.AuthController do
     )
   end
 
+  @doc """
+  `password_create/2` is called when a new person is registering with email
+  and is defining a password for the first time.
+  Note: at present we are not enforcing any rules for password strength/length.
+  Thinking of doing these checks as progressive enhancement in Browser.
+  see:
+  """
   def password_create(conn, params) do
-    # IO.inspect(params, label: "params:201")
+    IO.inspect(params, label: "password_create > params:271")
     p = params["person"]
     email = Auth.Person.decrypt_email(p["email"])
     person = Auth.Person.upsert_person(%{email: email, password: p["password"]})
     redirect_or_render(conn, person, p["state"])
   end
 
+  # def passwprd_prompt(conn, params) do
+  #
+  # end
+
+
+  def password_verify(conn, params) do
+    IO.inspect(params, label: "param")
+    # respond
+    conn
+    |> put_resp_content_type("text/html")
+    |> send_resp(200, "password_verify")
+    |> halt()
+
+  end
+
+
+
 
   def verify_email(conn, params) do
+    IO.inspect(params, label: "verify_email params:297")
     referer = params["referer"]
-    person = Auth.Person.verify_person_by_id(params["id"])
+    id = AuthWeb.ApikeyController.decode_decrypt(params["id"])
+    person = Auth.Person.verify_person_by_id(id)
     secret = get_client_secret_from_state(referer)
     conn
     |> redirect(external: add_jwt_url_param(person, referer, secret))
