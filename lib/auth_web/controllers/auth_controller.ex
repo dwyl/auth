@@ -247,7 +247,7 @@ defmodule AuthWeb.AuthController do
     IO.inspect(params, label: "params:197")
     conn
     |> assign(:action, Routes.auth_path(conn, :password_create))
-    |> render("password-prompt.html",
+    |> render("password_create.html",
       changeset: Auth.Person.password_new_changeset(%{email: params["email"]}),
       state: params["state"], # so we can redirect after creatig a password
       email: AuthWeb.ApikeyController.encrypt_encode(params["email"])
