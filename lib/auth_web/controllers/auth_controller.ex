@@ -247,7 +247,7 @@ defmodule AuthWeb.AuthController do
   def render_password_form(conn, email, message, state, template) do
     conn
       |> put_flash(:info, message)
-      |> assign(:action, Routes.auth_path(conn, :password_create))
+      |> assign(:action, Routes.auth_path(conn, String.to_atom(template)))
       |> render(template <> ".html",
         changeset: Auth.Person.password_new_changeset(%{email: email}),
         state: state, # so we can redirect after creatig a password
@@ -289,22 +289,24 @@ defmodule AuthWeb.AuthController do
     redirect_or_render(conn, person, p["state"])
   end
 
-  # def passwprd_prompt(conn, params) do
-  #
-  # end
 
+  def password_prompt(conn, params) do # verify the password
+    IO.inspect(params, label: "password_prompt params:294")
+    p = params["person"]
+    email = Auth.Person.decrypt_email(p["email"])
+    person = Auth.Person.get_person_by_email(email)
 
-  def password_verify(conn, params) do
-    IO.inspect(params, label: "param")
-    # respond
-    conn
-    |> put_resp_content_type("text/html")
-    |> send_resp(200, "password_verify")
-    |> halt()
+    case Argon2.verify_pass(p["password"], person.password_hash) do
+      true ->
+        redirect_or_render(conn, person, p["state"])
 
+      false ->
+        msg = """
+        That password is incorrect.
+        """
+        render_password_form(conn, email, msg, p["state"], "password_prompt")
+    end
   end
-
-
 
 
   def verify_email(conn, params) do
