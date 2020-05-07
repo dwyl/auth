@@ -11,4 +11,15 @@ defmodule Auth.PersonTest do
     person2 = Person.create_person(alex)
     assert person2.id == person.id
   end
+
+  test "verify_person_by_id/1" do
+    alice = %{email: "alice@gmail.com", auth_provider: "email"}
+    person = Person.create_person(alice)
+    assert is_nil(person.status)
+
+    Person.verify_person_by_id(person.id)
+    updated_person = Person.get_person_by_id(person.id)
+    # IO.inspect(updated_person, label: "updated_person")
+    assert updated_person.status == 1
+  end
 end
