@@ -23,6 +23,7 @@ defmodule AuthWeb.Router do
     post "/auth/register", AuthController, :login_register_handler
     get "/auth/password/new", AuthController, :password_input
     post "/auth/password/create", AuthController, :password_create
+    post "/auth/password/verify", AuthController, :password_prompt
   end
 
 
