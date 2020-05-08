@@ -223,4 +223,45 @@ defmodule AuthWeb.AuthControllerTest do
     conn = get(conn, link, %{})
     assert html_response(conn, 302) =~ "redirected"
   end
+
+  test "password_prompt/2 verify VALID password", %{conn: conn} do
+    data = %{
+      email: "ana@mail.com",
+      auth_provider: "email",
+      status: 1,
+      password: "thiswillbehashed"
+    }
+    Auth.Person.upsert_person(data)
+    state = AuthPlug.Helpers.get_baseurl_from_conn(conn)
+      <> "/profile?auth_client_id=" <> AuthPlug.Token.client_id()
+
+    params = %{ "person" => %{
+      "email" => AuthWeb.ApikeyController.encrypt_encode(data.email),
+      "password" => "thiswillbehashed",
+      "state" => state
+    }}
+    conn = post(conn, "/auth/password/verify", params)
+    # IO.inspect(conn, label: "conn")
+    assert html_response(conn, 302) =~ "redirected"
+  end
+
+  test "password_prompt/2 verify INVALID password", %{conn: conn} do
+    data = %{
+      email: "ana@mail.com",
+      auth_provider: "email",
+      status: 1,
+      password: "thiswillbehashed"
+    }
+    Auth.Person.upsert_person(data)
+    state = AuthPlug.Helpers.get_baseurl_from_conn(conn)
+      <> "/profile?auth_client_id=" <> AuthPlug.Token.client_id()
+
+    params = %{ "person" => %{
+      "email" => AuthWeb.ApikeyController.encrypt_encode(data.email),
+      "password" => "fail",
+      "state" => state
+    }}
+    conn = post(conn, "/auth/password/verify", params)
+    assert html_response(conn, 200) =~ "password is incorrect"
+  end
 end

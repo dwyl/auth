@@ -291,7 +291,7 @@ defmodule AuthWeb.AuthController do
   see:
   """
   def password_create(conn, params) do
-    IO.inspect(params, label: "password_create > params:271")
+    # IO.inspect(params, label: "password_create > params:271")
     p = params["person"]
     email = Auth.Person.decrypt_email(p["email"])
     person = Auth.Person.upsert_person(%{email: email, password: p["password"]})
@@ -305,10 +305,12 @@ defmodule AuthWeb.AuthController do
   TODO:
   """
   def password_prompt(conn, params) do # verify the password
-    IO.inspect(params, label: "password_prompt params:294")
+    # IO.inspect(params, label: "password_prompt params:294")
     p = params["person"]
     email = Auth.Person.decrypt_email(p["email"])
+    # IO.inspect(email, label: "email:311")
     person = Auth.Person.get_person_by_email(email)
+    # IO.inspect(person, label: "person:312")
 
     case Argon2.verify_pass(p["password"], person.password_hash) do
       true ->
