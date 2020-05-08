@@ -17,17 +17,13 @@ defmodule AuthWeb.AuthController do
       nil
     end
 
-    # TODO: add friendly error message when email is invalid
+    # TODO: add friendly error message when email address is invalid
     # IO.inspect(Fields.Validate.email(email), label: "Fields.Validate.email(email)")
     # errors = if not is_nil(email) and not Fields.Validate.email(email) do
     #   [email: "email address is invalid"]
     # else
     #   []
     # end
-    #
-    # IO.inspect(email, label: "email")
-    # IO.inspect(errors, label: "errors")
-
 
     state = if not is_nil(params_person)
       and not is_nil(Map.get(params_person, "state")) do
@@ -116,8 +112,6 @@ defmodule AuthWeb.AuthController do
     handler(conn, person, state)
   end
 
-
-
   @doc """
   `handler/3` responds to successful auth requests.
   if the state is defined, redirect to it.
@@ -132,6 +126,13 @@ defmodule AuthWeb.AuthController do
     redirect_or_render(conn, person, state)
   end
 
+  @doc """
+  `redirect_or_render/3` does what it's name suggests,
+  redirects if the `state` (HTTP referer) is defined
+  or renders the default `:welcome` template.
+  If the `auth_client_id` is undefined or invalid,
+  render the `unauthorized/1` 401.
+  """
   def redirect_or_render(conn, person, state) do
     # check if valid state (HTTP referer) is defined:
     case not is_nil(state) do
@@ -154,11 +155,10 @@ defmodule AuthWeb.AuthController do
     end
   end
 
-
+  # TODO: create a human-friendy response
   def unauthorized(conn) do
     # IO.inspect(conn)
     conn
-    # |> put_resp_header("www-authenticate", "Bearer realm=\"Person access\"")
     |> put_resp_content_type("text/html")
     |> send_resp(401, "invalid AUTH_API_KEY/client_id please check.")
     |> halt()

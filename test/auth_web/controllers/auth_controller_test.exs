@@ -105,7 +105,7 @@ defmodule AuthWeb.AuthControllerTest do
   end
 
   test "login_register_handler/2 with invalid email", %{conn: conn} do
-    conn = post(conn, "/auth/register", %{"person" =>
+    conn = post(conn, "/auth/loginregister", %{"person" =>
       %{email: "invalid", state: "www.example.com/" <>
       "&auth_client_id=" <> AuthPlug.Token.client_id() }
     })
@@ -115,7 +115,7 @@ defmodule AuthWeb.AuthControllerTest do
   end
 
   test "login_register_handler/2 with valid email", %{conn: conn} do
-    conn = post(conn, "/auth/register", %{"person" =>
+    conn = post(conn, "/auth/loginregister", %{"person" =>
       %{email: "jimmy@dwyl.com", state: "www.example.com/" <>
       "&auth_client_id=" <> AuthPlug.Token.client_id() }
     })
@@ -124,5 +124,74 @@ defmodule AuthWeb.AuthControllerTest do
     # assert html_response(conn, 302) =~ "redirected"
     assert html_response(conn, 200) =~ "New Password"
     # assert html_response(conn, 401) =~ "invalid"
+  end
+
+  test "login_register_handler/2 UNVERIFIED and NO PASSWORD", %{conn: conn} do
+    data = %{
+      email: "alice@gmail.com",
+      auth_provider: "email"
+    }
+    person = Auth.Person.upsert_person(data) # |> IO.inspect(label: "person")
+
+    conn = post(conn, "/auth/loginregister", %{"person" =>
+      %{email: person.email, state: "www.example.com/" <>
+      "&auth_client_id=" <> AuthPlug.Token.client_id() }
+    })
+    # IO.inspect(conn.resp_body, label: "conn.resp_body")
+    # expect to see put_flash informing person to click verify email:
+    assert html_response(conn, 200) =~ "email was sent"
+    # instruct them to create a New Password (registration):
+    assert conn.resp_body =~ "Please Create a New Password"
+  end
+
+  test "login_register_handler/2 has VERIFIED but NO PASSWORD", %{conn: conn} do
+    data = %{
+      email: "alan@gmail.com",
+      auth_provider: "email",
+      status: 1
+    }
+    person = Auth.Person.upsert_person(data) # |> IO.inspect(label: "person")
+
+    conn = post(conn, "/auth/loginregister", %{"person" =>
+      %{email: person.email, state: "www.example.com/" <>
+      "&auth_client_id=" <> AuthPlug.Token.client_id() }
+    })
+    # instruct them to create a New Password (registration):
+    assert conn.resp_body =~ "Please Create a New Password"
+  end
+
+  test "login_register_handler/2 UNVERIFIED person with PWD", %{conn: conn} do
+    data = %{
+      email: "alex@gmail.com",
+      auth_provider: "email",
+      password: "thiswillbehashed"
+    }
+    person = Auth.Person.upsert_person(data) # |> IO.inspect(label: "person")
+
+    conn = post(conn, "/auth/loginregister", %{"person" =>
+      %{email: person.email, state: "www.example.com/" <>
+      "&auth_client_id=" <> AuthPlug.Token.client_id() }
+    })
+    # expect to see put_flash informing person to click verify email:
+    assert html_response(conn, 200) =~ "email was sent"
+    # they can/should still login using the password they defined:
+    assert conn.resp_body =~ "Input Your Password"
+  end
+
+  test "login_register_handler/2 has VERIFIED and PASSWORD", %{conn: conn} do
+    data = %{
+      email: "ana@gmail.com",
+      auth_provider: "email",
+      status: 1,
+      password: "thiswillbehashed"
+    }
+    person = Auth.Person.upsert_person(data) # |> IO.inspect(label: "person")
+
+    conn = post(conn, "/auth/loginregister", %{"person" =>
+      %{email: person.email, state: "www.example.com/" <>
+      "&auth_client_id=" <> AuthPlug.Token.client_id() }
+    })
+    # person can login with their existing password:
+    assert conn.resp_body =~ "Input Your Password"
   end
 end
