@@ -45,20 +45,22 @@ defmodule AuthWeb.AuthControllerTest do
   end
 
   test "github_handler/2 github auth callback", %{conn: conn} do
+    baseurl = AuthPlug.Helpers.get_baseurl_from_conn(conn)
     conn = get(conn, "/auth/github/callback",
-      %{code: "123", state: "http://localhost:4000/" <>
+      %{code: "123", state: baseurl <>
       "&auth_client_id=" <> AuthPlug.Token.client_id() })
     # assert html_response(conn, 200) =~ "test@gmail.com"
-    assert html_response(conn, 302) =~ "http://localhost"
+    assert html_response(conn, 302) =~ baseurl
   end
 
   test "google_handler/2 for google auth callback", %{conn: conn} do
+    baseurl = AuthPlug.Helpers.get_baseurl_from_conn(conn)
     conn = get(conn, "/auth/google/callback",
-      %{code: "234", state: "http://localhost:4000" <>
-      "&auth_client_id=" <> AuthPlug.Token.client_id() })
+      %{code: "234", state: baseurl <>
+      "?auth_client_id=" <> AuthPlug.Token.client_id() })
 
     # assert html_response(conn, 200) =~ "nelson@gmail.com"
-    assert html_response(conn, 302) =~ "http://localhost"
+    assert html_response(conn, 302) =~ baseurl
   end
 
   test "google_handler/2 show welcome page", %{conn: conn} do
@@ -193,5 +195,32 @@ defmodule AuthWeb.AuthControllerTest do
     })
     # person can login with their existing password:
     assert conn.resp_body =~ "Input Your Password"
+  end
+
+  test "password_create/2 create a new password", %{conn: conn} do
+    %{ email: "anabela@mail.com", auth_provider: "email" }
+    |> Auth.Person.upsert_person()
+
+    params = %{ "person" => %{
+      "email" => AuthWeb.ApikeyController.encrypt_encode("anabela@mail.com"),
+      "password" => "thiswillbehashed"
+    }}
+
+    conn = post(conn, "/auth/password/create", params)
+    assert html_response(conn, 200) =~ "Welcome"
+  end
+
+  test "verify_email/2 verify an email address", %{conn: conn} do
+    person = %{ email: "anabela@mail.com", auth_provider: "email" }
+      |> Auth.Person.upsert_person()
+    # IO.inspect(conn)
+    state = AuthPlug.Helpers.get_baseurl_from_conn(conn)
+      <> "/profile?auth_client_id=" <> AuthPlug.Token.client_id()
+    link = AuthWeb.AuthController.make_verify_link(conn, person, state)
+    # IO.inspect(link, label: "link")
+    link = "/auth/verify" <> List.last(String.split(link, "/auth/verify"))
+    # IO.inspect(link, label: "link")
+    conn = get(conn, link, %{})
+    assert html_response(conn, 302) =~ "redirected"
   end
 end

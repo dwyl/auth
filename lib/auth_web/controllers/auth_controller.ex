@@ -134,6 +134,7 @@ defmodule AuthWeb.AuthController do
   render the `unauthorized/1` 401.
   """
   def redirect_or_render(conn, person, state) do
+    IO.inspect(state, label: "state:137")
     # check if valid state (HTTP referer) is defined:
     case not is_nil(state) do
       true -> # redirect
@@ -215,6 +216,7 @@ defmodule AuthWeb.AuthController do
       cond do
         is_nil(person.status) and is_nil(person.password_hash) ->
           # person has not verified their email address or created a password
+          # TODO: pull out these messages into a translateable file.
           message = """
           You registered with the email address: #{email}. An email was sent
           to you with a link to confirm your address. Please check your email
@@ -255,7 +257,14 @@ defmodule AuthWeb.AuthController do
       )
   end
 
-
+  @doc """
+  `make_verify_link/3` creates a verfication link that gets included
+  in the email we send to people to verify their email address.
+  The person.id is encrypted and base58 encoded to avoid anyone verifying
+  a different person's email. (not that anyone would do that, right? ;-)
+  We include the original state (HTTP referer) so that the request can be
+  redirected back to the desired page on successful verification.
+  """
   def make_verify_link(conn, person, state) do
     AuthPlug.Helpers.get_baseurl_from_conn(conn)
     <> "/auth/verify?id="
@@ -263,16 +272,16 @@ defmodule AuthWeb.AuthController do
     <> "&referer=" <> state
   end
 
-  def password_input(conn, params) do
-    IO.inspect(params, label: "params:197")
-    conn
-    |> assign(:action, Routes.auth_path(conn, :password_create))
-    |> render("password_create.html",
-      changeset: Auth.Person.password_new_changeset(%{email: params["email"]}),
-      state: params["state"], # so we can redirect after creatig a password
-      email: AuthWeb.ApikeyController.encrypt_encode(params["email"])
-    )
-  end
+  # def password_input(conn, params) do
+  #   IO.inspect(params, label: "params:197")
+  #   conn
+  #   |> assign(:action, Routes.auth_path(conn, :password_create))
+  #   |> render("password_create.html",
+  #     changeset: Auth.Person.password_new_changeset(%{email: params["email"]}),
+  #     state: params["state"], # so we can redirect after creatig a password
+  #     email: AuthWeb.ApikeyController.encrypt_encode(params["email"])
+  #   )
+  # end
 
   @doc """
   `password_create/2` is called when a new person is registering with email
@@ -289,7 +298,12 @@ defmodule AuthWeb.AuthController do
     redirect_or_render(conn, person, p["state"])
   end
 
-
+  @doc """
+  `password_prompt/2` handles all requests to verify a password for a person.
+  If the pasword is verified (using Argon2.verify_pass), redirect to their
+  desired page. If the password is invalid reset & re-render the form.
+  TODO:
+  """
   def password_prompt(conn, params) do # verify the password
     IO.inspect(params, label: "password_prompt params:294")
     p = params["person"]
@@ -310,13 +324,10 @@ defmodule AuthWeb.AuthController do
 
 
   def verify_email(conn, params) do
-    IO.inspect(params, label: "verify_email params:297")
-    referer = params["referer"]
+    # IO.inspect(params, label: "verify_email params:297")
     id = AuthWeb.ApikeyController.decode_decrypt(params["id"])
     person = Auth.Person.verify_person_by_id(id)
-    secret = get_client_secret_from_state(referer)
-    conn
-    |> redirect(external: add_jwt_url_param(person, referer, secret))
+    redirect_or_render(conn, person, params["referer"])
   end
 
 
@@ -327,11 +338,8 @@ defmodule AuthWeb.AuthController do
   All other failure conditions return a 0 (zero) which results in a 401.
   """
   def get_client_secret_from_state(state) do
-    # IO.inspect(state, label: "state:94")
-    # decoded = URI.decode(state)
-    # IO.inspect(decoded, label: "decoded:96")
     query = URI.decode_query(List.last(String.split(state, "?")))
-    # IO.inspect(query, label: "query:100")
+    # IO.inspect(query, label: "query:345")
     client_id = Map.get(query, "auth_client_id")
     # IO.inspect(client_id, label: "client_id")
     case not is_nil(client_id) do
@@ -345,13 +353,12 @@ defmodule AuthWeb.AuthController do
 
   def get_client_secret(client_id, state) do
     person_id = AuthWeb.ApikeyController.decode_decrypt(client_id)
-    # IO.inspect(person_id, label: "person_id:114")
+
     if person_id == 0 do # decode_decrypt fails with state 0
-      # IO.inspect(person_id, label: "person_id:116")
       0
     else
       apikeys = Auth.Apikey.list_apikeys_for_person(person_id)
-      # IO.inspect(apikeys, label: "apikeys:120")
+
       Enum.filter(apikeys, fn(k) ->
         k.client_id == client_id and state =~ k.url
       end) |> List.first() |> Map.get(:client_secret)
