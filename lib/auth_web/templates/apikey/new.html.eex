@@ -1,0 +1,15 @@
+<div class="f3 w-60 center">
+  <h1>New Apikey</h1>
+
+  <%= render "form.html", Map.put(assigns, :action,
+    Routes.apikey_path(@conn, :create)) %>
+
+  <br />
+  <span><%= link "< Back", to: Routes.apikey_path(@conn, :index),
+  class: "pointer br2 ba b--orange bg-gold white pa3 ml1 mv1 f4 mt3
+  shadow-hover bg-animate hover-bg-orange border-box no-underline",
+  data:
+   [confirm: "Are you sure you want to disguard this form?
+    (The data cannot be recovered!)"]
+  %></span>
+</div>

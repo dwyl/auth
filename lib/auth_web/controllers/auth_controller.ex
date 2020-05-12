@@ -1,89 +1,388 @@
 defmodule AuthWeb.AuthController do
   use AuthWeb, :controller
-  import Plug.Conn
-  import Comeonin.Bcrypt, only: [checkpw: 2]
-  plug(Ueberauth)
-  # plug :authenticate_user when action in [:index, :show]
-  alias Auth.User
-  alias Ueberauth.Strategy.Helpers
+  alias Auth.Person
 
-  def callback(%{assigns: %{ueberauth_failure: _fails}} = conn, _params) do
+  # https://github.com/dwyl/auth/issues/46
+  def admin(conn, _params) do
     conn
-    |> IO.inspect()
-    |> put_flash(:info, "Successfully authenticated.")
-    |> redirect(to: "/")
+    |> render(:welcome)
   end
 
-  def callback(%{assigns: %{ueberauth_auth: auth}} = conn, _params) do
-    case UserFromAuth.find_or_create(auth) do
-      {:ok, user} ->
-        conn
-        |> IO.inspect()
-        |> put_flash(:info, "sucessfully authenticated.")
-        |> put_session(:current_user, user)
-        |> redirect(to: "/")
-
-      {:error, reason} ->
-        conn
-        |> put_flash(:error, reason)
-        |> redirect(to: "/")
-    end
-  end
-
-  def identity_callback(%{assigns: %{ueberauth_auth: auth}} = conn, _params) do
-    IO.puts("auth:")
-    IO.inspect(auth)
-    opts = {}
-    repo = Keyword.fetch!(opts, :repo)
-    user = repo.get_by(User, username: auth.username)
-    IO.inspect(user)
-    # case validate_password(auth.credentials) do
-    case user && checkpw(auth.password, user.password_hash) do
-      :ok ->
-        user = %{id: auth.uid, name: auth.name, avatar: auth.info.image}
-
-        conn
-        |> put_flash(:info, "Successfully authenticated.")
-        |> put_session(:current_user, user)
-        |> redirect(to: "/")
-
-      {:error, reason} ->
-        conn
-        |> put_flash(:error, reason)
-        |> redirect(to: "/")
-    end
-  end
-
-  def login(conn, user) do
-    conn
-    |> assign(:current_user, user)
-    |> put_session(:user_id, user.id)
-    |> configure_session(renew: true)
-  end
-
-  def delete(conn, _params) do
-    conn
-    |> put_flash(:info, "You have been logged out!")
-    |> configure_session(drop: true)
-    |> redirect(to: "/")
-  end
-
-  def request(conn, _params) do
-    IO.inspect(conn)
-    IO.inspect(Helpers.callback_url(conn))
-    render(conn, "request.html", callback_url: Helpers.callback_url(conn))
-  end
-
-  import Phoenix.Controller
-
-  def authenticate_user(conn, _opts) do
-    if conn.assigns.current_user do
-      conn
+  def index(conn, params) do
+    params_person = Map.get(params, "person")
+    email = if not is_nil(params_person)
+      and not is_nil(Map.get(params_person, "email")) do
+        Map.get(Map.get(params, "person"), "email")
     else
-      conn
-      |> put_flash(:error, "You must be logged in to access that page")
-      |> redirect(to: Routes.page_path(conn, :index))
-      |> halt()
+      nil
     end
+
+    # TODO: add friendly error message when email address is invalid
+    # IO.inspect(Fields.Validate.email(email), label: "Fields.Validate.email(email)")
+    # errors = if not is_nil(email) and not Fields.Validate.email(email) do
+    #   [email: "email address is invalid"]
+    # else
+    #   []
+    # end
+
+    state = if not is_nil(params_person)
+      and not is_nil(Map.get(params_person, "state")) do
+        Map.get(params_person, "state")
+    else
+      get_referer(conn) # get from headers
+    end
+
+
+    oauth_github_url = ElixirAuthGithub.login_url(%{scopes: ["user:email"],
+      state: state})
+    oauth_google_url = ElixirAuthGoogle.generate_oauth_url(conn, state)
+
+    conn
+    |> assign(:action, Routes.auth_path(conn, :login_register_handler))
+    |> render("index.html",
+      oauth_github_url: oauth_github_url,
+      oauth_google_url: oauth_google_url,
+      changeset: Auth.Person.login_register_changeset(%{email: email}),
+      state: state
+      # errors: errors
+    )
+  end
+
+  def append_client_id(ref, client_id) do
+    ref <> "?auth_client_id=" <> client_id
+  end
+
+  def get_referer(conn) do
+    # https://stackoverflow.com/questions/37176911/get-http-referrer
+    case List.keyfind(conn.req_headers, "referer", 0) do
+      {"referer", referer} ->
+        referer
+
+      nil -> # referer not in headers, check URL query:
+        case conn.query_string =~ "referer" do
+          true ->
+            query = URI.decode_query(conn.query_string)
+            ref = Map.get(query, "referer")
+            client_id = get_client_id_from_query(conn)
+            ref |> URI.encode |> append_client_id(client_id)
+
+          false -> # no referer, redirect back to Auth app.
+            AuthPlug.Helpers.get_baseurl_from_conn(conn) <> "/profile"
+            |> URI.encode
+            |> append_client_id(AuthPlug.Token.client_id())
+        end
+    end
+  end
+
+  def get_client_id_from_query(conn) do
+    IO.inspect(conn.query_string, label: "conn.query_string")
+    case conn.query_string =~ "auth_client_id" do
+      true ->
+        Map.get(URI.decode_query(conn.query_string), "auth_client_id")
+      false -> # no client_id, redirect back to this app.
+        0
+    end
+  end
+
+  @doc """
+  `github_auth/2` handles the callback from GitHub Auth API redirect.
+  """
+  def github_handler(conn, %{"code" => code, "state" => state}) do
+    {:ok, profile} = ElixirAuthGithub.github_auth(code)
+    IO.inspect(profile, label: "github profile:96")
+    # save profile to people:
+    person = Person.create_github_person(profile)
+    IO.inspect(person, label: "github profile > person:99")
+    # render or redirect:
+    handler(conn, person, state)
+  end
+
+  @doc """
+  `google_handler/2` handles the callback from Google Auth API redirect.
+  """
+  def google_handler(conn, %{"code" => code, "state" => state}) do
+    # IO.inspect(state, label: "state:22")
+    {:ok, token} = ElixirAuthGoogle.get_token(code, conn)
+    {:ok, profile} = ElixirAuthGoogle.get_user_profile(token.access_token)
+
+    # save profile to people:
+    person = Person.create_google_person(profile)
+
+    # render or redirect:
+    handler(conn, person, state)
+  end
+
+  @doc """
+  `handler/3` responds to successful auth requests.
+  if the state is defined, redirect to it.
+  """
+  def handler(conn, person, state) do
+    # Send welcome email:
+    Auth.Email.sendemail(%{
+      email: person.email,
+      name: person.givenName,
+      template: "welcome"
+    })
+    redirect_or_render(conn, person, state)
+  end
+
+  @doc """
+  `redirect_or_render/3` does what it's name suggests,
+  redirects if the `state` (HTTP referer) is defined
+  or renders the default `:welcome` template.
+  If the `auth_client_id` is undefined or invalid,
+  render the `unauthorized/1` 401.
+  """
+  def redirect_or_render(conn, person, state) do
+    IO.inspect(state, label: "state:137")
+    # check if valid state (HTTP referer) is defined:
+    case not is_nil(state) do
+      true -> # redirect
+        case get_client_secret_from_state(state) do
+          0 ->
+            # IO.inspect("client_secret is 0 (error)")
+            unauthorized(conn)
+          secret ->
+            # IO.inspect(secret, label: "secret")
+            conn
+            # |> AuthPlug.create_session(person, secret)
+            |> redirect(external: add_jwt_url_param(person, state, secret))
+        end
+
+      false -> # display welcome page on Auth site:
+        conn
+        |> AuthPlug.create_jwt_session(person)
+        |> render(:welcome, person: person)
+    end
+  end
+
+  # TODO: create a human-friendy response
+  def unauthorized(conn) do
+    # IO.inspect(conn)
+    conn
+    |> put_resp_content_type("text/html")
+    |> send_resp(401, "invalid AUTH_API_KEY/client_id please check.")
+    |> halt()
+  end
+
+  # TODO: refactor this to render a template with a nice layout.
+  def not_found(conn, message) do
+    conn
+    |> put_resp_content_type("text/html")
+    |> send_resp(404, message)
+    |> halt()
+  end
+
+  @doc """
+  `login_register_handler/2` is a hybrid of traditional registration and login.
+  If the person has already registered, we treat it as a login attempt and
+  present them with a password field/form to complete.
+  If the person does *not* exist (or has not yet verified their email address),
+  we show them a welcome screen informing them that a verification email
+  was sent to their address. When they click it they will see a password (reset)
+  form where they can define a new password for their account.
+  """
+  def login_register_handler(conn, params) do
+    # IO.inspect(params, label: "params:130")
+    p = params["person"]
+    email = p["email"]
+    state = p["state"]
+    # IO.inspect(email, label: "email")
+    # email is blank or invalid:
+    if is_nil(email) or not Fields.Validate.email(email) do
+      conn # email invalid, re-render the login/register form:
+      |> index(params)
+    else
+      IO.puts("email is NOT nil: " <>  email)
+      person = Auth.Person.get_person_by_email(email)
+      # IO.inspect(person, label: "person:142")
+      # check if the email exists in the people table:
+      person = if is_nil(person) do
+        person = Auth.Person.create_person(%{
+          email: email,
+          auth_provider: "email"
+        })
+        # IO.inspect(person, label: "person:146")
+        Auth.Email.sendemail(%{ email: email, template: "verify",
+          link: make_verify_link(conn, person, state),
+          subject: "Please Verify Your Email Address"
+        })
+
+        person
+      else
+        person
+      end
+
+      cond do
+        is_nil(person.status) and is_nil(person.password_hash) ->
+          # person has not verified their email address or created a password
+          # TODO: pull out these messages into a translateable file.
+          message = """
+          You registered with the email address: #{email}. An email was sent
+          to you with a link to confirm your address. Please check your email
+          inbox for our message, open it and click the link.
+          """
+          render_password_form(conn, email, message, state, "password_create")
+
+        person.status > 0 and is_nil(person.password_hash) ->
+          # has verified but not yet defined a password
+          render_password_form(conn, email, "", state, "password_create")
+
+        is_nil(person.status) and not is_nil(person.password_hash) ->
+          # person has not yet verified their email but has defined a password
+          message = """
+          You registered with the email address: #{email}. An email was sent
+          to you with a link to confirm your address. Please check your email
+          inbox for our message, open it and click the link.
+          You can still login using the password you saved.
+          """
+          render_password_form(conn, email, message, state, "password_prompt")
+
+        person.status > 0 and not is_nil(person.password_hash) ->
+          # render password prompt without any put_flash message
+          render_password_form(conn, email, "", state, "password_prompt")
+
+      end
+    end
+  end
+
+  def render_password_form(conn, email, message, state, template) do
+    conn
+      |> put_flash(:info, message)
+      |> assign(:action, Routes.auth_path(conn, String.to_atom(template)))
+      |> render(template <> ".html",
+        changeset: Auth.Person.password_new_changeset(%{email: email}),
+        state: state, # so we can redirect after creatig a password
+        email: AuthWeb.ApikeyController.encrypt_encode(email)
+      )
+  end
+
+  @doc """
+  `make_verify_link/3` creates a verfication link that gets included
+  in the email we send to people to verify their email address.
+  The person.id is encrypted and base58 encoded to avoid anyone verifying
+  a different person's email. (not that anyone would do that, right? ;-)
+  We include the original state (HTTP referer) so that the request can be
+  redirected back to the desired page on successful verification.
+  """
+  def make_verify_link(conn, person, state) do
+    AuthPlug.Helpers.get_baseurl_from_conn(conn)
+    <> "/auth/verify?id="
+    <> AuthWeb.ApikeyController.encrypt_encode(person.id)
+    <> "&referer=" <> state
+  end
+
+  # def password_input(conn, params) do
+  #   IO.inspect(params, label: "params:197")
+  #   conn
+  #   |> assign(:action, Routes.auth_path(conn, :password_create))
+  #   |> render("password_create.html",
+  #     changeset: Auth.Person.password_new_changeset(%{email: params["email"]}),
+  #     state: params["state"], # so we can redirect after creatig a password
+  #     email: AuthWeb.ApikeyController.encrypt_encode(params["email"])
+  #   )
+  # end
+
+  @doc """
+  `password_create/2` is called when a new person is registering with email
+  and is defining a password for the first time.
+  Note: at present we are not enforcing any rules for password strength/length.
+  Thinking of doing these checks as progressive enhancement in Browser.
+  see:
+  """
+  def password_create(conn, params) do
+    # IO.inspect(params, label: "password_create > params:271")
+    p = params["person"]
+    email = Auth.Person.decrypt_email(p["email"])
+    person = Auth.Person.upsert_person(%{email: email, password: p["password"]})
+    redirect_or_render(conn, person, p["state"])
+  end
+
+  @doc """
+  `password_prompt/2` handles all requests to verify a password for a person.
+  If the pasword is verified (using Argon2.verify_pass), redirect to their
+  desired page. If the password is invalid reset & re-render the form.
+  TODO:
+  """
+  def password_prompt(conn, params) do # verify the password
+    # IO.inspect(params, label: "password_prompt params:294")
+    p = params["person"]
+    email = Auth.Person.decrypt_email(p["email"])
+    # IO.inspect(email, label: "email:311")
+    person = Auth.Person.get_person_by_email(email)
+    # IO.inspect(person, label: "person:312")
+
+    case Argon2.verify_pass(p["password"], person.password_hash) do
+      true ->
+        redirect_or_render(conn, person, p["state"])
+
+      false ->
+        msg = """
+        That password is incorrect.
+        """
+        render_password_form(conn, email, msg, p["state"], "password_prompt")
+    end
+  end
+
+
+  def verify_email(conn, params) do
+    # IO.inspect(params, label: "verify_email params:297")
+    id = AuthWeb.ApikeyController.decode_decrypt(params["id"])
+    person = Auth.Person.verify_person_by_id(id)
+    redirect_or_render(conn, person, params["referer"])
+  end
+
+
+  @doc """
+  `get_client_secret_from_state/1` gets the client_id from state,
+  attempts to decode_decrypt it and then look it up in apikeys
+  if it finds the corresponding client_secret it returns the client_secret.
+  All other failure conditions return a 0 (zero) which results in a 401.
+  """
+  def get_client_secret_from_state(state) do
+    query = URI.decode_query(List.last(String.split(state, "?")))
+    # IO.inspect(query, label: "query:345")
+    client_id = Map.get(query, "auth_client_id")
+    # IO.inspect(client_id, label: "client_id")
+    case not is_nil(client_id) do
+      true -> # Lookup client_id in apikeys table
+        get_client_secret(client_id, state)
+
+      false -> # state without client_id is not valid
+        0
+    end
+  end
+
+  def get_client_secret(client_id, state) do
+    person_id = AuthWeb.ApikeyController.decode_decrypt(client_id)
+
+    if person_id == 0 do # decode_decrypt fails with state 0
+      0
+    else
+      apikeys = Auth.Apikey.list_apikeys_for_person(person_id)
+
+      Enum.filter(apikeys, fn(k) ->
+        k.client_id == client_id and state =~ k.url
+      end) |> List.first() |> Map.get(:client_secret)
+
+    end
+  end
+
+
+
+  def add_jwt_url_param(person, state, client_secret) do
+    data = %{
+      auth_provider: person.auth_provider,
+      givenName: person.givenName,
+      id: person.id,
+      picture: person.picture,
+      status: person.status,
+      email: person.email
+    }
+
+    jwt = AuthPlug.Token.generate_jwt!(data, client_secret)
+    List.first(String.split(URI.decode(state), "?"))
+     <> "?jwt=" <> jwt
+    # |> IO.inspect(label: "state+jwt:146")
   end
 end

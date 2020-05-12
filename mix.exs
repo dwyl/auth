@@ -4,8 +4,8 @@ defmodule Auth.Mixfile do
   def project do
     [
       app: :auth,
-      version: "0.0.1",
-      elixir: "~> 1.5",
+      version: "1.2.1",
+      elixir: "~> 1.9",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       test_coverage: [tool: ExCoveralls],
@@ -18,7 +18,9 @@ defmodule Auth.Mixfile do
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+      package: package(),
+      description: "Turnkey Auth Auth Application"
     ]
   end
 
@@ -28,15 +30,7 @@ defmodule Auth.Mixfile do
   def application do
     [
       mod: {Auth.Application, []},
-      extra_applications: [
-        # auth specific:
-        :ueberauth,
-        :ueberauth_identity,
-        # email
-        :bamboo,
-        # password encryption/checking for :ueberauth_identity
-        :comeonin
-      ]
+      extra_applications: [:logger, :runtime_tools]
     ]
   end
 
@@ -48,40 +42,39 @@ defmodule Auth.Mixfile do
   #
   # Type `mix help deps` for examples and options.
   defp deps do
-    # Phoenix core:
     [
-      {:phoenix, "~> 1.4.0"},
+      # Phoenix core:
+      {:phoenix, "~> 1.4.16"},
       {:phoenix_pubsub, "~> 1.1"},
-      {:phoenix_ecto, "~> 4.0"},
-      {:ecto_sql, "~> 3.0"},
+      {:phoenix_ecto, "~> 4.1.0"},
+      {:ecto_sql, "~> 3.4.2"},
       {:postgrex, ">= 0.0.0"},
-      {:phoenix_html, "~> 2.11"},
+      {:phoenix_html, "~> 2.14.1"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
-      {:gettext, "~> 0.11"},
-      {:jason, "~> 1.0"},
-      {:plug_cowboy, "~> 2.0"},
+      {:gettext, "~> 0.17.2"},
+      {:jason, "~> 1.2.0"},
+      {:plug_cowboy, "~> 2.1.3"},
 
       # Auth:
-      # github.com/ueberauth/ueberauth
-      {:ueberauth, "~> 0.4"},
-      # github.com/ueberauth/ueberauth_identity
-      {:ueberauth_identity, "~> 0.2"},
+      # https://github.com/dwyl/elixir-auth-github
+      {:elixir_auth_github, "~> 1.2.0"},
+      # https://github.com/dwyl/elixir-auth-google
+      {:elixir_auth_google, "~> 1.2.0"},
+      # https://github.com/dwyl/auth_plug
+      {:auth_plug, "~> 1.1.0"},
 
-      # Email Sent by AWS SES see: https://git.io/vSuqc
-      # github.com/thoughtbot/bamboo
-      {:bamboo, "~> 1.1"},
-      # github.com/fewlinesco/bamboo_smtp
-      {:bamboo_smtp, "~> 1.6.0"},
+      # Field Validation and Encryption: github.com/dwyl/fields
+      {:fields, "~> 2.5.0"},
+      {:exbase58, "~> 1.0.2"}, # pending: github.com/dwyl/base58/pull/17
 
-      # Password Hashing
-      # github.com/riverrun/comeonin (bcrypt)
-      {:comeonin, "~> 2.0"},
+      # Check test coverage
+      {:excoveralls, "~> 0.12.3", only: :test},
 
-      # Dev/Test only:
-      # for checking test coverage
-      {:excoveralls, "~> 0.6", only: :test},
-      # for testing email without sending any
-      {:mock, "~> 0.2.0", only: :test}
+      # Property based tests: github.com/dwyl/learn-property-based-testing
+      {:stream_data, "~> 0.4.3", only: :test},
+
+      # Create Documentation for publishing Hex.docs:
+      {:ex_doc, "~> 0.21.3", only: :dev},
     ]
   end
 
@@ -93,9 +86,20 @@ defmodule Auth.Mixfile do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
-      "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
+      "ecto.setup": ["ecto.create --quiet", "ecto.migrate --quiet", "seeds"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
-      test: ["ecto.create --quiet", "ecto.migrate", "test"]
+      seeds: ["run priv/repo/seeds.exs"],
+      test: ["ecto.reset", "test"]
+    ]
+  end
+
+  defp package() do
+    [
+      files: ~w(lib LICENSE mix.exs README.md),
+      name: "auth",
+      licenses: ["GNU GPL v2.0"],
+      maintainers: ["dwyl"],
+      links: %{"GitHub" => "https://github.com/dwyl/auth"}
     ]
   end
 end

@@ -1,22 +1,22 @@
 defmodule Auth.Application do
+  # See https://hexdocs.pm/elixir/Application.html
+  # for more information on OTP Applications
+  @moduledoc false
+
   use Application
 
-  # See http://elixir-lang.org/docs/stable/elixir/Application.html
-  # for more information on OTP Applications
   def start(_type, _args) do
-    import Supervisor.Spec
-
-    # Define workers and child supervisors to be supervised
+    # List all child processes to be supervised
     children = [
       # Start the Ecto repository
-      supervisor(Auth.Repo, []),
+      Auth.Repo,
       # Start the endpoint when the application starts
-      supervisor(AuthWeb.Endpoint, [])
-      # Start your own worker by calling: Auth.Worker.start_link(arg1, arg2, arg3)
-      # worker(Auth.Worker, [arg1, arg2, arg3]),
+      AuthWeb.Endpoint
+      # Starts a worker by calling: Auth.Worker.start_link(arg)
+      # {Auth.Worker, arg},
     ]
 
-    # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
+    # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Auth.Supervisor]
     Supervisor.start_link(children, opts)
@@ -24,8 +24,12 @@ defmodule Auth.Application do
 
   # Tell Phoenix to update the endpoint configuration
   # whenever the application is updated.
+  # Sadly this is untestable hence ignoring it.
+  # coveralls-ignore-start
   def config_change(changed, _new, removed) do
     AuthWeb.Endpoint.config_change(changed, removed)
     :ok
   end
+
+  # coveralls-ignore-stop
 end

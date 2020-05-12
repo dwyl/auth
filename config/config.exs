@@ -3,46 +3,31 @@
 #
 # This configuration file is loaded before any dependency and
 # is restricted to this project.
-use Mix.Config
 
 # General application configuration
+use Mix.Config
+
 config :auth,
   ecto_repos: [Auth.Repo]
 
 # Configures the endpoint
 config :auth, AuthWeb.Endpoint,
   url: [host: "localhost"],
-  secret_key_base: "jUgd/S8tmMjbhzawyKI8ns2C3RbS04n0ClDVrLa7KjHLgDfcFJ6FS60BhvWBw/cg",
+  secret_key_base: System.get_env("SECRET_KEY_BASE"),
   render_errors: [view: AuthWeb.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: Auth.PubSub, adapter: Phoenix.PubSub.PG2]
+  pubsub: [name: Auth.PubSub, adapter: Phoenix.PubSub.PG2],
+  live_view: [signing_salt: "G+UI6RIv"]
 
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
 
-# Configure Ueberauth providers
-config :ueberauth, Ueberauth,
-  providers: [
-    github: {Ueberauth.Strategy.Github, []}
-  ]
+# Use Jason for JSON parsing in Phoenix
+config :phoenix, :json_library, Jason
 
-config :ueberauth, Ueberauth.Strategy.Github.OAuth,
-  client_id: System.get_env("GITHUB_CLIENT_ID"),
-  client_secret: System.get_env("GITHUB_CLIENT_SECRET")
-
-# Configure email via AWS SES
-config :auth, Auth.Mailer,
-  adapter: Bamboo.SMTPAdapter,
-  server: System.get_env("SES_SERVER"),
-  port: System.get_env("SES_PORT"),
-  username: System.get_env("SMTP_USERNAME"),
-  password: System.get_env("SMTP_PASSWORD"),
-  # can be `:always` or `:never`
-  tls: :always,
-  # can be `true`
-  ssl: false,
-  retries: 1
+# https://hexdocs.pm/joken/introduction.html#usage
+config :joken, default_signer: System.get_env("SECRET_KEY_BASE")
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

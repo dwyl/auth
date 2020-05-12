@@ -3,10 +3,9 @@
     "minimum_coverage": 100
   },
   "skip_files": [
-    "web/channels",
-    "lib/dwylbot.ex",
-    "test/support/model_case.ex",
-    "test/support/channel_case.ex",
-    "web/web.ex"
+    "test/",
+    "lib/auth/application.ex",
+    "lib/auth_web.ex",
+    "lib/auth_web/views/error_helpers.ex"
   ]
 }
