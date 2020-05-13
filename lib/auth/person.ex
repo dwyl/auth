@@ -52,13 +52,10 @@ defmodule Auth.Person do
   end
 
   def create_person(person) do
-    # IO.inspect(person, label: "create_person:51")
     person =
       %Person{}
       |> changeset(person)
       |> put_email_status_verified()
-
-    # |> IO.inspect(label: "after put_email_status_verified")
 
     case get_person_by_email(person.changes.email) do
       nil ->
@@ -103,11 +100,12 @@ defmodule Auth.Person do
     }
   """
   def transform_github_profile_data_to_person(profile) do
-    profile
-    |> Map.put(:username, profile.login)
-    |> Map.put(:givenName, profile.name)
-    |> Map.put(:picture, profile.avatar_url)
-    |> Map.put(:auth_provider, "github")
+    Map.merge(profile, %{
+      username: profile.login,
+      givenName: profile.name,
+      picture: profile.avatar_url,
+      auth_provider: "github"
+    })
   end
 
   def create_github_person(profile) do
@@ -146,14 +144,11 @@ defmodule Auth.Person do
     }
   """
   def transform_google_profile_data_to_person(profile) do
-    # IO.inspect(profile, label: "profile:145")
     Map.merge(profile, %{
       familyName: profile.family_name,
       givenName: profile.given_name,
       auth_provider: "google"
     })
-
-    # |> IO.inspect(label: "merged")
   end
 
   def create_google_person(profile) do
