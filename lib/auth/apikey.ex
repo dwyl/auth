@@ -21,8 +21,7 @@ defmodule Auth.Apikey do
   @doc false
   def changeset(apikey, attrs) do
     apikey
-    |> cast(attrs, [:client_id, :client_secret,
-      :name, :description, :url, :person_id])
+    |> cast(attrs, [:client_id, :client_secret, :name, :description, :url, :person_id])
     |> validate_required([:client_secret])
   end
 
@@ -38,11 +37,13 @@ defmodule Auth.Apikey do
 
   def list_apikeys_for_person(person_id) do
     # IO.inspect(person_id, label: "person_id")
-    query = from(
-      a in __MODULE__,
-      where: a.person_id == ^person_id,
-      select: a
-    )
+    query =
+      from(
+        a in __MODULE__,
+        where: a.person_id == ^person_id,
+        select: a
+      )
+
     Repo.all(query)
   end
 

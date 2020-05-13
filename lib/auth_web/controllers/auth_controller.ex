@@ -10,12 +10,14 @@ defmodule AuthWeb.AuthController do
 
   def index(conn, params) do
     params_person = Map.get(params, "person")
-    email = if not is_nil(params_person)
-      and not is_nil(Map.get(params_person, "email")) do
+
+    email =
+      if not is_nil(params_person) and
+           not is_nil(Map.get(params_person, "email")) do
         Map.get(Map.get(params, "person"), "email")
-    else
-      nil
-    end
+      else
+        nil
+      end
 
     # TODO: add friendly error message when email address is invalid
     # IO.inspect(Fields.Validate.email(email), label: "Fields.Validate.email(email)")
@@ -25,16 +27,16 @@ defmodule AuthWeb.AuthController do
     #   []
     # end
 
-    state = if not is_nil(params_person)
-      and not is_nil(Map.get(params_person, "state")) do
+    state =
+      if not is_nil(params_person) and
+           not is_nil(Map.get(params_person, "state")) do
         Map.get(params_person, "state")
-    else
-      get_referer(conn) # get from headers
-    end
+      else
+        # get from headers
+        get_referer(conn)
+      end
 
-
-    oauth_github_url = ElixirAuthGithub.login_url(%{scopes: ["user:email"],
-      state: state})
+    oauth_github_url = ElixirAuthGithub.login_url(%{scopes: ["user:email"], state: state})
     oauth_google_url = ElixirAuthGoogle.generate_oauth_url(conn, state)
 
     conn
@@ -58,17 +60,19 @@ defmodule AuthWeb.AuthController do
       {"referer", referer} ->
         referer
 
-      nil -> # referer not in headers, check URL query:
+      #  referer not in headers, check URL query:
+      nil ->
         case conn.query_string =~ "referer" do
           true ->
             query = URI.decode_query(conn.query_string)
             ref = Map.get(query, "referer")
             client_id = get_client_id_from_query(conn)
-            ref |> URI.encode |> append_client_id(client_id)
+            ref |> URI.encode() |> append_client_id(client_id)
 
-          false -> # no referer, redirect back to Auth app.
-            AuthPlug.Helpers.get_baseurl_from_conn(conn) <> "/profile"
-            |> URI.encode
+          #  no referer, redirect back to Auth app.
+          false ->
+            (AuthPlug.Helpers.get_baseurl_from_conn(conn) <> "/profile")
+            |> URI.encode()
             |> append_client_id(AuthPlug.Token.client_id())
         end
     end
@@ -76,10 +80,13 @@ defmodule AuthWeb.AuthController do
 
   def get_client_id_from_query(conn) do
     IO.inspect(conn.query_string, label: "conn.query_string")
+
     case conn.query_string =~ "auth_client_id" do
       true ->
         Map.get(URI.decode_query(conn.query_string), "auth_client_id")
-      false -> # no client_id, redirect back to this app.
+
+      #  no client_id, redirect back to this app.
+      false ->
         0
     end
   end
@@ -123,6 +130,7 @@ defmodule AuthWeb.AuthController do
       name: person.givenName,
       template: "welcome"
     })
+
     redirect_or_render(conn, person, state)
   end
 
@@ -137,11 +145,13 @@ defmodule AuthWeb.AuthController do
     IO.inspect(state, label: "state:137")
     # check if valid state (HTTP referer) is defined:
     case not is_nil(state) do
-      true -> # redirect
+      # redirect
+      true ->
         case get_client_secret_from_state(state) do
           0 ->
             # IO.inspect("client_secret is 0 (error)")
             unauthorized(conn)
+
           secret ->
             # IO.inspect(secret, label: "secret")
             conn
@@ -149,7 +159,8 @@ defmodule AuthWeb.AuthController do
             |> redirect(external: add_jwt_url_param(person, state, secret))
         end
 
-      false -> # display welcome page on Auth site:
+      # display welcome page on Auth site:
+      false ->
         conn
         |> AuthPlug.create_jwt_session(person)
         |> render(:welcome, person: person)
@@ -190,28 +201,34 @@ defmodule AuthWeb.AuthController do
     # IO.inspect(email, label: "email")
     # email is blank or invalid:
     if is_nil(email) or not Fields.Validate.email(email) do
-      conn # email invalid, re-render the login/register form:
+      # email invalid, re-render the login/register form:
+      conn
       |> index(params)
     else
-      IO.puts("email is NOT nil: " <>  email)
+      IO.puts("email is NOT nil: " <> email)
       person = Auth.Person.get_person_by_email(email)
       # IO.inspect(person, label: "person:142")
       # check if the email exists in the people table:
-      person = if is_nil(person) do
-        person = Auth.Person.create_person(%{
-          email: email,
-          auth_provider: "email"
-        })
-        # IO.inspect(person, label: "person:146")
-        Auth.Email.sendemail(%{ email: email, template: "verify",
-          link: make_verify_link(conn, person, state),
-          subject: "Please Verify Your Email Address"
-        })
+      person =
+        if is_nil(person) do
+          person =
+            Auth.Person.create_person(%{
+              email: email,
+              auth_provider: "email"
+            })
 
-        person
-      else
-        person
-      end
+          # IO.inspect(person, label: "person:146")
+          Auth.Email.sendemail(%{
+            email: email,
+            template: "verify",
+            link: make_verify_link(conn, person, state),
+            subject: "Please Verify Your Email Address"
+          })
+
+          person
+        else
+          person
+        end
 
       cond do
         is_nil(person.status) and is_nil(person.password_hash) ->
@@ -222,6 +239,7 @@ defmodule AuthWeb.AuthController do
           to you with a link to confirm your address. Please check your email
           inbox for our message, open it and click the link.
           """
+
           render_password_form(conn, email, message, state, "password_create")
 
         person.status > 0 and is_nil(person.password_hash) ->
@@ -236,25 +254,26 @@ defmodule AuthWeb.AuthController do
           inbox for our message, open it and click the link.
           You can still login using the password you saved.
           """
+
           render_password_form(conn, email, message, state, "password_prompt")
 
         person.status > 0 and not is_nil(person.password_hash) ->
           # render password prompt without any put_flash message
           render_password_form(conn, email, "", state, "password_prompt")
-
       end
     end
   end
 
   def render_password_form(conn, email, message, state, template) do
     conn
-      |> put_flash(:info, message)
-      |> assign(:action, Routes.auth_path(conn, String.to_atom(template)))
-      |> render(template <> ".html",
-        changeset: Auth.Person.password_new_changeset(%{email: email}),
-        state: state, # so we can redirect after creatig a password
-        email: AuthWeb.ApikeyController.encrypt_encode(email)
-      )
+    |> put_flash(:info, message)
+    |> assign(:action, Routes.auth_path(conn, String.to_atom(template)))
+    |> render(template <> ".html",
+      changeset: Auth.Person.password_new_changeset(%{email: email}),
+      # so we can redirect after creatig a password
+      state: state,
+      email: AuthWeb.ApikeyController.encrypt_encode(email)
+    )
   end
 
   @doc """
@@ -266,10 +285,10 @@ defmodule AuthWeb.AuthController do
   redirected back to the desired page on successful verification.
   """
   def make_verify_link(conn, person, state) do
-    AuthPlug.Helpers.get_baseurl_from_conn(conn)
-    <> "/auth/verify?id="
-    <> AuthWeb.ApikeyController.encrypt_encode(person.id)
-    <> "&referer=" <> state
+    AuthPlug.Helpers.get_baseurl_from_conn(conn) <>
+      "/auth/verify?id=" <>
+      AuthWeb.ApikeyController.encrypt_encode(person.id) <>
+      "&referer=" <> state
   end
 
   # def password_input(conn, params) do
@@ -304,7 +323,8 @@ defmodule AuthWeb.AuthController do
   desired page. If the password is invalid reset & re-render the form.
   TODO:
   """
-  def password_prompt(conn, params) do # verify the password
+  # verify the password
+  def password_prompt(conn, params) do
     # IO.inspect(params, label: "password_prompt params:294")
     p = params["person"]
     email = Auth.Person.decrypt_email(p["email"])
@@ -320,10 +340,10 @@ defmodule AuthWeb.AuthController do
         msg = """
         That password is incorrect.
         """
+
         render_password_form(conn, email, msg, p["state"], "password_prompt")
     end
   end
-
 
   def verify_email(conn, params) do
     # IO.inspect(params, label: "verify_email params:297")
@@ -331,7 +351,6 @@ defmodule AuthWeb.AuthController do
     person = Auth.Person.verify_person_by_id(id)
     redirect_or_render(conn, person, params["referer"])
   end
-
 
   @doc """
   `get_client_secret_from_state/1` gets the client_id from state,
@@ -345,10 +364,12 @@ defmodule AuthWeb.AuthController do
     client_id = Map.get(query, "auth_client_id")
     # IO.inspect(client_id, label: "client_id")
     case not is_nil(client_id) do
-      true -> # Lookup client_id in apikeys table
+      # Lookup client_id in apikeys table
+      true ->
         get_client_secret(client_id, state)
 
-      false -> # state without client_id is not valid
+      # state without client_id is not valid
+      false ->
         0
     end
   end
@@ -356,19 +377,19 @@ defmodule AuthWeb.AuthController do
   def get_client_secret(client_id, state) do
     person_id = AuthWeb.ApikeyController.decode_decrypt(client_id)
 
-    if person_id == 0 do # decode_decrypt fails with state 0
+    # decode_decrypt fails with state 0
+    if person_id == 0 do
       0
     else
       apikeys = Auth.Apikey.list_apikeys_for_person(person_id)
 
-      Enum.filter(apikeys, fn(k) ->
+      Enum.filter(apikeys, fn k ->
         k.client_id == client_id and state =~ k.url
-      end) |> List.first() |> Map.get(:client_secret)
-
+      end)
+      |> List.first()
+      |> Map.get(:client_secret)
     end
   end
-
-
 
   def add_jwt_url_param(person, state, client_secret) do
     data = %{
@@ -381,8 +402,10 @@ defmodule AuthWeb.AuthController do
     }
 
     jwt = AuthPlug.Token.generate_jwt!(data, client_secret)
-    List.first(String.split(URI.decode(state), "?"))
-     <> "?jwt=" <> jwt
+
+    List.first(String.split(URI.decode(state), "?")) <>
+      "?jwt=" <> jwt
+
     # |> IO.inspect(label: "state+jwt:146")
   end
 end

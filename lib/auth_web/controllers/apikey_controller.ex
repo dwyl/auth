@@ -14,7 +14,7 @@ defmodule AuthWeb.ApikeyController do
   end
 
   def encrypt_encode(plaintext) do
-    Fields.AES.encrypt(plaintext) |> Base58.encode
+    Fields.AES.encrypt(plaintext) |> Base58.encode()
   end
 
   def create_api_key(person_id) do
@@ -27,7 +27,7 @@ defmodule AuthWeb.ApikeyController do
   """
   def decode_decrypt(key) do
     try do
-      key |> Base58.decode |> Fields.AES.decrypt() |> String.to_integer()
+      key |> Base58.decode() |> Fields.AES.decrypt() |> String.to_integer()
     rescue
       ArgumentError ->
         # IO.puts("AES.decrypt() unable to decrypt client_id")
@@ -71,7 +71,7 @@ defmodule AuthWeb.ApikeyController do
       changeset = Auth.Apikey.change_apikey(apikey)
       render(conn, "edit.html", apikey: apikey, changeset: changeset)
     else
-      AuthWeb.AuthController.not_found(conn, "API KEY " <> id <> " not found." )
+      AuthWeb.AuthController.not_found(conn, "API KEY " <> id <> " not found.")
     end
   end
 
@@ -93,7 +93,7 @@ defmodule AuthWeb.ApikeyController do
           render(conn, "edit.html", apikey: apikey, changeset: changeset)
       end
     else
-      AuthWeb.AuthController.not_found(conn, "API KEY " <> id <> " not found." )
+      AuthWeb.AuthController.not_found(conn, "API KEY " <> id <> " not found.")
     end
   end
 
@@ -102,6 +102,7 @@ defmodule AuthWeb.ApikeyController do
     # check that the person attempting to delete the key owns it!
     if apikey.person_id == conn.assigns.person.id do
       {:ok, _apikey} = Apikey.delete_apikey(apikey)
+
       conn
       |> put_flash(:info, "Apikey deleted successfully.")
       |> redirect(to: Routes.apikey_path(conn, :index))

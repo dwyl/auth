@@ -26,7 +26,6 @@ defmodule AuthWeb.Router do
     post "/auth/password/verify", AuthController, :password_prompt
   end
 
-
   pipeline :auth do
     plug(AuthPlug, %{auth_url: "https://dwylauth.herokuapp.com"})
   end
