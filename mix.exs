@@ -65,16 +65,16 @@ defmodule Auth.Mixfile do
 
       # Field Validation and Encryption: github.com/dwyl/fields
       {:fields, "~> 2.5.0"},
-      {:exbase58, "~> 1.0.2"}, # pending: github.com/dwyl/base58/pull/17
+      {:B58, "~> 1.0", hex: :b58},
 
       # Check test coverage
       {:excoveralls, "~> 0.12.3", only: :test},
 
-      # Property based tests: github.com/dwyl/learn-property-based-testing
+      #  Property based tests: github.com/dwyl/learn-property-based-testing
       {:stream_data, "~> 0.4.3", only: :test},
 
       # Create Documentation for publishing Hex.docs:
-      {:ex_doc, "~> 0.21.3", only: :dev},
+      {:ex_doc, "~> 0.21.3", only: :dev}
     ]
   end
 
