@@ -36,12 +36,10 @@ defmodule Auth.Apikey do
   end
 
   def list_apikeys_for_person(person_id) do
-    # IO.inspect(person_id, label: "person_id")
     query =
       from(
         a in __MODULE__,
-        where: a.person_id == ^person_id,
-        select: a
+        where: a.person_id == ^person_id
       )
 
     Repo.all(query)
