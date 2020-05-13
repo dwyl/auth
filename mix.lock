@@ -1,4 +1,5 @@
 %{
+  "B58": {:hex, :b58, "1.0.1", "db9443361d2597ea60559ab5ef29a461f0da9698727e68d1ce2d5366644ebc1f", [:mix], [], "hexpm", "f0de289ba02513c8e966b3137b32c50826281e0ac2e11c22e2e7a0e810b4202d"},
   "argon2_elixir": {:hex, :argon2_elixir, "2.3.0", "e251bdafd69308e8c1263e111600e6d68bd44f23d2cccbe43fcb1a417a76bc8e", [:make, :mix], [{:comeonin, "~> 5.3", [hex: :comeonin, repo: "hexpm", optional: false]}, {:elixir_make, "~> 0.6", [hex: :elixir_make, repo: "hexpm", optional: false]}], "hexpm", "28ccb63bff213aecec1f7f3dde9648418b031f822499973281d8f494b9d5a3b3"},
   "auth_plug": {:hex, :auth_plug, "1.1.0", "55d892acdae9083706038db7c4c87a85c0b13fca4def040700864786f2c6aaa2", [:mix], [{:joken, "~> 2.2.0", [hex: :joken, repo: "hexpm", optional: false]}, {:plug, "~> 1.10", [hex: :plug, repo: "hexpm", optional: false]}], "hexpm", "93fcce126fb0941f28b0ec0e6af407ace148d3d3becade918226eb4e10d0afc0"},
   "certifi": {:hex, :certifi, "2.5.1", "867ce347f7c7d78563450a18a6a28a8090331e77fa02380b4a21962a65d36ee5", [:rebar3], [{:parse_trans, "~>3.3", [hex: :parse_trans, repo: "hexpm", optional: false]}], "hexpm", "805abd97539caf89ec6d4732c91e62ba9da0cda51ac462380bbd28ee697a8c42"},
