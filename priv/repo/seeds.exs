@@ -36,15 +36,16 @@ defmodule Auth.Seeds do
   end
 
   def create_apikey_for_admin(person) do
-
-    {:ok, key} = %{
-      "name" => "system admin key",
-      "description" => "Created by /priv/repo/seeds.exs during setup.",
-      "url" => "www.example.com" # the default host in %Plug.Conn
-    }
-    |> AuthWeb.ApikeyController.make_apikey(person.id)
-    # |> IO.inspect(label: "apikey_params")
-    |> Auth.Apikey.create_apikey()
+    {:ok, key} =
+      %{
+        "name" => "system admin key",
+        "description" => "Created by /priv/repo/seeds.exs during setup.",
+        # the default host in %Plug.Conn
+        "url" => "www.example.com"
+      }
+      |> AuthWeb.ApikeyController.make_apikey(person.id)
+      # |> IO.inspect(label: "apikey_params")
+      |> Auth.Apikey.create_apikey()
 
     # IO.inspect(key, label: "key")
     api_key = key.client_id <> "/" <> key.client_secret

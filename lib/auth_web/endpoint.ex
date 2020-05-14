@@ -37,6 +37,6 @@ defmodule AuthWeb.Endpoint do
 
   plug Plug.MethodOverride
   plug Plug.Head
-  plug Plug.Session, AuthPlug.session_options
+  plug Plug.Session, AuthPlug.session_options()
   plug AuthWeb.Router
 end

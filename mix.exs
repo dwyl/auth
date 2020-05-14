@@ -15,6 +15,7 @@ defmodule Auth.Mixfile do
         "coveralls.post": :test,
         "coveralls.html": :test
       ],
+      dialyzer: [plt_add_deps: :transitive],
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
@@ -74,7 +75,10 @@ defmodule Auth.Mixfile do
       {:stream_data, "~> 0.4.3", only: :test},
 
       # Create Documentation for publishing Hex.docs:
-      {:ex_doc, "~> 0.21.3", only: :dev}
+      {:ex_doc, "~> 0.21.3", only: :dev},
+      {:credo, "~> 1.4", only: [:dev], runtime: false},
+      {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
+      {:sobelow, "~> 0.10.2", only: [:dev]}
     ]
   end
 

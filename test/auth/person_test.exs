@@ -22,6 +22,4 @@ defmodule Auth.PersonTest do
     # IO.inspect(updated_person, label: "updated_person")
     assert updated_person.status == 1
   end
-
-  
 end
