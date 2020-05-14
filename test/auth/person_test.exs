@@ -19,7 +19,6 @@ defmodule Auth.PersonTest do
 
     Person.verify_person_by_id(person.id)
     updated_person = Person.get_person_by_id(person.id)
-    # IO.inspect(updated_person, label: "updated_person")
     assert updated_person.status == 1
   end
 end

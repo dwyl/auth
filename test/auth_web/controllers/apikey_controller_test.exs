@@ -18,17 +18,12 @@ defmodule AuthWeb.ApikeyControllerTest do
     test "encrypt_encode/1 returns a base58 we can decrypt" do
       person_id = 1
       key = AuthWeb.ApikeyController.encrypt_encode(person_id)
-      # |> IO.inspect(label: "key")
 
       decrypted =
         key
         |> Base58.decode()
-        # |> IO.inspect(label: "decoded")
         |> Fields.AES.decrypt()
-        # |> IO.inspect(label: "decrypted")
         |> String.to_integer()
-
-      # |> IO.inspect(label: "int")
 
       assert decrypted == person_id
     end
@@ -48,10 +43,7 @@ defmodule AuthWeb.ApikeyControllerTest do
 
     test "decrypt_api_key/1 decrypts an AUTH_API_KEY" do
       person_id = 1234
-      # |> IO.inspect()
       key = AuthWeb.ApikeyController.create_api_key(person_id)
-      # IO.inspect(String.length(key), label: "String.length(key)")
-      # |> IO.inspect()
       decrypted = AuthWeb.ApikeyController.decrypt_api_key(key)
       assert decrypted == person_id
     end

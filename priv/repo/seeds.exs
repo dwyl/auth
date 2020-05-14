@@ -12,8 +12,6 @@ defmodule Auth.Seeds do
   # put_assoc
   import Ecto.Changeset
 
-  # IO.inspect(System.get_env("ADMIN_EMAIL"), label: "ADMIN_EMAIL")
-
   def create_admin do
     email = System.get_env("ADMIN_EMAIL")
 
@@ -44,10 +42,8 @@ defmodule Auth.Seeds do
         "url" => "www.example.com"
       }
       |> AuthWeb.ApikeyController.make_apikey(person.id)
-      # |> IO.inspect(label: "apikey_params")
       |> Auth.Apikey.create_apikey()
 
-    # IO.inspect(key, label: "key")
     api_key = key.client_id <> "/" <> key.client_secret
     # Set the AUTH_API_KEY to a valid value that is in the DB:
     System.put_env("AUTH_API_KEY", api_key)

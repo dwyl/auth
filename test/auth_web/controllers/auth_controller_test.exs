@@ -21,7 +21,6 @@ defmodule AuthWeb.AuthControllerTest do
       auth_provider: "google"
     }
 
-    # |> IO.inspect(label: "person")
     person = Auth.Person.create_person(data)
     conn = AuthPlug.create_jwt_session(conn, Map.merge(data, %{id: person.id}))
     conn = get(conn, "/profile", %{})
@@ -81,7 +80,6 @@ defmodule AuthWeb.AuthControllerTest do
   end
 
   test "google_handler/2 show welcome page", %{conn: conn} do
-    # IO.inspect(AuthPlug.Helpers.get_baseurl_from_conn(conn), label: "baseurl")
     # Google Auth Mock makes the state https://www.example.com
     # so we need to create a new API_KEY with that url:
     {:ok, key} =
@@ -109,9 +107,7 @@ defmodule AuthWeb.AuthControllerTest do
       auth_provider: "google"
     }
 
-    # |> IO.inspect(label: "person")
     person = Auth.Person.upsert_person(data)
-    # IO.inspect(person, label: "google_handler/2 test person:89")
     conn = AuthPlug.create_jwt_session(conn, person)
     conn = get(conn, "/auth/google/callback", %{code: "234", state: nil})
 
@@ -145,7 +141,6 @@ defmodule AuthWeb.AuthControllerTest do
         }
       })
 
-    # IO.inspect(conn)
     # re-render the index
     assert html_response(conn, 200) =~ "email"
     # assert html_response(conn, 401) =~ "invalid"
@@ -163,7 +158,6 @@ defmodule AuthWeb.AuthControllerTest do
       })
 
     # TODO: show password form!
-    # IO.inspect(conn)
     # assert html_response(conn, 302) =~ "redirected"
     assert html_response(conn, 200) =~ "New Password"
     # assert html_response(conn, 401) =~ "invalid"
@@ -175,7 +169,6 @@ defmodule AuthWeb.AuthControllerTest do
       auth_provider: "email"
     }
 
-    # |> IO.inspect(label: "person")
     person = Auth.Person.upsert_person(data)
 
     conn =
@@ -188,7 +181,6 @@ defmodule AuthWeb.AuthControllerTest do
         }
       })
 
-    # IO.inspect(conn.resp_body, label: "conn.resp_body")
     # expect to see put_flash informing person to click verify email:
     assert html_response(conn, 200) =~ "email was sent"
     # instruct them to create a New Password (registration):
@@ -202,7 +194,6 @@ defmodule AuthWeb.AuthControllerTest do
       status: 1
     }
 
-    # |> IO.inspect(label: "person")
     person = Auth.Person.upsert_person(data)
 
     conn =
@@ -226,7 +217,6 @@ defmodule AuthWeb.AuthControllerTest do
       password: "thiswillbehashed"
     }
 
-    # |> IO.inspect(label: "person")
     person = Auth.Person.upsert_person(data)
 
     conn =
@@ -253,7 +243,6 @@ defmodule AuthWeb.AuthControllerTest do
       password: "thiswillbehashed"
     }
 
-    # |> IO.inspect(label: "person")
     person = Auth.Person.upsert_person(data)
 
     conn =
@@ -290,15 +279,12 @@ defmodule AuthWeb.AuthControllerTest do
       %{email: "anabela@mail.com", auth_provider: "email"}
       |> Auth.Person.upsert_person()
 
-    # IO.inspect(conn)
     state =
       AuthPlug.Helpers.get_baseurl_from_conn(conn) <>
         "/profile?auth_client_id=" <> AuthPlug.Token.client_id()
 
     link = AuthWeb.AuthController.make_verify_link(conn, person, state)
-    # IO.inspect(link, label: "link")
     link = "/auth/verify" <> List.last(String.split(link, "/auth/verify"))
-    # IO.inspect(link, label: "link")
     conn = get(conn, link, %{})
     assert html_response(conn, 302) =~ "redirected"
   end
@@ -326,7 +312,6 @@ defmodule AuthWeb.AuthControllerTest do
     }
 
     conn = post(conn, "/auth/password/verify", params)
-    # IO.inspect(conn, label: "conn")
     assert html_response(conn, 302) =~ "redirected"
   end
 

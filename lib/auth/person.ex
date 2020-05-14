@@ -154,8 +154,6 @@ defmodule Auth.Person do
   def create_google_person(profile) do
     transform_google_profile_data_to_person(profile)
     |> upsert_person()
-
-    # |> IO.inspect(label: "create_person:")
   end
 
   # @doc """
@@ -230,10 +228,8 @@ defmodule Auth.Person do
 
         {:ok, person} =
           changeset(%Person{id: ep.id}, merged)
-          # |> IO.inspect(label: "changeset transformed:234")
           |> Repo.update()
 
-        # |> IO.inspect(label: "updated person:230")
         person
     end
   end
@@ -247,7 +243,6 @@ defmodule Auth.Person do
       cyphertext |> Base58.decode() |> Fields.AES.decrypt()
     rescue
       ArgumentError ->
-        # IO.puts("AES.decrypt() unable to decrypt client_id")
         0
     end
   end

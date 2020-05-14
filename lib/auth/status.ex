@@ -20,9 +20,6 @@ defmodule Auth.Status do
   end
 
   def create_status(text, person) do
-    # IO.inspect(text, label: "create_status/2 > text")
-    # IO.inspect(person, label: "create_status/2 > person")
-    # IO.inspect(__MODULE__, label: "__MODULE__")
     %Status{}
     |> changeset(%{text: text})
     |> put_assoc(:person, person)
@@ -38,7 +35,6 @@ defmodule Auth.Status do
         create_status(text, person)
 
       status ->
-        # IO.inspect(status, label: "status")
         status
     end
   end

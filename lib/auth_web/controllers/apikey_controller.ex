@@ -30,7 +30,6 @@ defmodule AuthWeb.ApikeyController do
       key |> Base58.decode() |> Fields.AES.decrypt() |> String.to_integer()
     rescue
       ArgumentError ->
-        # IO.puts("AES.decrypt() unable to decrypt client_id")
         0
     end
   end
@@ -66,7 +65,7 @@ defmodule AuthWeb.ApikeyController do
 
   def edit(conn, %{"id" => id}) do
     apikey = Auth.Apikey.get_apikey!(id)
-    # IO.inspect(apikey, label: "apikey")
+
     if apikey.person_id == conn.assigns.person.id do
       changeset = Auth.Apikey.change_apikey(apikey)
       render(conn, "edit.html", apikey: apikey, changeset: changeset)
