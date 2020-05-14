@@ -7,7 +7,6 @@ defmodule Auth.StatusTest do
     assert status.id == 1
 
     new_status = Status.upsert_status("amaze")
-    # IO.inspect(new_status, label: "new_status")
     assert new_status.id == 2
   end
 end
