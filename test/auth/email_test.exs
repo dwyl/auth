@@ -13,6 +13,7 @@ defmodule Auth.EmailTest do
       assert Map.get(params, "email") == Map.get(res, "email")
       assert Map.get(res, "id") > 0
     end
+
     test "sendemail/1 an email params atom" do
       params = %{
         email: "success@simulator.amazonses.com",
@@ -21,7 +22,6 @@ defmodule Auth.EmailTest do
       }
 
       res = Auth.Email.sendemail(params)
-      IO.inspect res
       assert Map.get(params, :email) == Map.get(res, "email")
       assert Map.get(res, "id") > 0
     end

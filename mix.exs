@@ -76,7 +76,6 @@ defmodule Auth.Mixfile do
 
       # Create Documentation for publishing Hex.docs:
       {:ex_doc, "~> 0.21.3", only: :dev},
-
       {:credo, "~> 1.4", only: [:dev], runtime: false},
       {:dialyxir, "~> 1.0", only: [:dev], runtime: false}
     ]
