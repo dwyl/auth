@@ -285,6 +285,18 @@ defmodule AuthWeb.AuthControllerTest do
     assert html_response(conn, 200) =~ "Welcome"
   end
 
+  test "password_create/2 display form when password not valid", %{conn: conn} do
+    params = %{
+      "person" => %{
+        "email" => AuthWeb.ApikeyController.encrypt_encode("anabela@mail.com"),
+        "password" => "short"
+      }
+    }
+
+    conn = post(conn, "/auth/password/create", params)
+    assert html_response(conn, 200) =~ "Password"
+  end
+
   test "verify_email/2 verify an email address", %{conn: conn} do
     person =
       %{email: "anabela@mail.com", auth_provider: "email"}

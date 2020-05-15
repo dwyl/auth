@@ -301,8 +301,20 @@ defmodule AuthWeb.AuthController do
   def password_create(conn, params) do
     p = params["person"]
     email = Auth.Person.decrypt_email(p["email"])
-    person = Auth.Person.upsert_person(%{email: email, password: p["password"]})
-    redirect_or_render(conn, person, p["state"])
+    changeset = Auth.Person.password_new_changeset(%{email: email, password: p["password"]})
+
+    if changeset.valid? do
+      person = Auth.Person.upsert_person(%{email: email, password: p["password"]})
+      redirect_or_render(conn, person, p["state"])
+    else
+      conn
+      |> assign(:action, Routes.auth_path(conn, :password_create))
+      |> render("password_create.html",
+        changeset: changeset,
+        state: p["state"],
+        email: p["email"]
+      )
+    end
   end
 
   @doc """
