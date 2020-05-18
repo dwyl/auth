@@ -74,6 +74,8 @@ defmodule Auth.Person do
   def password_new_changeset(attrs) do
     %Person{}
     |> cast(attrs, [:email, :password])
+    |> validate_required([:password])
+    |> validate_length(:password, min: 8)
   end
 
   @doc """
