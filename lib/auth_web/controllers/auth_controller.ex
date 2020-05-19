@@ -108,6 +108,25 @@ defmodule AuthWeb.AuthController do
     {:ok, profile} = ElixirAuthGithub.github_auth(code)
     # save profile to people:
     person = Person.create_github_person(profile)
+
+    # login log
+    user_agent =
+      conn
+      |> get_user_agent_string()
+      |> Auth.UserAgent.get_or_insert_user_agent()
+
+    ip_address = get_ip_address(conn)
+
+    Auth.LoginLog.create_login_log(
+      %{
+        email: person.email,
+        ip_address: ip_address,
+        auth_provider: "github"
+      },
+      person,
+      user_agent
+    )
+
     # render or redirect:
     handler(conn, person, state)
   end
@@ -121,6 +140,24 @@ defmodule AuthWeb.AuthController do
 
     # save profile to people:
     person = Person.create_google_person(profile)
+
+    # login log
+    user_agent =
+      conn
+      |> get_user_agent_string()
+      |> Auth.UserAgent.get_or_insert_user_agent()
+
+    ip_address = get_ip_address(conn)
+
+    Auth.LoginLog.create_login_log(
+      %{
+        email: person.email,
+        ip_address: ip_address,
+        auth_provider: "google"
+      },
+      person,
+      user_agent
+    )
 
     # render or redirect:
     handler(conn, person, state)
@@ -236,10 +273,14 @@ defmodule AuthWeb.AuthController do
 
       ip_address = get_ip_address(conn)
 
-      log = Auth.LoginLog.create_login_log(%{
-        email: person.email,
-        ip_address: ip_address,
-      }, person, user_agent)
+      Auth.LoginLog.create_login_log(
+        %{
+          email: person.email,
+          ip_address: ip_address
+        },
+        person,
+        user_agent
+      )
 
       password_form(conn, person, state)
     end
