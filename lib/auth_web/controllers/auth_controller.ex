@@ -8,6 +8,19 @@ defmodule AuthWeb.AuthController do
     |> render(:welcome)
   end
 
+  defp get_user_agent_string(conn) do
+    [{_, ua}] =
+      Enum.filter(conn.req_headers, fn {k, _} ->
+        k == "user-agent"
+      end)
+
+    ua
+  end
+
+  defp get_ip_address(conn) do
+    Enum.join(Tuple.to_list(conn.remote_ip), ".")
+  end
+
   def index(conn, params) do
     params_person = Map.get(params, "person")
 
@@ -214,6 +227,19 @@ defmodule AuthWeb.AuthController do
         else
           person
         end
+
+      # login log
+      user_agent =
+        conn
+        |> get_user_agent_string()
+        |> Auth.UserAgent.get_or_insert_user_agent()
+
+      ip_address = get_ip_address(conn)
+
+      log = Auth.LoginLog.create_login_log(%{
+        email: person.email,
+        ip_address: ip_address,
+      }, person, user_agent)
 
       password_form(conn, person, state)
     end

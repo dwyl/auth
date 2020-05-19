@@ -22,6 +22,7 @@ defmodule Auth.Person do
     field :key_id, :integer
 
     has_many :statuses, Auth.Status
+    has_many :login_logs, Auth.LoginLog
     # has_many :sessions, Auth.Session, on_delete: :delete_all
     timestamps()
   end
