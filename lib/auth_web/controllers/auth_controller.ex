@@ -137,7 +137,7 @@ defmodule AuthWeb.AuthController do
   """
   def redirect_or_render(conn, person, state) do
     # check if valid state (HTTP referer) is defined:
-    case not is_nil(state) do
+    case not (is_nil(state) or state == "") do
       # redirect
       true ->
         case get_client_secret_from_state(state) do
