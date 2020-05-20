@@ -17,9 +17,13 @@ defmodule Auth.UserAgent do
   end
 
   def get_or_insert_user_agent(ua) do
-    Repo.insert!(
-      %Auth.UserAgent{user_agent: ua},
-      on_conflict: :nothing
-    )
+    case Repo.get_by(Auth.UserAgent, user_agent: ua) do
+      nil ->
+        changeset(%Auth.UserAgent{}, %{user_agent: ua})
+        |> Repo.insert!(on_conflict: :nothing)
+
+      user_agent ->
+        user_agent
+    end
   end
 end
