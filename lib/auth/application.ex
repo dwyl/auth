@@ -11,6 +11,7 @@ defmodule Auth.Application do
       # Start the Ecto repository
       Auth.Repo,
       # Start the endpoint when the application starts
+      {Phoenix.PubSub, name: Auth.PubSub},
       AuthWeb.Endpoint
       # Starts a worker by calling: Auth.Worker.start_link(arg)
       # {Auth.Worker, arg},
