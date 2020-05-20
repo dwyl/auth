@@ -15,7 +15,7 @@ config :auth, AuthWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: System.get_env("SECRET_KEY_BASE"),
   render_errors: [view: AuthWeb.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: Auth.PubSub, adapter: Phoenix.PubSub.PG2],
+  pubsub_server: Auth.PubSub,
   live_view: [signing_salt: "G+UI6RIv"]
 
 # Configures Elixir's Logger
