@@ -109,7 +109,7 @@ defmodule AuthWeb.AuthControllerTest do
 
     person = Auth.Person.upsert_person(data)
     conn = AuthPlug.create_jwt_session(conn, person)
-    conn = get(conn, "/auth/google/callback", %{code: "234", state: nil})
+    conn = get(conn, "/auth/google/callback", %{"code" => "234", "state" => nil})
 
     assert html_response(conn, 200) =~ "Google account"
     # assert html_response(conn, 302) =~ "redirected"

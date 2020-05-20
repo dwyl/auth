@@ -140,7 +140,6 @@ defmodule AuthWeb.AuthController do
   def google_handler(conn, %{"code" => code, "state" => state}) do
     {:ok, token} = ElixirAuthGoogle.get_token(code, conn)
     {:ok, profile} = ElixirAuthGoogle.get_user_profile(token.access_token)
-
     # save profile to people:
     person = Person.create_google_person(profile)
 
@@ -190,7 +189,8 @@ defmodule AuthWeb.AuthController do
   """
   def redirect_or_render(conn, person, state) do
     # check if valid state (HTTP referer) is defined:
-    case not is_nil(state) do
+
+    case not (is_nil(state) or state == "") do
       # redirect
       true ->
         case get_client_secret_from_state(state) do
