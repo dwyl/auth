@@ -9,12 +9,15 @@ defmodule AuthWeb.AuthController do
   end
 
   defp get_user_agent_string(conn) do
-    [{_, ua}] =
+    user_agent_header =
       Enum.filter(conn.req_headers, fn {k, _} ->
         k == "user-agent"
       end)
 
-    ua
+    case user_agent_header do
+      [{_, ua}] -> ua
+      _ -> "undefined_user_agent"
+    end
   end
 
   defp get_ip_address(conn) do

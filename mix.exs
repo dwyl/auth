@@ -62,7 +62,7 @@ defmodule Auth.Mixfile do
       # https://github.com/dwyl/elixir-auth-google
       {:elixir_auth_google, "~> 1.2.0"},
       # https://github.com/dwyl/auth_plug
-      {:auth_plug, "~> 1.1.0"},
+      {:auth_plug, "~> 1.1.1"},
 
       # Field Validation and Encryption: github.com/dwyl/fields
       {:fields, "~> 2.5.0"},
