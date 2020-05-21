@@ -4,7 +4,7 @@ defmodule Auth.Mixfile do
   def project do
     [
       app: :auth,
-      version: "1.2.1",
+      version: "1.2.2",
       elixir: "~> 1.9",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
@@ -45,16 +45,16 @@ defmodule Auth.Mixfile do
   defp deps do
     [
       # Phoenix core:
-      {:phoenix, "~> 1.4.16"},
-      {:phoenix_pubsub, "~> 1.1"},
+      {:phoenix, "~> 1.5.1"},
+      {:phoenix_pubsub, "~> 2.0"},
       {:phoenix_ecto, "~> 4.1.0"},
-      {:ecto_sql, "~> 3.4.2"},
+      {:ecto_sql, "~> 3.4.4"},
       {:postgrex, ">= 0.0.0"},
-      {:phoenix_html, "~> 2.14.1"},
+      {:phoenix_html, "~> 2.14.2"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
-      {:gettext, "~> 0.17.2"},
-      {:jason, "~> 1.2.0"},
-      {:plug_cowboy, "~> 2.1.3"},
+      {:gettext, "~> 0.18.0"},
+      {:jason, "~> 1.2.1"},
+      {:plug_cowboy, "~> 2.2.1"},
 
       # Auth:
       # https://github.com/dwyl/elixir-auth-github
