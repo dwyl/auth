@@ -221,6 +221,7 @@ defmodule AuthWeb.AuthController do
         ip_address: ip_address,
         email: nil
       }
+
       Auth.LoginLog.create_login_log(login_log)
 
       # email invalid, re-render the login/register form:
@@ -371,6 +372,20 @@ defmodule AuthWeb.AuthController do
         msg = """
         That password is incorrect.
         """
+
+        # log password incorrect
+
+        user_agent = get_user_agent(conn)
+        ip_address = get_ip_address(conn)
+
+        login_log = %{
+          user_agent_id: user_agent.id,
+          person_id: person.id,
+          ip_address: ip_address,
+          email: person.email
+        }
+
+        Auth.LoginLog.create_login_log(login_log)
 
         render_password_form(conn, email, msg, p["state"], "password_prompt")
     end
