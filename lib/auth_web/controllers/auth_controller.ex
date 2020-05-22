@@ -212,14 +212,11 @@ defmodule AuthWeb.AuthController do
     # email is blank or invalid:
     if is_nil(email) or not Fields.Validate.email(email) do
       # intialise login log data
-      user_agent = get_user_agent(conn)
-      ip_address = get_ip_address(conn)
-
       login_log = %{
-        user_agent_id: user_agent.id,
+        user_agent_id: get_user_agent(conn).id,
         person_id: nil,
-        ip_address: ip_address,
-        email: nil
+        ip_address: get_ip_address(conn),
+        email: email
       }
 
       Auth.LoginLog.create_login_log(login_log)

@@ -4,8 +4,8 @@ defmodule Auth.LoginLog do
   alias Auth.Repo
 
   schema "login_logs" do
-    field :email, :string
-    field :ip_address, :string
+    field :email, Fields.Encrypted
+    field :ip_address, :binary
     field :person_id, :integer
     field :user_agent_id, :integer
     timestamps()

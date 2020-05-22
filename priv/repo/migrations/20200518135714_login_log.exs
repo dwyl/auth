@@ -8,7 +8,7 @@ defmodule Auth.Repo.Migrations.LoginLog do
 
     create table(:login_logs) do
       add :email, :binary
-      add :ip_address, :string
+      add :ip_address, :binary
       add :person_id, references(:people, on_delete: :nothing)
       add :user_agent_id, references(:user_agents, on_delete: :nothing)
 
