@@ -20,6 +20,12 @@ defmodule AuthWeb.AuthController do
     end
   end
 
+  defp get_user_agent(conn) do
+    conn
+    |> get_user_agent_string()
+    |> Auth.UserAgent.get_or_insert_user_agent()
+  end
+
   defp get_ip_address(conn) do
     Enum.join(Tuple.to_list(conn.remote_ip), ".")
   end
@@ -205,6 +211,18 @@ defmodule AuthWeb.AuthController do
 
     # email is blank or invalid:
     if is_nil(email) or not Fields.Validate.email(email) do
+      # intialise login log data
+      user_agent = get_user_agent(conn)
+      ip_address = get_ip_address(conn)
+
+      login_log = %{
+        user_agent_id: user_agent.id,
+        person_id: nil,
+        ip_address: ip_address,
+        email: nil
+      }
+      Auth.LoginLog.create_login_log(login_log)
+
       # email invalid, re-render the login/register form:
       index(conn, params)
     else
@@ -230,23 +248,6 @@ defmodule AuthWeb.AuthController do
         else
           person
         end
-
-      # login log
-      user_agent =
-        conn
-        |> get_user_agent_string()
-        |> Auth.UserAgent.get_or_insert_user_agent()
-
-      ip_address = get_ip_address(conn)
-
-      Auth.LoginLog.create_login_log(
-        %{
-          email: person.email,
-          ip_address: ip_address
-        },
-        person,
-        user_agent
-      )
 
       password_form(conn, person, state)
     end

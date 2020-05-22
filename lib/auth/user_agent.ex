@@ -4,26 +4,23 @@ defmodule Auth.UserAgent do
   alias Auth.Repo
 
   schema "user_agents" do
-    field :user_agent, :string
-    has_many :login_logs, Auth.LoginLog
+    field :name, :string
   end
 
   @doc false
   def changeset(user_agent, attrs) do
     user_agent
-    |> cast(attrs, [:user_agent])
-    |> validate_required([:user_agent])
-    |> unique_constraint(:user_agent)
+    |> cast(attrs, [:name])
+    |> validate_required([:name])
+    |> unique_constraint(:name)
   end
 
   def get_or_insert_user_agent(ua) do
-    case Repo.get_by(Auth.UserAgent, user_agent: ua) do
-      nil ->
-        changeset(%Auth.UserAgent{}, %{user_agent: ua})
-        |> Repo.insert!()
-
-      user_agent ->
-        user_agent
-    end
+    # see https://hexdocs.pm/ecto/constraints-and-upserts.html#upserts
+    Repo.insert!(
+      %Auth.UserAgent{name: ua},
+      on_conflict: [set: [name: ua]],
+      conflict_target: :name
+    )
   end
 end

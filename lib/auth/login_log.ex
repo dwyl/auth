@@ -6,27 +6,20 @@ defmodule Auth.LoginLog do
   schema "login_logs" do
     field :email, :string
     field :ip_address, :string
-    field :auth_provider, :string
-    belongs_to :person, Auth.Person
-    belongs_to :user_agent, Auth.UserAgent
-
+    field :person_id, :integer
+    field :user_agent_id, :integer
     timestamps()
   end
 
   @doc false
   def changeset(login_log, attrs) do
     login_log
-    |> cast(attrs, [:email, :ip_address, :auth_provider])
-    |> validate_required([:email])
+    |> cast(attrs, [:email, :ip_address, :person_id, :user_agent_id])
   end
 
-  def create_login_log(log, person, user_agent) do
-    log =
-      %Auth.LoginLog{}
-      |> changeset(log)
-      |> put_assoc(:person, person)
-      |> put_assoc(:user_agent, user_agent)
-
-    Repo.insert!(log)
+  def create_login_log(log) do
+    %Auth.LoginLog{}
+    |> changeset(log)
+    |> Repo.insert!()
   end
 end
