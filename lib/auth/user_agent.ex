@@ -18,7 +18,7 @@ defmodule Auth.UserAgent do
   def get_or_insert_user_agent(ua) do
     # see https://hexdocs.pm/ecto/constraints-and-upserts.html#upserts
     Repo.insert!(
-      %Auth.UserAgent{name: ua},
+      changeset(%Auth.UserAgent{}, %{name: ua}),
       on_conflict: [set: [name: ua]],
       conflict_target: :name
     )

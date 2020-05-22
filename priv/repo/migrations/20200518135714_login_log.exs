@@ -4,7 +4,6 @@ defmodule Auth.Repo.Migrations.LoginLog do
   def change do
     create table(:user_agents) do
       add :name, :string
-
     end
 
     create table(:login_logs) do

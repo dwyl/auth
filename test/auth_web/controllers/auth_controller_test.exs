@@ -108,27 +108,10 @@ defmodule AuthWeb.AuthControllerTest do
     }
 
     person = Auth.Person.upsert_person(data)
+
     conn =
       conn
       |> AuthPlug.create_jwt_session(person)
-      |> get("/auth/google/callback", %{"code" => "234", "state" => nil})
-
-    assert html_response(conn, 200) =~ "Google account"
-  end
-
-  test "google_handler/2 show welcome (state=nil) > handler/3 with user agent header", %{conn: conn} do
-    data = %{
-      email: "nelson@gmail.com",
-      givenName: "McTestin",
-      picture: "https://youtu.be/naoknj1ebqI",
-      auth_provider: "google"
-    }
-
-    person = Auth.Person.upsert_person(data)
-    conn =
-      conn
-      |> AuthPlug.create_jwt_session(person)
-      |> put_req_header("user-agent", "user-agent-1")
       |> get("/auth/google/callback", %{"code" => "234", "state" => nil})
 
     assert html_response(conn, 200) =~ "Google account"
@@ -151,7 +134,9 @@ defmodule AuthWeb.AuthControllerTest do
 
   test "login_register_handler/2 with invalid email", %{conn: conn} do
     conn =
-      post(conn, "/auth/loginregister", %{
+      conn
+      |> put_req_header("user-agent", "user-agent-1")
+      |> post("/auth/loginregister", %{
         "person" => %{
           email: "invalid",
           state:
