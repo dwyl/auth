@@ -5,7 +5,7 @@ defmodule Auth.LoginLog do
 
   schema "login_logs" do
     field :email, Fields.Encrypted
-    field :ip_address, :binary
+    field :ip_address, Fields.IpAddressEncrypted
     field :person_id, :integer
     field :user_agent_id, :integer
     timestamps()
