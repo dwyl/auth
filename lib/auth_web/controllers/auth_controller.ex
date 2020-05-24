@@ -8,6 +8,28 @@ defmodule AuthWeb.AuthController do
     |> render(:welcome)
   end
 
+  defp get_user_agent_string(conn) do
+    user_agent_header =
+      Enum.filter(conn.req_headers, fn {k, _} ->
+        k == "user-agent"
+      end)
+
+    case user_agent_header do
+      [{_, ua}] -> ua
+      _ -> "undefined_user_agent"
+    end
+  end
+
+  defp get_user_agent(conn) do
+    conn
+    |> get_user_agent_string()
+    |> Auth.UserAgent.get_or_insert_user_agent()
+  end
+
+  defp get_ip_address(conn) do
+    Enum.join(Tuple.to_list(conn.remote_ip), ".")
+  end
+
   def index(conn, params) do
     params_person = Map.get(params, "person")
 
@@ -95,6 +117,7 @@ defmodule AuthWeb.AuthController do
     {:ok, profile} = ElixirAuthGithub.github_auth(code)
     # save profile to people:
     person = Person.create_github_person(profile)
+
     # render or redirect:
     handler(conn, person, state)
   end
@@ -105,7 +128,6 @@ defmodule AuthWeb.AuthController do
   def google_handler(conn, %{"code" => code, "state" => state}) do
     {:ok, token} = ElixirAuthGoogle.get_token(code, conn)
     {:ok, profile} = ElixirAuthGoogle.get_user_profile(token.access_token)
-
     # save profile to people:
     person = Person.create_google_person(profile)
 
@@ -189,6 +211,16 @@ defmodule AuthWeb.AuthController do
 
     # email is blank or invalid:
     if is_nil(email) or not Fields.Validate.email(email) do
+      # intialise login log data
+      login_log = %{
+        user_agent_id: get_user_agent(conn).id,
+        person_id: nil,
+        ip_address: get_ip_address(conn),
+        email: email
+      }
+
+      Auth.LoginLog.create_login_log(login_log)
+
       # email invalid, re-render the login/register form:
       index(conn, params)
     else
@@ -337,6 +369,20 @@ defmodule AuthWeb.AuthController do
         msg = """
         That password is incorrect.
         """
+
+        # log password incorrect
+
+        user_agent = get_user_agent(conn)
+        ip_address = get_ip_address(conn)
+
+        login_log = %{
+          user_agent_id: user_agent.id,
+          person_id: person.id,
+          ip_address: ip_address,
+          email: person.email
+        }
+
+        Auth.LoginLog.create_login_log(login_log)
 
         render_password_form(conn, email, msg, p["state"], "password_prompt")
     end

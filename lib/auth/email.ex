@@ -22,7 +22,6 @@ defmodule Auth.Email do
     }
   """
   def sendemail(params) do
-    # IO.inspect(params, label: "sendemail/1 params:")
     url = System.get_env("EMAIL_APP_URL") <> "/api/send"
     # until further notice use the SECRET_KEY_BASE for sending email:
     secret = System.get_env("SECRET_KEY_BASE")

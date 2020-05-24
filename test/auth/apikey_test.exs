@@ -6,10 +6,8 @@ defmodule Auth.ApikeyTest do
 
   test "list_apikeys_for_person/1 returns all apikeys person" do
     person = Auth.Person.get_person_by_email(@email)
-    # IO.inspect(person, label: "person")
 
     keys = Auth.Apikey.list_apikeys_for_person(person.id)
-    # IO.inspect(keys, label: "keys")
     assert length(keys) == 1
 
     # Insert Two API keys:
