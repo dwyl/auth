@@ -22,8 +22,7 @@ defmodule AuthWeb.AuthControllerTest do
     }
 
     person = Auth.Person.create_person(data)
-    conn = init_test_session(conn, test: "setup") # auth/issues/83
-    |> AuthPlug.create_jwt_session(Map.merge(data, %{id: person.id}))
+    conn = AuthPlug.create_jwt_session(conn, Map.merge(data, %{id: person.id}))
     |> get("/profile", %{})
 
     assert html_response(conn, 200) =~ "Google account"
@@ -110,8 +109,7 @@ defmodule AuthWeb.AuthControllerTest do
 
     person = Auth.Person.upsert_person(data)
 
-    conn = init_test_session(conn, test: "setup") # auth/issues/83
-    |> AuthPlug.create_jwt_session(person)
+    conn = AuthPlug.create_jwt_session(conn, person)
     |> get("/auth/google/callback", %{"code" => "234", "state" => nil})
 
     assert html_response(conn, 200) =~ "Google account"

@@ -123,8 +123,7 @@ defmodule AuthWeb.ApikeyControllerTest do
   describe "edit apikey" do
     test "renders form for editing chosen apikey", %{conn: conn} do
       person = Auth.Person.get_person_by_email(@email)
-      conn = init_test_session(conn, test: "setup") # auth/issues/83
-      |> AuthPlug.create_jwt_session(person)
+      conn = AuthPlug.create_jwt_session(conn, person)
 
       {:ok, key} =
         %{"name" => "test key", "url" => "http://localhost:4000"}
@@ -144,8 +143,7 @@ defmodule AuthWeb.ApikeyControllerTest do
           auth_provider: "email"
         })
 
-        conn = init_test_session(conn, test: "setup") # auth/issues/83
-        |> AuthPlug.create_jwt_session(wrong_person)
+        conn = AuthPlug.create_jwt_session(conn, wrong_person)
 
       {:ok, key} =
         %{"name" => "test key", "url" => "http://localhost:4000"}
@@ -160,8 +158,7 @@ defmodule AuthWeb.ApikeyControllerTest do
   describe "update apikey" do
     test "redirects when data is valid", %{conn: conn} do
       person = Auth.Person.get_person_by_email(@email)
-      conn = init_test_session(conn, test: "setup") # auth/issues/83
-      |> AuthPlug.create_jwt_session(person)
+      conn = AuthPlug.create_jwt_session(conn, person)
 
       {:ok, key} =
         %{"name" => "test key", "url" => "http://localhost:4000"}
@@ -177,8 +174,7 @@ defmodule AuthWeb.ApikeyControllerTest do
 
     test "renders errors when data is invalid", %{conn: conn} do
       person = Auth.Person.get_person_by_email(@email)
-      conn = init_test_session(conn, test: "setup") # auth/issues/83
-      |> AuthPlug.create_jwt_session(person)
+      conn = AuthPlug.create_jwt_session(conn, person)
 
       {:ok, key} =
         %{"name" => "test key", "url" => "http://localhost:4000"}
@@ -198,8 +194,7 @@ defmodule AuthWeb.ApikeyControllerTest do
           auth_provider: "email"
         })
 
-      conn = init_test_session(conn, test: "setup") # auth/issues/83
-      |> AuthPlug.create_jwt_session(wrong_person)
+      conn = AuthPlug.create_jwt_session(conn, wrong_person)
 
       {:ok, key} =
         %{"name" => "test key", "url" => "http://localhost:4000", "person_id" => person.id}
@@ -214,8 +209,7 @@ defmodule AuthWeb.ApikeyControllerTest do
   describe "delete apikey" do
     test "deletes chosen apikey", %{conn: conn} do
       person = Auth.Person.get_person_by_email(@email)
-      conn = init_test_session(conn, test: "setup") # auth/issues/83
-      |> AuthPlug.create_jwt_session(person)
+      conn = AuthPlug.create_jwt_session(conn, person)
 
       {:ok, key} =
         %{"name" => "test key", "url" => "http://localhost:4000"}
@@ -237,9 +231,7 @@ defmodule AuthWeb.ApikeyControllerTest do
           auth_provider: "email"
         })
 
-      conn = init_test_session(conn, test: "setup") # auth/issues/83
-      |> AuthPlug.create_jwt_session(wrong_person)
-
+      conn = AuthPlug.create_jwt_session(conn, wrong_person)
       person = Auth.Person.get_person_by_email(@email)
 
       {:ok, key} =
