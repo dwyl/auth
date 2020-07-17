@@ -39,15 +39,15 @@ defmodule Auth.Seeds do
         "name" => "system admin key",
         "description" => "Created by /priv/repo/seeds.exs during setup.",
         # the default host in %Plug.Conn
-        "url" => "www.example.com"
+        "url" => "localhost:4000"
       }
       |> AuthWeb.ApikeyController.make_apikey(person.id)
       |> Auth.Apikey.create_apikey()
 
     api_key = key.client_id <> "/" <> key.client_secret
     # Set the AUTH_API_KEY to a valid value that is in the DB:
-    System.put_env("AUTH_API_KEY", api_key)
-    IO.inspect(System.get_env("AUTH_API_KEY"), label: "AUTH_API_KEY")
+    IO.puts("Remember to set the AUTH_API_KEY environment variable:")
+    IO.puts("export AUTH_API_KEY=#{api_key}")
     IO.puts("- - - - - - - - - - - - - - - - - - - - - - ")
     key
   end
