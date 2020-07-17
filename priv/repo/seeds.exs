@@ -45,6 +45,8 @@ defmodule Auth.Seeds do
       |> Auth.Apikey.create_apikey()
 
     api_key = key.client_id <> "/" <> key.client_secret
+    # set the AUTH_API_KEY during test run:
+    System.put_env("AUTH_API_KEY", api_key)
     # Set the AUTH_API_KEY to a valid value that is in the DB:
     IO.puts("Remember to set the AUTH_API_KEY environment variable:")
     IO.puts("export AUTH_API_KEY=#{api_key}")
