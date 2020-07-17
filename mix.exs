@@ -58,11 +58,11 @@ defmodule Auth.Mixfile do
 
       # Auth:
       # https://github.com/dwyl/elixir-auth-github
-      {:elixir_auth_github, "~> 1.2.0"},
+      {:elixir_auth_github, "~> 1.3.0"},
       # https://github.com/dwyl/elixir-auth-google
-      {:elixir_auth_google, "~> 1.2.0"},
+      {:elixir_auth_google, "~> 1.3.0"},
       # https://github.com/dwyl/auth_plug
-      {:auth_plug, "~> 1.2.0"},
+      {:auth_plug, "1.2.0"},
 
       # Field Validation and Encryption: github.com/dwyl/fields
       {:fields, "~> 2.6.0"},
@@ -70,7 +70,7 @@ defmodule Auth.Mixfile do
       {:B58, "~> 1.0", hex: :b58},
 
       # Check test coverage
-      {:excoveralls, "~> 0.12.3", only: :test},
+      {:excoveralls, "~> 0.12.3", only: :test}, 
 
       #  Property based tests: github.com/dwyl/learn-property-based-testing
       {:stream_data, "~> 0.4.3", only: :test},
