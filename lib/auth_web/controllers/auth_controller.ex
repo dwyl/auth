@@ -417,7 +417,6 @@ defmodule AuthWeb.AuthController do
 
   def get_client_secret(client_id, state) do
     person_id = AuthWeb.ApikeyController.decode_decrypt(client_id)
-
     # decode_decrypt fails with state 0
     if person_id == 0 do
       0
@@ -425,7 +424,13 @@ defmodule AuthWeb.AuthController do
       apikeys = Auth.Apikey.list_apikeys_for_person(person_id)
 
       Enum.filter(apikeys, fn k ->
-        k.client_id == client_id and state =~ k.url
+        # if the API Key belongs to Super Admin, don't check URL as it's the "setup key":
+        if person_id == 1 do
+          k.client_id == client_id 
+        else
+          # check url matches the state for all other keys:
+          k.client_id == client_id and state =~ k.url
+        end
       end)
       |> List.first()
       |> Map.get(:client_secret)
