@@ -23,9 +23,9 @@ defmodule AuthWeb.AuthControllerTest do
 
     person = Auth.Person.create_person(data)
     conn = AuthPlug.create_jwt_session(conn, Map.merge(data, %{id: person.id}))
-    conn = get(conn, "/profile", %{})
+    |> get("/profile", %{})
+
     assert html_response(conn, 200) =~ "Google account"
-    # assert html_response(conn, 302) =~ "redirected"
   end
 
   test "get_referer/1", %{conn: conn} do
@@ -109,10 +109,8 @@ defmodule AuthWeb.AuthControllerTest do
 
     person = Auth.Person.upsert_person(data)
 
-    conn =
-      conn
-      |> AuthPlug.create_jwt_session(person)
-      |> get("/auth/google/callback", %{"code" => "234", "state" => nil})
+    conn = AuthPlug.create_jwt_session(conn, person)
+    |> get("/auth/google/callback", %{"code" => "234", "state" => nil})
 
     assert html_response(conn, 200) =~ "Google account"
   end

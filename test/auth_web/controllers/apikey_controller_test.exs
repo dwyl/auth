@@ -76,7 +76,8 @@ defmodule AuthWeb.ApikeyControllerTest do
     test "lists all apikeys", %{conn: conn} do
       person = Auth.Person.get_person_by_email(@email)
       conn = AuthPlug.create_jwt_session(conn, %{email: @email, id: person.id})
-      conn = get(conn, Routes.apikey_path(conn, :index))
+      |> get(Routes.apikey_path(conn, :index))
+
       assert html_response(conn, 200) =~ "Auth API Keys"
     end
   end
@@ -84,9 +85,10 @@ defmodule AuthWeb.ApikeyControllerTest do
   describe "new apikey" do
     test "renders form", %{conn: conn} do
       person = Auth.Person.get_person_by_email(@email)
-      conn = AuthPlug.create_jwt_session(conn, %{email: @email, id: person.id})
 
-      conn = get(conn, Routes.apikey_path(conn, :new))
+      conn = AuthPlug.create_jwt_session(conn, %{email: @email, id: person.id})
+      |> get(Routes.apikey_path(conn, :new))
+
       assert html_response(conn, 200) =~ "New Apikey"
     end
   end
@@ -94,9 +96,8 @@ defmodule AuthWeb.ApikeyControllerTest do
   describe "create apikey" do
     test "redirects to show when data is valid", %{conn: conn} do
       person = Auth.Person.get_person_by_email(@email)
-      conn = AuthPlug.create_jwt_session(conn, %{email: @email, id: person.id})
-
-      conn = post(conn, Routes.apikey_path(conn, :create), apikey: @create_attrs)
+      conn = AuthPlug.create_jwt_session(conn, person)
+      |> post(Routes.apikey_path(conn, :create), apikey: @create_attrs)
 
       assert %{id: id} = redirected_params(conn)
       assert redirected_to(conn) == Routes.apikey_path(conn, :show, id)
@@ -137,7 +138,7 @@ defmodule AuthWeb.ApikeyControllerTest do
           auth_provider: "email"
         })
 
-      conn = AuthPlug.create_jwt_session(conn, wrong_person)
+        conn = AuthPlug.create_jwt_session(conn, wrong_person)
 
       {:ok, key} =
         %{"name" => "test key", "url" => "http://localhost:4000"}
@@ -226,7 +227,6 @@ defmodule AuthWeb.ApikeyControllerTest do
         })
 
       conn = AuthPlug.create_jwt_session(conn, wrong_person)
-
       person = Auth.Person.get_person_by_email(@email)
 
       {:ok, key} =
