@@ -26,10 +26,12 @@ defmodule Auth.Seeds do
         person ->
           person
       end
-
-    IO.inspect(person.id, label: "seeds.exs person.id")
-    IO.puts("- - - - - - - - - - - - - - - - - - - - - - ")
-
+    if(Mix.env() == :test) do
+      # don't print noise during tests
+    else
+      IO.inspect(person.id, label: "seeds.exs person.id")
+      IO.puts("- - - - - - - - - - - - - - - - - - - - - - ")
+    end
     person
   end
 
@@ -47,10 +49,14 @@ defmodule Auth.Seeds do
     api_key = key.client_id <> "/" <> key.client_secret
     # set the AUTH_API_KEY during test run:
     System.put_env("AUTH_API_KEY", api_key)
-    # Set the AUTH_API_KEY to a valid value that is in the DB:
-    IO.puts("Remember to set the AUTH_API_KEY environment variable:")
-    IO.puts("export AUTH_API_KEY=#{api_key}")
-    IO.puts("- - - - - - - - - - - - - - - - - - - - - - ")
+
+    if(Mix.env() == :test) do
+      # don't print noise during tests
+    else
+      IO.puts("Remember to set the AUTH_API_KEY environment variable:")
+      IO.puts("export AUTH_API_KEY=#{api_key}")
+      IO.puts("- - - - - - - - - - - - - - - - - - - - - - ")
+    end
     key
   end
 end
