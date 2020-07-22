@@ -15,6 +15,7 @@ you can setup in ***5 minutes***.
 <!-- uncomment when service is working ...
 [![Inline docs](http://inch-ci.org/github/dwyl/auth.svg?branch=master&style=flat-square)](http://inch-ci.org/github/dwyl/auth)
 -->
+![wake-sleeping-heroku-app](https://dwylauth.herokuapp.com/ping)
 
 </div>
 

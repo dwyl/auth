@@ -24,6 +24,9 @@ defmodule AuthWeb.Router do
     # get "/auth/password/new", AuthController, :password_input
     post "/auth/password/create", AuthController, :password_create
     post "/auth/password/verify", AuthController, :password_prompt
+
+    # https://github.com/dwyl/ping
+    get "/ping", PingController, :ping
   end
 
   pipeline :auth do
