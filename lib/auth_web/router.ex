@@ -38,6 +38,8 @@ defmodule AuthWeb.Router do
     pipe_through :auth
 
     get "/profile", AuthController, :admin
+    resources "/roles", RoleController
+    
     resources "/settings/apikeys", ApikeyController
   end
 
