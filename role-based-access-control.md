@@ -53,6 +53,14 @@ should learn about RBAC.
 
 ## _How_?
 
+Before creating any roles,
+you will need to have a baseline schema including people
+as people will be referenced by roles.
+
+If you don't already have these schemas/tables,
+see: https://github.com/dwyl/app-mvp-phoenix#create-schemas
+
+
 Let's create the Database Schemas (Tables) to store our RBAC data,
 starting with **`Roles`**:
 
@@ -60,7 +68,7 @@ starting with **`Roles`**:
 mix phx.gen.html Ctx Role roles name:string desc:string person_id:references:people
 ```
 
-
+Next create the permissions schema:
 ```
 mix phx.gen.html Ctx Permission permissions name:string desc:string person_id:references:people
 ```
@@ -71,7 +79,13 @@ Next create the **`many-to-many`** relationship between roles and permissions.
 mix ecto.gen.migration create_role_permissions
 ```
 
-Now create the **`many-to-many`** relationship between people and roles.
+
+
+Now create the **`many-to-many`** relationship between people and roles:
+
+```
+mix ecto.gen.migration create_people_roles
+```
 
 
 
