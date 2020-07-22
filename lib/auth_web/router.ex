@@ -39,7 +39,7 @@ defmodule AuthWeb.Router do
 
     get "/profile", AuthController, :admin
     resources "/roles", RoleController
-    
+    resources "/permissions", PermissionController
     resources "/settings/apikeys", ApikeyController
   end
 
