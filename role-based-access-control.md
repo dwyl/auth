@@ -12,6 +12,13 @@ Access Control List (ACL) based permissions systems
 and helps everyone building and maintaining the app
 to focus on security.
 
+## _Who_?
+
+This document is relevant to anyone 
+that is interested in developing and _maintaining_ 
+secure multi-person applications
+should learn about RBAC.
+
 
 ## What?
 
@@ -76,13 +83,6 @@ that still allows the person to login and view their _own_ content,
 but they have no other privileges.
 
 
-## Who?
-
-Anyone who is interested in developing and _maintaining_ 
-secure multi-person applications
-should learn about RBAC.
-
-
 ## _How_?
 
 _Before_ creating any roles,
@@ -134,18 +134,18 @@ defmodule Auth.Repo.Migrations.CreateRolePermissions do
 
   def change do
     create table(:role_permissions) do
-      add :role_id, references(:roles)
-      add :permission_id, references(:permissions)
+      add :role_id, references(:roles, on_delete: :nothing)
+      add :permission_id, references(:permissions, on_delete: :nothing)
   
       timestamps()
     end
   
-    create unique_index(:role_permissionss, [:role_id, :permission_id])
+    create unique_index(:role_permissions, [:role_id, :permission_id])
   end
 end
 ```
 
-
+### Create People<->Roles Associations
 
 Now create the **`many-to-many`** relationship 
 between **`people`** and **`roles`**:
@@ -153,6 +153,30 @@ between **`people`** and **`roles`**:
 ```
 mix ecto.gen.migration create_people_roles
 ```
+
+Open the migration file that was just created, e.g: 
+[`/Users/n/code/auth/priv/repo/migrations/20200723154847_create_people_roles.exs`]()
+
+
+Replace the contents of the file with the following code:
+
+```elixir
+defmodule Auth.Repo.Migrations.CreatePeopleRoles do
+  use Ecto.Migration
+
+  def change do
+    create table(:people_roles) do
+      add :person_id, references(:people, on_delete: :nothing)
+      add :role_id, references(:roles, on_delete: :nothing)
+  
+      timestamps()
+    end
+  
+    create unique_index(:people_roles, [:person_id, :role_id])
+  end
+end
+```
+
 
 
 
