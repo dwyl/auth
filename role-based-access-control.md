@@ -1,13 +1,16 @@
-# Role Based Access Control (RBAC)
+# Role Based Access Control (RBAC)
 
 _Understand_ the fundamentals of Role Based Access Control (RBAC)
+so that you can easily control who has access to what in your App.
 
 ## Why?
 
 RBAC lets you easily manage roles and permissions in any application
-and see at a glance exactly permissions a person has in the system.
+and see at a glance exactly what permissions a person has.
 It reduces complexity over traditional
-Access Control List (ACL) based permissions systems. 
+Access Control List (ACL) based permissions systems
+and helps everyone building and maintaining the app
+to focus on security.
 
 
 ## What?
@@ -53,9 +56,9 @@ should learn about RBAC.
 
 ## _How_?
 
-Before creating any roles,
-you will need to have a baseline schema including people
-as people will be referenced by roles.
+_Before_ creating any roles,
+you will need to have a baseline schema including **`people`**
+as **`person.id`** will be referenced by roles.
 
 If you don't already have these schemas/tables,
 see: https://github.com/dwyl/app-mvp-phoenix#create-schemas
