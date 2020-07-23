@@ -22,6 +22,9 @@ defmodule AuthWeb.ConnCase do
       # Import conveniences for testing with connections
       import Plug.Conn
       import Phoenix.ConnTest
+      # AuthTest is defined in test_helpers.exs
+      # as per https://stackoverflow.com/a/58902158/1148249
+      import AuthTest 
       alias AuthWeb.Router.Helpers, as: Routes
 
       # The default endpoint for testing
