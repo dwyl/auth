@@ -22,7 +22,7 @@ to manage the permissions assigned to the people using the App(s).
 Each role granted just enough flexibility and permissions 
 to perform the tasks required for their job, 
 this helps enforce the 
-[principal of least privilege](https://en.wikipedia.org/wiki/Principle_of_least_privilege)
+[principal of least privilege](https://en.wikipedia.org/wiki/Principle_of_least_privilege).
 
 The RBAC methodology is based on a set of three principal rules 
 that govern access to systems:
@@ -40,12 +40,41 @@ The purpose of role authorization
 is to ensure that people can only assume a role 
 for which they have been given the appropriate authorization. 
 When a person assumes a role, 
-they must do so with authorization from an administrator.
+they must do so with authorization from an admin.
 
 3. **Transaction Authorization**: 
 An operation can only be completed 
 if the person attempting to complete the transaction 
 possesses the appropriate role.
+
+
+### Default Roles
+
+We have defined the following 7 `default` roles based on our experience/research 
+into RBAC systems of several of the most popular applications
+including both "enterprise" (closed source) and popular open source CRM/CMS apps.
+
+| **`id`** | **`name`** | **`desc`** | `person_id` |
+| -------- | ---------- | ---------- | ----------- |
+| `1` | superadmin | Can **`CREATE`** new roles. Can **`CREATE`**, **`UPDATE`** and **`DELETE`** Any content. Can **`PURGE`** deleted items. Can "ban" any user including people with "Admin" Role. | 1 |
+| `2` | admin | Can **create** new roles and **assign** existing roles. Can **`CREATE`**, **`UPDATE`** and **`DELETE`** any content. Can "ban" any user except people with "admin" Role. Can see deleted content and un-delete it. Cannot _purge_ deleted. This guarantees audit-trail. | 1 | 
+| `3` | editor | Can **`CREATE`** and **`UPDATE`** _Any_ content. Can **"`DELETE`"** content. Cannot _see_ deleted content. | 1 |
+| `4` | creator | Can **`CREATE`** content. Can **`UPDATE`** their _own_ content. Can **`DELETE`** their _own_ content. | 1 |
+| `5` | commenter | Can **`COMMENT`** on content that has commenting enabled. | 1 |
+| `6` | subscriber | Can **`SUBSCRIBE`** to receive updates (e.g: newsletter), but has either not verified their account or has made negative comments and is therefore _not_ allowed to comment. | 1 |
+| `7` | banned | Can login and see their past content. Cannot create any new content. Can see the _reason_ for their banning (_which the Admin has to write when performing the "ban user" action. usually linked to a specific action the person performed like a particularly unacceptable comment._) | 1 | 
+
+The first 3 roles closely matches WordPress: 
+https://wordpress.org/support/article/roles-and-capabilities
+We have renamed "author" to "creator" to emphasize the creative part
+and the fact that we will allow for various types of content not just "posts".
+We have added a "**commenter** role as an "upgrade" to **subscriber**,
+to indicate that the person has the ability to _comment_ on content.
+Finally, we have added the concept of a "**banned**" role
+that still allows the person to login and view their _own_ content,
+but they have no other privileges.
+
+
 
 
 ## Who?
@@ -64,7 +93,10 @@ If you don't already have these schemas/tables,
 see: https://github.com/dwyl/app-mvp-phoenix#create-schemas
 
 
-Let's create the Database Schemas (Tables) to store our RBAC data,
+### Create `Roles` and `Permissions` Schemas
+
+Let's create the Database Schemas (Tables) 
+to store our RBAC data,
 starting with **`Roles`**:
 
 ```
@@ -76,12 +108,18 @@ Next create the permissions schema:
 mix phx.gen.html Ctx Permission permissions name:string desc:string person_id:references:people
 ```
 
-Next create the **`many-to-many`** relationship between roles and permissions.
+We placed the roles and permissions resources in an **`auth`** pipeline
+because we only want people with **`superadmin`** role to access them.
+
+
+### Create Associations
+
+Next create the **`many-to-many`** relationship 
+between roles and permissions.
 
 ```
 mix ecto.gen.migration create_role_permissions
 ```
-
 
 
 Now create the **`many-to-many`** relationship between people and roles:
@@ -89,6 +127,7 @@ Now create the **`many-to-many`** relationship between people and roles:
 ```
 mix ecto.gen.migration create_people_roles
 ```
+
 
 
 
