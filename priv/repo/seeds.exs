@@ -52,7 +52,9 @@ defmodule Auth.Seeds do
 
   # write the key:value pair to project .env file
   def write_env(key, value) do
+    IO.inspect(File.cwd!)
     path = File.cwd! <> "/.env"
+    IO.inspect(path, label: "path")
     {:ok, data} = File.read(path)
 
     lines = String.split(data, "\n") 
