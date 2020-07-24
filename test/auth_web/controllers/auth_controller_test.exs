@@ -49,6 +49,23 @@ defmodule AuthWeb.AuthControllerTest do
     assert conn.resp_body =~ "state=http://localhost/admin"
   end
 
+  test "get_client_secret(client_id, state) gets the secret for the given client_id" do
+
+    person = Auth.Person.create_person(%{
+      email: "alex@gmail.com",
+      auth_provider: "email"
+    })
+
+    {:ok, key} = %{"name" => "test key", "url" => "example.com"}
+    |> AuthWeb.ApikeyController.make_apikey(person.id)
+    |> Auth.Apikey.create_apikey()
+
+    state = "https://www.example.com/profile?auth_client_id=#{key.client_id}"
+    secret = AuthWeb.AuthController.get_client_secret(key.client_id, state)
+    
+    assert secret == key.client_secret
+  end
+
   test "github_handler/2 github auth callback", %{conn: conn} do
     baseurl = AuthPlug.Helpers.get_baseurl_from_conn(conn)
 
