@@ -56,6 +56,7 @@ defmodule Auth.Seeds do
     path = File.cwd! <> "/.env"
     IO.inspect(path, label: "path")
     {:ok, data} = File.read(path)
+    # IO.inspect(data)
 
     lines = String.split(data, "\n") 
     |> Enum.filter(fn line -> 
@@ -76,6 +77,7 @@ defmodule Auth.Seeds do
       |> String.replace("'", "")
       |> String.split("=")
 
+      IO.inspect(List.last(parts), label: List.first(parts))
       System.put_env(List.first(parts), List.last(parts))
     end)
   end
