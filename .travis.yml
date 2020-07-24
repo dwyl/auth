@@ -8,6 +8,7 @@ services:
 env:
   - MIX_ENV=test
 before_script:
+  - echo "export MIX_ENV=test" > .env
   - mix ecto.setup
 script:
   - mix do deps.get, coveralls.json
