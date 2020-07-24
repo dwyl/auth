@@ -40,7 +40,6 @@ defmodule Auth.Seeds do
       %{
         "name" => "system admin key",
         "description" => "Created by /priv/repo/seeds.exs during setup.",
-        # the default host in %Plug.Conn
         "url" => "localhost:4000"
       }
       |> AuthWeb.ApikeyController.make_apikey(person.id)
@@ -48,18 +47,38 @@ defmodule Auth.Seeds do
 
     api_key = key.client_id <> "/" <> key.client_secret
     # set the AUTH_API_KEY during test run:
-    System.put_env("AUTH_API_KEY", api_key)
+    write_env("AUTH_API_KEY", api_key)
+  end
 
-    if(Mix.env() == :test) do
-      # don't print noise during tests
-    else
-      IO.puts("Remember to set the AUTH_API_KEY environment variable:")
-      IO.puts("export AUTH_API_KEY=#{api_key}")
-      IO.puts("- - - - - - - - - - - - - - - - - - - - - - ")
-    end
-    key
+  # write the key:value pair to project .env file
+  def write_env(key, value) do
+    path = File.cwd! <> "/.env"
+    {:ok, data} = File.read(path)
+
+    lines = String.split(data, "\n") 
+    |> Enum.filter(fn line -> 
+      not String.contains?(line, key)  
+    end)
+    str = "export #{key}=#{value}" # |> IO.inspect
+    vars = lines ++ [str]
+    content = Enum.join(vars, "\n")
+    File.write!(path, content) |> File.close()
+    env(vars)
+  end
+
+  # export all the environment variables during app excution/tests
+  def env(vars) do
+    Enum.map(vars, fn line ->
+      parts = line
+      |> String.replace("export ", "")
+      |> String.replace("'", "")
+      |> String.split("=")
+
+      System.put_env(List.first(parts), List.last(parts))
+    end)
   end
 end
+
 
 Auth.Seeds.create_admin()
 |> Auth.Seeds.create_apikey_for_admin()
