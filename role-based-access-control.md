@@ -93,6 +93,7 @@ If you don't already have these schemas/tables,
 see: https://github.com/dwyl/app-mvp-phoenix#create-schemas
 
 
+
 ### Create `Roles` and `Permissions` Schemas
 
 Let's create the Database Schemas (Tables) 
@@ -125,7 +126,7 @@ mix ecto.gen.migration create_role_permissions
 ```
 
 Open the file that was just created, e.g: 
-[`priv/repo/migrations/20200723143204_create_role_permissions.exs`]()
+[`priv/repo/migrations/20200723143204_create_role_permissions.exs`](https://github.com/dwyl/auth/blob/ef4261d09a702c4003cd84f30dabe630b47922d2/priv/repo/migrations/20200723143204_create_role_permissions.exs)
 
 And replace the contents with:
 ```elixir
@@ -156,7 +157,7 @@ mix ecto.gen.migration create_people_roles
 ```
 
 Open the migration file that was just created, e.g: 
-[`/Users/n/code/auth/priv/repo/migrations/20200723154847_create_people_roles.exs`]()
+[`/Users/n/code/auth/priv/repo/migrations/20200723154847_create_people_roles.exs`](https://github.com/dwyl/auth/blob/ef4261d09a702c4003cd84f30dabe630b47922d2/priv/repo/migrations/20200723154847_create_people_roles.exs)
 
 
 Replace the contents of the file with the following code:
@@ -179,7 +180,26 @@ defmodule Auth.Repo.Migrations.CreatePeopleRoles do
 end
 ```
 
-This 
+This is all we need in terms of database tables for now.
+Run:
+```
+mix ecto.migrate
+```
+To create the tables.
+
+The Entity Relationship Diagram (ERD) should now look like this:
+
+[![auth-erd-with-roles-permissions](https://user-images.githubusercontent.com/194400/88439166-5c2e0e00-ce02-11ea-93ce-11c3a721cb18.png "Schema Diagram - Click to Enlarge")](https://user-images.githubusercontent.com/194400/88439166-5c2e0e00-ce02-11ea-93ce-11c3a721cb18.png)
+
+Next we need to create a script 
+that inserts the default roles and permissions
+during the setup of the Auth App. 
+
+### Setup Default Roles & Permissions
+
+
+
+
 
 
 

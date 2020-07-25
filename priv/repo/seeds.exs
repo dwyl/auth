@@ -52,9 +52,9 @@ defmodule Auth.Seeds do
 
   # write the key:value pair to project .env file
   def write_env(key, value) do
-    IO.inspect(File.cwd!, label: "CWD")
+    # IO.inspect(File.cwd!, label: "cwd")
     path = File.cwd! <> "/.env"
-    IO.inspect(path, label: "path")
+    IO.inspect(path, label: ".env file path")
     {:ok, data} = File.read(path)
     # IO.inspect(data)
 
@@ -77,12 +77,36 @@ defmodule Auth.Seeds do
       |> String.replace("'", "")
       |> String.split("=")
 
-      IO.inspect(List.last(parts), label: List.first(parts))
+      # IO.inspect(List.last(parts), label: List.first(parts))
       System.put_env(List.first(parts), List.last(parts))
     end)
   end
 end
 
-
 Auth.Seeds.create_admin()
 |> Auth.Seeds.create_apikey_for_admin()
+
+
+# scripts for creating default roles and permissions
+defmodule SetupRoles do
+  alias Auth.Role
+
+  def get_json(filepath) do
+    # IO.inspect(filepath, label: "filepath")
+    path = File.cwd! <> filepath
+    # IO.inspect(path, label: "path")
+    {:ok, data} = File.read(path)
+    json = Jason.decode!(data)
+    # IO.inspect(json)
+    json
+  end
+
+  def create_default_roles() do
+    json = get_json("/priv/repo/default_roles.json")
+    Enum.each(json, fn role -> 
+      Role.create_role(role)
+    end)
+  end
+end
+
+SetupRoles.create_default_roles()

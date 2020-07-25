@@ -1,0 +1,12 @@
+[
+  {
+    "name": "superadmin", 
+    "desc": "With great power comes great responsibility", 
+    "person_id": "1"
+  },
+  {
+    "name": "admin", 
+    "desc": "Can perform all system administration tasks", 
+    "person_id": "1"
+  }
+]

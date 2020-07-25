@@ -17,7 +17,7 @@ defmodule Auth.Role do
   @doc false
   def changeset(role, attrs) do
     role
-    |> cast(attrs, [:name, :desc])
+    |> cast(attrs, [:name, :desc, :person_id])
     |> validate_required([:name, :desc])
   end
 
