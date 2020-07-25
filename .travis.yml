@@ -8,6 +8,7 @@ services:
 env:
   - MIX_ENV=test
 before_script:
+  # create .env file on Travis-CI:
   - echo "export MIX_ENV=test" > .env
   - mix ecto.setup
 script:

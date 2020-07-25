@@ -46,13 +46,13 @@ defmodule Auth.Seeds do
       |> Auth.Apikey.create_apikey()
 
     api_key = key.client_id <> "/" <> key.client_secret
-    # set the AUTH_API_KEY during test run:
+    # set the AUTH_API_KEY environment variable during test run:
     write_env("AUTH_API_KEY", api_key)
   end
 
   # write the key:value pair to project .env file
   def write_env(key, value) do
-    IO.inspect(File.cwd!)
+    IO.inspect(File.cwd!, label: "CWD")
     path = File.cwd! <> "/.env"
     IO.inspect(path, label: "path")
     {:ok, data} = File.read(path)

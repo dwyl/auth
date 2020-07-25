@@ -1,21 +1,20 @@
 defmodule AuthWeb.RoleController do
   use AuthWeb, :controller
 
-  alias Auth.Ctx
-  alias Auth.Ctx.Role
+  alias Auth.Role
 
   def index(conn, _params) do
-    roles = Ctx.list_roles()
+    roles = Role.list_roles()
     render(conn, "index.html", roles: roles)
   end
 
   def new(conn, _params) do
-    changeset = Ctx.change_role(%Role{})
+    changeset = Role.change_role(%Role{})
     render(conn, "new.html", changeset: changeset)
   end
 
   def create(conn, %{"role" => role_params}) do
-    case Ctx.create_role(role_params) do
+    case Role.create_role(role_params) do
       {:ok, role} ->
         conn
         |> put_flash(:info, "Role created successfully.")
@@ -27,20 +26,20 @@ defmodule AuthWeb.RoleController do
   end
 
   def show(conn, %{"id" => id}) do
-    role = Ctx.get_role!(id)
+    role = Role.get_role!(id)
     render(conn, "show.html", role: role)
   end
 
   def edit(conn, %{"id" => id}) do
-    role = Ctx.get_role!(id)
-    changeset = Ctx.change_role(role)
+    role = Role.get_role!(id)
+    changeset = Role.change_role(role)
     render(conn, "edit.html", role: role, changeset: changeset)
   end
 
   def update(conn, %{"id" => id, "role" => role_params}) do
-    role = Ctx.get_role!(id)
+    role = Role.get_role!(id)
 
-    case Ctx.update_role(role, role_params) do
+    case Role.update_role(role, role_params) do
       {:ok, role} ->
         conn
         |> put_flash(:info, "Role updated successfully.")
@@ -52,8 +51,8 @@ defmodule AuthWeb.RoleController do
   end
 
   def delete(conn, %{"id" => id}) do
-    role = Ctx.get_role!(id)
-    {:ok, _role} = Ctx.delete_role(role)
+    role = Role.get_role!(id)
+    {:ok, _role} = Role.delete_role(role)
 
     conn
     |> put_flash(:info, "Role deleted successfully.")

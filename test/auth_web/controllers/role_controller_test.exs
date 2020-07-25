@@ -1,14 +1,14 @@
 defmodule AuthWeb.RoleControllerTest do
   use AuthWeb.ConnCase
 
-  alias Auth.Ctx
+  alias Auth.Role
 
   @create_attrs %{desc: "some desc", name: "some name"}
   @update_attrs %{desc: "some updated desc", name: "some updated name"}
   @invalid_attrs %{desc: nil, name: nil}
 
   def fixture(:role) do
-    {:ok, role} = Ctx.create_role(@create_attrs)
+    {:ok, role} = Role.create_role(@create_attrs)
     role
   end
 
