@@ -1,12 +1,25 @@
-defmodule Auth.Ctx do
-  @moduledoc """
-  The Ctx context.
-  """
-
+defmodule Auth.Permission do
+  use Ecto.Schema
+  import Ecto.Changeset
   import Ecto.Query, warn: false
   alias Auth.Repo
+  # alias the Struct so we can use it below
+  alias Auth.Permission
 
-  alias Auth.Ctx.Permission
+  schema "permissions" do
+    field :desc, :string
+    field :name, :string
+    field :person_id, :id
+
+    timestamps()
+  end
+
+  @doc false
+  def changeset(permission, attrs) do
+    permission
+    |> cast(attrs, [:name, :desc])
+    |> validate_required([:name, :desc])
+  end
 
   @doc """
   Returns the list of permissions.
@@ -18,7 +31,7 @@ defmodule Auth.Ctx do
 
   """
   def list_permissions do
-    Repo.all(Permission)
+    Repo.all(__MODULE__)
   end
 
   @doc """
@@ -35,7 +48,7 @@ defmodule Auth.Ctx do
       ** (Ecto.NoResultsError)
 
   """
-  def get_permission!(id), do: Repo.get!(Permission, id)
+  def get_permission!(id), do: Repo.get!(__MODULE__, id)
 
   @doc """
   Creates a permission.
@@ -101,4 +114,5 @@ defmodule Auth.Ctx do
   def change_permission(%Permission{} = permission, attrs \\ %{}) do
     Permission.changeset(permission, attrs)
   end
+
 end

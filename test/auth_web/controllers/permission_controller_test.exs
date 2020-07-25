@@ -1,14 +1,14 @@
 defmodule AuthWeb.PermissionControllerTest do
   use AuthWeb.ConnCase
 
-  alias Auth.Ctx
+  alias Auth.Permission
 
   @create_attrs %{desc: "some desc", name: "some name"}
   @update_attrs %{desc: "some updated desc", name: "some updated name"}
   @invalid_attrs %{desc: nil, name: nil}
 
   def fixture(:permission) do
-    {:ok, permission} = Ctx.create_permission(@create_attrs)
+    {:ok, permission} = Permission.create_permission(@create_attrs)
     permission
   end
 
