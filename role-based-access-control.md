@@ -65,15 +65,30 @@ including both "enterprise" (closed source) and popular open source CRM/CMS apps
 | -------- | ---------- | ---------- | ----------- |
 | `1` | superadmin | Can **`CREATE`** new roles. Can **`CREATE`**, **`UPDATE`** and **`DELETE`** Any content. Can **`PURGE`** deleted items. Can "ban" any user including people with "Admin" Role. | 1 |
 | `2` | admin | Can **create** new roles and **assign** existing roles. Can **`CREATE`**, **`UPDATE`** and **`DELETE`** any content. Can "ban" any user except people with "admin" Role. Can see deleted content and un-delete it. Cannot _purge_ deleted. This guarantees audit-trail. | 1 | 
-| `3` | editor | Can **`CREATE`** and **`UPDATE`** _Any_ content. Can **"`DELETE`"** content. Cannot _see_ deleted content. | 1 |
+| `3` | moderator | Can neutrally moderate _any_ content. Can _ban_ rule-breaking `people`. Cannot **"`DELETE`"** content. | 1 |
 | `4` | creator | Can **`CREATE`** content. Can **`UPDATE`** their _own_ content. Can **`DELETE`** their _own_ content. | 1 |
 | `5` | commenter | Can **`COMMENT`** on content that has commenting enabled. | 1 |
 | `6` | subscriber | Can **`SUBSCRIBE`** to receive updates (e.g: newsletter), but has either not verified their account or has made negative comments and is therefore _not_ allowed to comment. | 1 |
 | `7` | banned | Can login and see their past content. Cannot create any new content. Can see the _reason_ for their banning (_which the Admin has to write when performing the "ban user" action. usually linked to a specific action the person performed like a particularly unacceptable comment._) | 1 | 
 
-The first 3 roles closely matches WordPress: 
+These roles are loosely inspired by WordPress: 
 https://wordpress.org/support/article/roles-and-capabilities <br />
-We have renamed "author" to "creator" to emphasize that creating content 
+The **`superadmin`** and **`admin`** roles make sense:
+The person who can perform "system administration" tasks like updating the schemas/code,
+this is the **`superadmin`** or "**owner**" of the application. 
+Typically there is only ***one*** **`superadmin`**,
+this person is ultimately responsible for _everything_. 
+The people who are responsible for _maintaining_ the site/app 
+including the `content` and `people`
+are given the **`admin`** role; 
+they can see everything that is going on.
+
+The **`admin`** role should 
+We have renamed "editor" to "moderator"
+because we feel this role is more _relevant_ in a multi-content setting
+see: https://en.wikipedia.org/wiki/Moderator
+We have also renamed "author" to "creator" 
+to emphasize that creating content 
 is more than just "authoring" text. 
 There will be various types of content not just "posts".
 We have added a "**commenter** role as an "upgrade" to **subscriber**,

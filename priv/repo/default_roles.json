@@ -8,5 +8,30 @@
     "name": "admin", 
     "desc": "Can perform all system administration tasks", 
     "person_id": "1"
+  },
+  {
+    "name": "moderator", 
+    "desc": "Can view and neutrally moderate any content. Can ban rule-breakers. Cannot delete.", 
+    "person_id": "1"
+  },
+  {
+    "name": "creator", 
+    "desc": "Can create any content. Can edit and delete their own content.", 
+    "person_id": "1"
+  },
+  {
+    "name": "commenter", 
+    "desc": "Can comment on content where commenting is available.", 
+    "person_id": "1"
+  },
+  {
+    "name": "subscriber", 
+    "desc": "Subscribes for updates e.g. newsletter or content from a specific person. Cannot comment until verified.", 
+    "person_id": "1"
+  },
+  {
+    "name": "banned", 
+    "desc": "Can still login to see their content but cannot perform any other action.", 
+    "person_id": "1"
   }
 ]
