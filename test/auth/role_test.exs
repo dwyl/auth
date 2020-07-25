@@ -19,7 +19,7 @@ defmodule Auth.RoleTest do
 
     test "list_roles/0 returns all roles" do
       role = role_fixture()
-      assert Role.list_roles() == [role]
+      assert Role.list_roles() |> List.last() == role
     end
 
     test "get_role!/1 returns the role with given id" do
