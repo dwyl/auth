@@ -107,6 +107,8 @@ defmodule SetupRoles do
       Role.create_role(role)
     end)
   end
+
+  
 end
 
 SetupRoles.create_default_roles()
