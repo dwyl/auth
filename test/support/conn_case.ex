@@ -24,7 +24,7 @@ defmodule AuthWeb.ConnCase do
       import Phoenix.ConnTest
       # AuthTest is defined in test_helpers.exs
       # as per https://stackoverflow.com/a/58902158/1148249
-      import AuthTest 
+      import AuthTest
       alias AuthWeb.Router.Helpers, as: Routes
 
       # The default endpoint for testing
@@ -39,8 +39,10 @@ defmodule AuthWeb.ConnCase do
       Ecto.Adapters.SQL.Sandbox.mode(Auth.Repo, {:shared, self()})
     end
 
-    conn = Phoenix.ConnTest.build_conn()
-    |> Phoenix.ConnTest.init_test_session(%{})
+    conn =
+      Phoenix.ConnTest.build_conn()
+      |> Phoenix.ConnTest.init_test_session(%{})
+
     # invoke Plug.Test.init_test_session/2 to setup the test session
     # before attempting to set a JWT. see:
     # https://github.com/dwyl/auth/issues/83#issuecomment-660052222

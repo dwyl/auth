@@ -74,8 +74,9 @@ defmodule AuthWeb.ApikeyControllerTest do
   #
   describe "index" do
     test "lists all apikeys", %{conn: conn} do
-      conn = admin_login(conn)
-      |> get(Routes.apikey_path(conn, :index))
+      conn =
+        admin_login(conn)
+        |> get(Routes.apikey_path(conn, :index))
 
       assert html_response(conn, 200) =~ "Auth API Keys"
     end
@@ -83,8 +84,9 @@ defmodule AuthWeb.ApikeyControllerTest do
 
   describe "new apikey" do
     test "renders form", %{conn: conn} do
-      conn = admin_login(conn)
-      |> get(Routes.apikey_path(conn, :new))
+      conn =
+        admin_login(conn)
+        |> get(Routes.apikey_path(conn, :new))
 
       assert html_response(conn, 200) =~ "New Apikey"
     end
@@ -92,8 +94,9 @@ defmodule AuthWeb.ApikeyControllerTest do
 
   describe "create apikey" do
     test "redirects to show when data is valid", %{conn: conn} do
-      conn = admin_login(conn)
-      |> post(Routes.apikey_path(conn, :create), apikey: @create_attrs)
+      conn =
+        admin_login(conn)
+        |> post(Routes.apikey_path(conn, :create), apikey: @create_attrs)
 
       assert %{id: id} = redirected_params(conn)
       assert redirected_to(conn) == Routes.apikey_path(conn, :show, id)
@@ -134,7 +137,7 @@ defmodule AuthWeb.ApikeyControllerTest do
           auth_provider: "email"
         })
 
-        conn = AuthPlug.create_jwt_session(conn, wrong_person)
+      conn = AuthPlug.create_jwt_session(conn, wrong_person)
 
       {:ok, key} =
         %{"name" => "test key", "url" => "http://localhost:4000"}

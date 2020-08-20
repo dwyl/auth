@@ -22,8 +22,7 @@ defmodule Auth.Role do
     |> validate_required([:name, :desc])
   end
 
-
-@doc """
+  @doc """
   Returns the list of roles.
 
   ## Examples
@@ -117,12 +116,10 @@ defmodule Auth.Role do
     Role.changeset(role, attrs)
   end
 
-
   # @doc """
   # grants the default "subscriber" (6) role to the person
   # """ 
   # def set_default_role(person) do
-    
-  # end
 
+  # end
 end

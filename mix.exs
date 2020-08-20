@@ -73,7 +73,7 @@ defmodule Auth.Mixfile do
       {:ping, "~> 1.0.1"},
 
       # Check test coverage
-      {:excoveralls, "~> 0.12.3", only: :test}, 
+      {:excoveralls, "~> 0.12.3", only: :test},
 
       #  Property based tests: github.com/dwyl/learn-property-based-testing
       {:stream_data, "~> 0.4.3", only: :test},

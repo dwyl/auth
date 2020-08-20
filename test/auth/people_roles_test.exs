@@ -17,11 +17,10 @@ defmodule AuthWeb.PeopleRolesTest do
   test "attempt to grant_role/3 without admin should 401", %{conn: conn} do
     alex = %{email: "alex_grant_role_fail@gmail.com", auth_provider: "email"}
     grantee = Auth.Person.create_person(alex)
-    conn = assign(conn, :person, grantee) # 
+    conn = assign(conn, :person, grantee)
     role_id = 4
     conn = Auth.PeopleRoles.grant_role(conn, grantee.id, role_id)
 
     assert conn.status == 401
   end
-
 end

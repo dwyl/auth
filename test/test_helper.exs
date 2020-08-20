@@ -1,7 +1,6 @@
 ExUnit.start()
 Ecto.Adapters.SQL.Sandbox.mode(Auth.Repo, :manual)
 
-
 defmodule AuthTest do
   @moduledoc """
   Test helper functions :-)

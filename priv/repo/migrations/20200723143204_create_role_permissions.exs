@@ -6,10 +6,10 @@ defmodule Auth.Repo.Migrations.CreateRolePermissions do
       add :role_id, references(:roles, on_delete: :nothing)
       add :permission_id, references(:permissions, on_delete: :nothing)
       add :granter_id, references(:people, on_delete: :nothing)
-  
+
       timestamps()
     end
-  
+
     create unique_index(:role_permissions, [:role_id, :permission_id])
   end
 end

@@ -22,8 +22,10 @@ defmodule AuthWeb.AuthControllerTest do
     }
 
     person = Auth.Person.create_person(data)
-    conn = AuthPlug.create_jwt_session(conn, Map.merge(data, %{id: person.id}))
-    |> get("/profile", %{})
+
+    conn =
+      AuthPlug.create_jwt_session(conn, Map.merge(data, %{id: person.id}))
+      |> get("/profile", %{})
 
     assert html_response(conn, 200) =~ "Google account"
   end
@@ -50,19 +52,20 @@ defmodule AuthWeb.AuthControllerTest do
   end
 
   test "get_client_secret(client_id, state) gets the secret for the given client_id" do
+    person =
+      Auth.Person.create_person(%{
+        email: "alex@gmail.com",
+        auth_provider: "email"
+      })
 
-    person = Auth.Person.create_person(%{
-      email: "alex@gmail.com",
-      auth_provider: "email"
-    })
-
-    {:ok, key} = %{"name" => "test key", "url" => "example.com"}
-    |> AuthWeb.ApikeyController.make_apikey(person.id)
-    |> Auth.Apikey.create_apikey()
+    {:ok, key} =
+      %{"name" => "test key", "url" => "example.com"}
+      |> AuthWeb.ApikeyController.make_apikey(person.id)
+      |> Auth.Apikey.create_apikey()
 
     state = "https://www.example.com/profile?auth_client_id=#{key.client_id}"
     secret = AuthWeb.AuthController.get_client_secret(key.client_id, state)
-    
+
     assert secret == key.client_secret
   end
 
@@ -126,8 +129,9 @@ defmodule AuthWeb.AuthControllerTest do
 
     person = Auth.Person.upsert_person(data)
 
-    conn = AuthPlug.create_jwt_session(conn, person)
-    |> get("/auth/google/callback", %{"code" => "234", "state" => nil})
+    conn =
+      AuthPlug.create_jwt_session(conn, person)
+      |> get("/auth/google/callback", %{"code" => "234", "state" => nil})
 
     assert html_response(conn, 200) =~ "Google account"
   end

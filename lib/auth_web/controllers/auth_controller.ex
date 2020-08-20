@@ -426,7 +426,7 @@ defmodule AuthWeb.AuthController do
       Enum.filter(apikeys, fn k ->
         # if the API Key belongs to Super Admin, don't check URL as it's the "setup key":
         if person_id == 1 do
-          k.client_id == client_id 
+          k.client_id == client_id
         else
           # check url matches the state for all other keys:
           k.client_id == client_id and state =~ k.url

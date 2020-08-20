@@ -13,7 +13,6 @@ defmodule Auth.PeopleRoles do
     timestamps()
   end
 
-
   @doc """
   grant_role/3 grants a role to the given person
   the conn must have conn.assigns.person to check for admin in order to grant the role.
@@ -34,7 +33,5 @@ defmodule Auth.PeopleRoles do
     else
       AuthWeb.AuthController.unauthorized(conn)
     end
-
   end
-
 end

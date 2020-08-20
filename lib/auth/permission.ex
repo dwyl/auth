@@ -114,5 +114,4 @@ defmodule Auth.Permission do
   def change_permission(%Permission{} = permission, attrs \\ %{}) do
     Permission.changeset(permission, attrs)
   end
-
 end

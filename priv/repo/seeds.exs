@@ -26,13 +26,14 @@ defmodule Auth.Seeds do
         person ->
           person
       end
+
     if(Mix.env() == :test) do
       # don't print noise during tests
     else
       IO.inspect(person.id, label: "seeds.exs person.id")
       IO.puts("- - - - - - - - - - - - - - - - - - - - - - ")
     end
-    
+
     person
   end
 
@@ -59,16 +60,19 @@ defmodule Auth.Seeds do
   # write the key:value pair to project .env file
   def write_env(key, value) do
     # IO.inspect(File.cwd!, label: "cwd")
-    path = File.cwd! <> "/.env"
+    path = File.cwd!() <> "/.env"
     IO.inspect(path, label: ".env file path")
     {:ok, data} = File.read(path)
     # IO.inspect(data)
 
-    lines = String.split(data, "\n") 
-    |> Enum.filter(fn line -> 
-      not String.contains?(line, key)  
-    end)
-    str = "export #{key}=#{value}" # |> IO.inspect
+    lines =
+      String.split(data, "\n")
+      |> Enum.filter(fn line ->
+        not String.contains?(line, key)
+      end)
+
+    # |> IO.inspect
+    str = "export #{key}=#{value}"
     vars = lines ++ [str]
     content = Enum.join(vars, "\n")
     File.write!(path, content) |> File.close()
@@ -78,10 +82,11 @@ defmodule Auth.Seeds do
   # export all the environment variables during app excution/tests
   def env(vars) do
     Enum.map(vars, fn line ->
-      parts = line
-      |> String.replace("export ", "")
-      |> String.replace("'", "")
-      |> String.split("=")
+      parts =
+        line
+        |> String.replace("export ", "")
+        |> String.replace("'", "")
+        |> String.split("=")
 
       # IO.inspect(List.last(parts), label: List.first(parts))
       System.put_env(List.first(parts), List.last(parts))
@@ -92,14 +97,13 @@ end
 Auth.Seeds.create_admin()
 |> Auth.Seeds.create_apikey_for_admin()
 
-
 # scripts for creating default roles and permissions
 defmodule SetupRoles do
   alias Auth.Role
 
   def get_json(filepath) do
     # IO.inspect(filepath, label: "filepath")
-    path = File.cwd! <> filepath
+    path = File.cwd!() <> filepath
     # IO.inspect(path, label: "path")
     {:ok, data} = File.read(path)
     json = Jason.decode!(data)
@@ -109,17 +113,15 @@ defmodule SetupRoles do
 
   def create_default_roles() do
     json = get_json("/priv/repo/default_roles.json")
-    Enum.each(json, fn role -> 
+
+    Enum.each(json, fn role ->
       Role.create_role(role)
       # |> IO.inspect()
     end)
   end
 
   def assign_superadmin_role() do
-    
   end
-
-  
 end
 
 SetupRoles.create_default_roles()

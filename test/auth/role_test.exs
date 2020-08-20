@@ -47,8 +47,7 @@ defmodule Auth.RoleTest do
 
     test "update_role/2 with invalid data returns error changeset" do
       role = role_fixture()
-      assert {:error, %Ecto.Changeset{}} = 
-        Role.update_role(role, @invalid_attrs)
+      assert {:error, %Ecto.Changeset{}} = Role.update_role(role, @invalid_attrs)
       assert role == Role.get_role!(role.id)
     end
 
@@ -91,37 +90,40 @@ defmodule Auth.RoleTest do
     end
 
     test "create_permission/1 with valid data creates a permission" do
-      assert {:ok, %Permission{} = permission} = 
-        Permission.create_permission(@valid_attrs)
+      assert {:ok, %Permission{} = permission} = Permission.create_permission(@valid_attrs)
       assert permission.desc == "some desc"
       assert permission.name == "some name"
     end
 
     test "create_permission/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = 
-        Permission.create_permission(@invalid_attrs)
+      assert {:error, %Ecto.Changeset{}} = Permission.create_permission(@invalid_attrs)
     end
 
     test "update_permission/2 with valid data updates the permission" do
       permission = permission_fixture()
-      assert {:ok, %Permission{} = permission} = 
-        Permission.update_permission(permission, @update_attrs)
+
+      assert {:ok, %Permission{} = permission} =
+               Permission.update_permission(permission, @update_attrs)
+
       assert permission.desc == "some updated desc"
       assert permission.name == "some updated name"
     end
 
     test "update_permission/2 with invalid data returns error changeset" do
       permission = permission_fixture()
-      assert {:error, %Ecto.Changeset{}} = 
-        Permission.update_permission(permission, @invalid_attrs)
+
+      assert {:error, %Ecto.Changeset{}} =
+               Permission.update_permission(permission, @invalid_attrs)
+
       assert permission == Permission.get_permission!(permission.id)
     end
 
     test "delete_permission/1 deletes the permission" do
       permission = permission_fixture()
       assert {:ok, %Permission{}} = Permission.delete_permission(permission)
-      assert_raise Ecto.NoResultsError, fn -> 
-        Permission.get_permission!(permission.id) 
+
+      assert_raise Ecto.NoResultsError, fn ->
+        Permission.get_permission!(permission.id)
       end
     end
 
@@ -131,15 +133,9 @@ defmodule Auth.RoleTest do
     end
   end
 
-  
   # create a new person and confirm they were asigned a default role of "subscriber"
-    
-
 
   # describe "grant role" do
-
-
-
 
   #   # test "change_permission/1 returns a permission changeset" do
   #   #   permission = permission_fixture()
