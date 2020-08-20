@@ -58,4 +58,20 @@ defmodule AuthWeb.RoleController do
     |> put_flash(:info, "Role deleted successfully.")
     |> redirect(to: Routes.role_path(conn, :index))
   end
+
+  @doc """
+  grant_role/3 grants a role to the given person
+  the conn must have conn.assigns.person to check for admin in order to grant the role.
+  grantee_id should be a valid person.id (the person you want to grant the role to) and
+  role_id a valid role.id
+  """
+  # def grant_role(conn, grantee_id, role_id) do
+  #   # confirm that the granter is either superadmin (conn.assigns.person.id == 1)
+  #   # or has an "admin" role (1 || 2)
+  #   if granter.id == 1 do
+  #     conn
+  #   else
+  #     AuthWeb.AuthController.unauthorized(conn)
+  #   end
+  # end
 end

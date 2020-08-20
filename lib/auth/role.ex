@@ -7,7 +7,7 @@ defmodule Auth.Role do
   import Ecto.Query, warn: false
   alias Auth.Repo
   # https://stackoverflow.com/a/47501059/1148249
-  alias __MODULE__ 
+  alias __MODULE__
 
   schema "roles" do
     field :desc, :string

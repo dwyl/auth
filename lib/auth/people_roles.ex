@@ -18,33 +18,22 @@ defmodule Auth.PeopleRoles do
   end
 
   @doc """
-  Returns the list of people_roles.
+  Returns the list of people_roles with all people data.
+  This is useful for displaying the data in a admin overview table.
   """
   def list_people_roles do
     Repo.all(from pr in __MODULE__, preload: [:person, :role])
   end
 
-
-
   @doc """
   grant_role/3 grants a role to the given person
   the conn must have conn.assigns.person to check for admin in order to grant the role.
   """
-  def grant_role(conn, grantee_id, role_id) do
-    granter = conn.assigns.person
-    # IO.inspect(granter, label: "granter")
-    # confirm that the granter is either superadmin (conn.assigns.person.id == 1)
-    # or has an "admin" role (1 || 2)
-    if granter.id == 1 do
-      %PeopleRoles{}
-      |> cast(%{granter_id: granter.id}, [:granter_id])
-      |> put_assoc(:person, Auth.Person.get_person_by_id(grantee_id))
-      |> put_assoc(:role, Auth.Role.get_role!(role_id))
-      |> Repo.insert()
-
-      conn
-    else
-      AuthWeb.AuthController.unauthorized(conn)
-    end
+  def insert(granter_id, grantee_id, role_id) do
+    %PeopleRoles{}
+    |> cast(%{granter_id: granter_id}, [:granter_id])
+    |> put_assoc(:person, Auth.Person.get_person_by_id(grantee_id))
+    |> put_assoc(:role, Auth.Role.get_role!(role_id))
+    |> Repo.insert()
   end
 end

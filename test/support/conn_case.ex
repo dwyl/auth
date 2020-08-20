@@ -39,7 +39,7 @@ defmodule AuthWeb.ConnCase do
       Ecto.Adapters.SQL.Sandbox.mode(Auth.Repo, {:shared, self()})
     end
 
-    conn = Phoenix.ConnTest.init_test_session(Phoenix.ConnTest.build_conn, %{})
+    conn = Phoenix.ConnTest.init_test_session(Phoenix.ConnTest.build_conn(), %{})
 
     # invoke Plug.Test.init_test_session/2 to setup the test session
     # before attempting to set a JWT. see:
