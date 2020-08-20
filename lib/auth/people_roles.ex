@@ -1,4 +1,7 @@
 defmodule Auth.PeopleRoles do
+  @moduledoc """
+  Defines people_roles schema and fuction to grant roles to a person.
+  """
   use Ecto.Schema
   import Ecto.Changeset
   alias Auth.Repo

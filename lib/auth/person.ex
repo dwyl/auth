@@ -1,4 +1,7 @@
 defmodule Auth.Person do
+  @moduledoc """
+  Defines Person schema and CRUD functions
+  """
   use Ecto.Schema
   import Ecto.Changeset
   alias Auth.Repo

@@ -1,4 +1,7 @@
 defmodule AuthWeb.Router do
+  @moduledoc """
+  Defines Web Application Router pipelines and routes
+  """
   use AuthWeb, :router
 
   pipeline :browser do

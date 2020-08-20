@@ -1,4 +1,7 @@
 defmodule AuthWeb.ApikeyController do
+  @moduledoc """
+  Defines API Key controller functions
+  """
   use AuthWeb, :controller
   alias Auth.Apikey
 

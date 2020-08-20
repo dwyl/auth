@@ -1,4 +1,7 @@
 defmodule Auth.Permission do
+  @moduledoc """
+  Defines Rermission schema and CRUD functions
+  """
   use Ecto.Schema
   import Ecto.Changeset
   import Ecto.Query, warn: false

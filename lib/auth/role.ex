@@ -1,4 +1,7 @@
 defmodule Auth.Role do
+  @moduledoc """
+  Defines Role schema and CRUD functions
+  """
   use Ecto.Schema
   import Ecto.Changeset
   import Ecto.Query, warn: false

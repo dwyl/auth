@@ -1,4 +1,7 @@
 defmodule Auth.Mixfile do
+  @moduledoc """
+  Defines the Mix Project, Dependencies and Scripts
+  """
   use Mix.Project
 
   def project do

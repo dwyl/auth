@@ -1,4 +1,7 @@
 defmodule Auth.Apikey do
+  @moduledoc """
+  Defines apikeys schema and CRUD functions
+  """
   use Ecto.Schema
   import Ecto.Query, warn: false
   import Ecto.Changeset

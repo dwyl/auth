@@ -1,4 +1,7 @@
 defmodule Auth.LoginLog do
+  @moduledoc """
+  Defines login_logs schema and CRUD functions
+  """
   use Ecto.Schema
   import Ecto.Changeset
   alias Auth.Repo

@@ -1,4 +1,7 @@
 defmodule AuthWeb.AuthController do
+  @moduledoc """
+  Defines AuthController and all functions for authenticaiton
+  """
   use AuthWeb, :controller
   alias Auth.Person
 
