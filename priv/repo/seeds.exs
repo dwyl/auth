@@ -32,6 +32,7 @@ defmodule Auth.Seeds do
       IO.inspect(person.id, label: "seeds.exs person.id")
       IO.puts("- - - - - - - - - - - - - - - - - - - - - - ")
     end
+    
     person
   end
 
@@ -47,7 +48,12 @@ defmodule Auth.Seeds do
 
     api_key = key.client_id <> "/" <> key.client_secret
     # set the AUTH_API_KEY environment variable during test run:
-    write_env("AUTH_API_KEY", api_key)
+    if(Mix.env() == :test) do
+      System.put_env("AUTH_API_KEY", api_key)
+    else
+      # update the AUTH_API_KEY in the .env file:
+      write_env("AUTH_API_KEY", api_key)
+    end
   end
 
   # write the key:value pair to project .env file
@@ -105,7 +111,12 @@ defmodule SetupRoles do
     json = get_json("/priv/repo/default_roles.json")
     Enum.each(json, fn role -> 
       Role.create_role(role)
+      # |> IO.inspect()
     end)
+  end
+
+  def assign_superadmin_role() do
+    
   end
 
   

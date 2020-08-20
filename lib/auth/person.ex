@@ -20,7 +20,9 @@ defmodule Auth.Person do
     field :status, :id
     field :tag, :id
     field :key_id, :integer
-    many_to_many :roles, Auth.Role, join_through: "people_roles"
+    # many_to_many :roles, Auth.Role, join_through: "people_roles"
+    # has_many :roles, through: [:people_roles, :role]
+    many_to_many :roles, Auth.Role, join_through: Auth.PeopleRoles
 
     has_many :statuses, Auth.Status
     # has_many :sessions, Auth.Session, on_delete: :delete_all
@@ -31,6 +33,9 @@ defmodule Auth.Person do
   Default attributes validation for Person
   """
   def changeset(person, attrs, roles \\ []) do
+    # IO.inspect(person, label: "changeset > person")
+    # IO.inspect(attrs, label: "changeset > attrs")
+    # IO.inspect(roles, label: "changeset > roles")
     person
     |> cast(attrs, [
       :id,
@@ -199,6 +204,7 @@ defmodule Auth.Person do
     __MODULE__
     |> Repo.get_by(id: id)
     |> Repo.preload(:roles)
+    |> Repo.preload(:statuses)
   end
 
   defp put_pass_hash(changeset) do
@@ -218,6 +224,7 @@ defmodule Auth.Person do
     __MODULE__
     |> Repo.get_by(email_hash: email)
     |> Repo.preload(:roles)
+    |> Repo.preload(:statuses)
   end
 
   @doc """

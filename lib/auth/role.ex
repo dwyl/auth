@@ -10,7 +10,7 @@ defmodule Auth.Role do
     field :desc, :string
     field :name, :string
     field :person_id, :id
-    many_to_many :people, Auth.Person, join_through: "people_roles"
+    # many_to_many :roles, Auth.Role, join_through: Auth.PeopleRoles
 
     timestamps()
   end
@@ -118,17 +118,10 @@ defmodule Auth.Role do
   end
 
 
-  @doc """
-  grants the default "subscriber" (6) role to the person
-  """
+  # @doc """
+  # grants the default "subscriber" (6) role to the person
+  # """ 
   # def set_default_role(person) do
-    
-  # end
-
-  @doc """
-  grants a role to the given person
-  """
-  # def grant_role(person, role, granter) do
     
   # end
 

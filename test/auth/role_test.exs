@@ -1,5 +1,6 @@
 defmodule Auth.RoleTest do
   use Auth.DataCase
+  # use AuthWeb.ConnCase
 
   describe "roles" do
     alias Auth.Role
@@ -129,4 +130,20 @@ defmodule Auth.RoleTest do
       assert %Ecto.Changeset{} = Permission.change_permission(permission)
     end
   end
+
+  
+  # create a new person and confirm they were asigned a default role of "subscriber"
+    
+
+
+  # describe "grant role" do
+
+
+
+
+  #   # test "change_permission/1 returns a permission changeset" do
+  #   #   permission = permission_fixture()
+  #   #   assert %Ecto.Changeset{} = Permission.change_permission(permission)
+  #   # end
+  # end
 end

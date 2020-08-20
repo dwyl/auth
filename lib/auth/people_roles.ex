@@ -2,6 +2,7 @@ defmodule Auth.PeopleRoles do
   use Ecto.Schema
   import Ecto.Changeset
   alias Auth.Repo
+  # https://stackoverflow.com/a/47501059/1148249
   alias __MODULE__
 
   schema "people_roles" do
