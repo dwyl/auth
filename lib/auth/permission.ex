@@ -1,6 +1,6 @@
 defmodule Auth.Permission do
   @moduledoc """
-  Defines Rermission schema and CRUD functions
+  Defines permissions schema and CRUD functions
   """
   use Ecto.Schema
   import Ecto.Changeset

@@ -1,13 +1,13 @@
 defmodule Auth.Role do
   @moduledoc """
-  Defines Role schema and CRUD functions
+  Defines roles schema and CRUD functions
   """
   use Ecto.Schema
   import Ecto.Changeset
   import Ecto.Query, warn: false
   alias Auth.Repo
   # https://stackoverflow.com/a/47501059/1148249
-  alias __MODULE__
+  alias __MODULE__ 
 
   schema "roles" do
     field :desc, :string
