@@ -8,7 +8,6 @@ defmodule AuthWeb.PeopleRolesTest do
     role_id = 4
     # grant the "creator" role (id: 4) to the new person:
     Auth.PeopleRoles.insert(1, grantee.id, role_id)
-    # |> IO.inspect()
     person_with_role = Auth.Person.get_person_by_id(grantee.id)
     roles = RBAC.transform_role_list_to_string(person_with_role.roles)
     assert roles =~ Integer.to_string(role_id)

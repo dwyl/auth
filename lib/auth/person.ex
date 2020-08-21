@@ -203,9 +203,7 @@ defmodule Auth.Person do
 
   def verify_person_by_id(id) do
     person = get_person_by_id(id)
-
-    %{email: person.email, status: get_status_verified()}
-    |> upsert_person()
+    upsert_person(%{email: person.email, status: get_status_verified()})
   end
 
   def get_person_by_id(id) do
