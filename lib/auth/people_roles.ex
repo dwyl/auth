@@ -13,6 +13,7 @@ defmodule Auth.PeopleRoles do
     belongs_to :person, Auth.Person
     belongs_to :role, Auth.Role
     field :granter_id, :integer
+    field :revoked, :naive_datetime
 
     timestamps()
   end
