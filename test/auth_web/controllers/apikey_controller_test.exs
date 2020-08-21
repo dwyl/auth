@@ -136,6 +136,7 @@ defmodule AuthWeb.ApikeyControllerTest do
         auth_provider: "email",
         id: 42
       }
+
       Auth.Person.create_person(wrong_person_data)
       conn = AuthPlug.create_jwt_session(conn, wrong_person_data)
 
@@ -187,6 +188,7 @@ defmodule AuthWeb.ApikeyControllerTest do
         auth_provider: "email",
         id: 42
       }
+
       Auth.Person.create_person(wrong_person_data)
       conn = AuthPlug.create_jwt_session(conn, wrong_person_data)
 
@@ -219,12 +221,12 @@ defmodule AuthWeb.ApikeyControllerTest do
     end
 
     test "cannot delete a key belonging to someone else! 404", %{conn: conn} do
-
       wrong_person_data = %{
         email: "wronger@gmail.com",
         auth_provider: "email",
         id: 42
       }
+
       Auth.Person.create_person(wrong_person_data)
       conn = AuthPlug.create_jwt_session(conn, wrong_person_data)
       person = Auth.Person.get_person_by_email(@email)

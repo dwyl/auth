@@ -5,7 +5,7 @@ defmodule AuthWeb.RoleController do
 
   def index(conn, _params) do
     roles = Role.list_roles()
-    IO.inspect(conn.assigns.person, label: "conn.assigns.person")
+    # IO.inspect(conn.assigns.person, label: "conn.assigns.person")
     render(conn, "index.html", roles: roles)
   end
 
@@ -77,6 +77,4 @@ defmodule AuthWeb.RoleController do
   #     AuthWeb.AuthController.unauthorized(conn)
   #   end
   # end
-
-
 end

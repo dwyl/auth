@@ -65,7 +65,7 @@ defmodule Auth.Person do
       %Person{}
       |> changeset(person)
       |> put_email_status_verified()
-      |> put_assoc(:roles, [ Auth.Role.get_role!(6) ])
+      |> put_assoc(:roles, [Auth.Role.get_role!(6)])
 
     case get_person_by_email(person.changes.email) do
       nil ->
@@ -164,8 +164,9 @@ defmodule Auth.Person do
   end
 
   def create_google_person(profile) do
-    person = transform_google_profile_data_to_person(profile)
-    |> upsert_person()
+    person =
+      transform_google_profile_data_to_person(profile)
+      |> upsert_person()
 
     Map.replace!(person, :roles, RBAC.transform_role_list_to_string(person.roles))
   end
@@ -202,9 +203,9 @@ defmodule Auth.Person do
 
   def verify_person_by_id(id) do
     person = get_person_by_id(id)
+
     %{email: person.email, status: get_status_verified()}
     |> upsert_person()
-
   end
 
   def get_person_by_id(id) do
