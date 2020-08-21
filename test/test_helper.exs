@@ -11,6 +11,12 @@ defmodule AuthTest do
   """
   def admin_login(conn) do
     person = Auth.Person.get_person_by_email(@admin_email)
-    AuthPlug.create_jwt_session(conn, person)
+    data = %{
+      id: person.id,
+      email: person.email,
+      auth_provider: person.auth_provider
+    }
+    # IO.inspect(person, label: "person")
+    AuthPlug.create_jwt_session(conn, data)
   end
 end

@@ -340,6 +340,9 @@ defmodule AuthWeb.AuthController do
 
     if changeset.valid? do
       person = Auth.Person.upsert_person(%{email: email, password: p["password"]})
+      # replace %Auth.Role{} struct with string  github.com/dwyl/rbac/issues/4
+      person = Map.replace!(person, :roles,
+        RBAC.transform_role_list_to_string(person.roles))
       redirect_or_render(conn, person, p["state"])
     else
       conn
@@ -447,7 +450,8 @@ defmodule AuthWeb.AuthController do
       id: person.id,
       picture: person.picture,
       status: person.status,
-      email: person.email
+      email: person.email,
+      roles: RBAC.transform_role_list_to_string(person.roles)
     }
 
     jwt = AuthPlug.Token.generate_jwt!(data, client_secret)

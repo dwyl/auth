@@ -127,11 +127,11 @@ defmodule AuthWeb.AuthControllerTest do
       auth_provider: "google"
     }
 
-    person = Auth.Person.upsert_person(data)
+    Auth.Person.upsert_person(data)
 
     conn =
-      AuthPlug.create_jwt_session(conn, person)
-      |> get("/auth/google/callback", %{"code" => "234", "state" => nil})
+    AuthPlug.create_jwt_session(conn, data)
+    |> get("/auth/google/callback", %{"code" => "234", "state" => nil})
 
     assert html_response(conn, 200) =~ "Google account"
   end
@@ -320,6 +320,7 @@ defmodule AuthWeb.AuthControllerTest do
 
     link = AuthWeb.AuthController.make_verify_link(conn, person, state)
     link = "/auth/verify" <> List.last(String.split(link, "/auth/verify"))
+
     conn = get(conn, link, %{})
     assert html_response(conn, 302) =~ "redirected"
   end

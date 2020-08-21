@@ -119,9 +119,7 @@ defmodule SetupRoles do
       # |> IO.inspect()
     end)
   end
-
-  def assign_superadmin_role() do
-  end
 end
 
 SetupRoles.create_default_roles()
+Auth.PeopleRoles.insert(1, 1, 1)

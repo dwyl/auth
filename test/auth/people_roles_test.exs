@@ -8,12 +8,14 @@ defmodule AuthWeb.PeopleRolesTest do
     role_id = 4
     # grant the "creator" role (id: 4) to the new person:
     Auth.PeopleRoles.insert(1, grantee.id, role_id)
-    person_with_role = Auth.Person.get_person_by_id(grantee.id) |> IO.inspect()
-    role = List.first(person_with_role.roles)
-    assert role_id == role.id
+    person_with_role = Auth.Person.get_person_by_id(grantee.id) # |> IO.inspect()
+    roles = RBAC.transform_role_list_to_string(person_with_role.roles)
+    assert roles =~ Integer.to_string(role_id)
 
     # check the latest people_roles record:
-    pr = List.last(Auth.PeopleRoles.list_people_roles())
+    list = Auth.PeopleRoles.list_people_roles()
+    # IO.inspect(list, label: "list")
+    pr = List.last(list)
     assert pr.granter_id == 1
     assert pr.person_id == grantee.id
   end
@@ -25,5 +27,8 @@ defmodule AuthWeb.PeopleRolesTest do
   #   role_id = 4
   #   conn = Auth.PeopleRoles.insert(conn, grantee.id, role_id)
   #   assert conn.status == 401
+  # end
+  # test "get list of roles" do
+  #   Auth.Role.list_roles() |> IO.inspect()
   # end
 end

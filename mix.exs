@@ -1,7 +1,4 @@
 defmodule Auth.Mixfile do
-  @moduledoc """
-  Defines the Mix Project, Dependencies and Scripts
-  """
   use Mix.Project
 
   def project do
@@ -66,6 +63,8 @@ defmodule Auth.Mixfile do
       {:elixir_auth_google, "~> 1.3.0"},
       # https://github.com/dwyl/auth_plug
       {:auth_plug, "1.2.0"},
+      # https://github.com/dwyl/rbac
+      {:rbac, "~> 0.2.0"},
 
       # Field Validation and Encryption: github.com/dwyl/fields
       {:fields, "~> 2.6.0"},

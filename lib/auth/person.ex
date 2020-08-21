@@ -35,7 +35,7 @@ defmodule Auth.Person do
   @doc """
   Default attributes validation for Person
   """
-  def changeset(person, attrs, roles \\ []) do
+  def changeset(person, attrs) do
     # IO.inspect(person, label: "changeset > person")
     # IO.inspect(attrs, label: "changeset > attrs")
     # IO.inspect(roles, label: "changeset > roles")
@@ -58,7 +58,6 @@ defmodule Auth.Person do
     |> validate_required([:email])
     |> put_email_hash()
     |> put_pass_hash()
-    |> put_assoc(:roles, roles)
   end
 
   def create_person(person) do
@@ -66,6 +65,7 @@ defmodule Auth.Person do
       %Person{}
       |> changeset(person)
       |> put_email_status_verified()
+      |> put_assoc(:roles, [ Auth.Role.get_role!(6) ])
 
     case get_person_by_email(person.changes.email) do
       nil ->
@@ -164,8 +164,10 @@ defmodule Auth.Person do
   end
 
   def create_google_person(profile) do
-    transform_google_profile_data_to_person(profile)
+    person = transform_google_profile_data_to_person(profile)
     |> upsert_person()
+
+    Map.replace!(person, :roles, RBAC.transform_role_list_to_string(person.roles))
   end
 
   # @doc """
@@ -200,7 +202,9 @@ defmodule Auth.Person do
 
   def verify_person_by_id(id) do
     person = get_person_by_id(id)
-    %{email: person.email, status: get_status_verified()} |> upsert_person()
+    %{email: person.email, status: get_status_verified()}
+    |> upsert_person()
+
   end
 
   def get_person_by_id(id) do
@@ -246,7 +250,8 @@ defmodule Auth.Person do
           changeset(%Person{id: ep.id}, merged)
           |> Repo.update()
 
-        person
+        # ensure that the preloads are returned:
+        get_person_by_email(person.email)
     end
   end
 
