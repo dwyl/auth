@@ -5,6 +5,7 @@ defmodule AuthWeb.RoleController do
 
   def index(conn, _params) do
     roles = Role.list_roles()
+    IO.inspect(conn.assigns.person, label: "conn.assigns.person")
     render(conn, "index.html", roles: roles)
   end
 
@@ -68,10 +69,14 @@ defmodule AuthWeb.RoleController do
   # def grant_role(conn, grantee_id, role_id) do
   #   # confirm that the granter is either superadmin (conn.assigns.person.id == 1)
   #   # or has an "admin" role (1 || 2)
+  #   granter = conn.assigns.person
+
   #   if granter.id == 1 do
   #     conn
   #   else
   #     AuthWeb.AuthController.unauthorized(conn)
   #   end
   # end
+
+
 end

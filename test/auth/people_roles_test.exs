@@ -8,7 +8,7 @@ defmodule AuthWeb.PeopleRolesTest do
     role_id = 4
     # grant the "creator" role (id: 4) to the new person:
     Auth.PeopleRoles.insert(1, grantee.id, role_id)
-    person_with_role = Auth.Person.get_person_by_id(grantee.id)
+    person_with_role = Auth.Person.get_person_by_id(grantee.id) |> IO.inspect()
     role = List.first(person_with_role.roles)
     assert role_id == role.id
 

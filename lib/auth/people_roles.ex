@@ -18,7 +18,7 @@ defmodule Auth.PeopleRoles do
   end
 
   @doc """
-  Returns the list of people_roles with all people data.
+  list_people_roles/0 returns the list of people_roles with all people data.
   This is useful for displaying the data in a admin overview table.
   """
   def list_people_roles do
@@ -26,8 +26,10 @@ defmodule Auth.PeopleRoles do
   end
 
   @doc """
-  grant_role/3 grants a role to the given person
-  the conn must have conn.assigns.person to check for admin in order to grant the role.
+  insert/3 grants a role to the given person
+  granter_id is the id of the person (admin) granting the role
+  grantee_id is the person.id of the person being granted the role
+  role_id is the role.id (int, e.g: 4) of th role being granted.
   """
   def insert(granter_id, grantee_id, role_id) do
     %PeopleRoles{}
