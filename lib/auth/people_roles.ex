@@ -31,14 +31,12 @@ defmodule Auth.PeopleRoles do
   get_record/0 returns the record where the person was granted a role.
   """
   def get_record(person_id, role_id) do
-    # Repo.all(from pr in __MODULE__, preload: [:person, :role])
-    from(pr in __MODULE__,
-      where:
-        pr.person_id == ^person_id and
-          pr.role_id == ^role_id,
-      preload: [:person, :role]
+    Repo.one(
+      from(pr in __MODULE__,
+        where: pr.person_id == ^person_id and pr.role_id == ^role_id,
+        preload: [:person, :role]
+      )
     )
-    |> Repo.one()
   end
 
   @doc """
@@ -63,16 +61,11 @@ defmodule Auth.PeopleRoles do
   """
   def revoke(revoker_id, person_id, role_id) do
     # get the people_role record that needs to be updated (revoked)
-    record = get_record(person_id, role_id)
-
-    record
-    # |> Map.delete(:__meta__)
+    get_record(person_id, role_id)
     |> cast(
       %{revoker_id: revoker_id, revoked: DateTime.utc_now()},
       [:revoker_id, :revoked]
     )
-    # |> put_assoc(:person, Auth.Person.get_person_by_id(person_id))
-    # |> put_assoc(:role, Auth.Role.get_role!(role_id))
     |> Repo.update()
   end
 end
