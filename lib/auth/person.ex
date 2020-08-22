@@ -4,6 +4,7 @@ defmodule Auth.Person do
   """
   use Ecto.Schema
   import Ecto.Changeset
+  import Ecto.Query
   alias Auth.Repo
   # https://stackoverflow.com/a/47501059/1148249
   alias __MODULE__
@@ -261,5 +262,46 @@ defmodule Auth.Person do
       ArgumentError ->
         0
     end
+  end
+
+
+  @doc """
+  `list_people/0` lists all people in the system.
+  Used for displaying the table of authenticated people.
+  """
+  def list_people do
+
+    Repo.all(
+      from(pr in __MODULE__, preload: [:roles, :statuses]
+      )
+    )
+
+    # query = """
+    # SELECT DISTINCT ON (s.status_id, s.person_id) s.id, s.message_id,
+    # s.updated_at, s.template, st.text as status, s.person_id
+    # FROM sent s
+    # JOIN status as st on s.status_id = st.id
+    # WHERE s.message_id IS NOT NULL
+    # """
+    # {:ok, result} = Repo.query(query)
+
+    # # create List of Maps from the result.rows:
+    # Enum.map(result.rows, fn([id, mid, iat, t, s, pid]) ->
+    #   # e = Fields.AES.decrypt(e)
+    #   # e = case e !== :error and e =~ "@" do
+    #   #   true -> e |> String.split("@") |> List.first
+    #   #   false -> e
+    #   # end
+    #   %{
+    #     id: id,
+    #     message_id: mid,
+    #     updated_at: NaiveDateTime.truncate(iat, :second),
+    #     template: t,
+    #     status: s,
+    #     person_id: pid,
+    #     email: ""
+    #   }
+    # end)
+    # |> Enum.sort(&(&1.id > &2.id))
   end
 end
