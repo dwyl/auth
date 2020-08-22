@@ -33,10 +33,11 @@ defmodule Auth.PeopleRoles do
   def get_record(person_id, role_id) do
     # Repo.all(from pr in __MODULE__, preload: [:person, :role])
     from(pr in __MODULE__,
-      where: pr.person_id == ^person_id
-      and pr.role_id == ^role_id,
+      where:
+        pr.person_id == ^person_id and
+          pr.role_id == ^role_id,
       preload: [:person, :role]
-      )
+    )
     |> Repo.one()
   end
 
@@ -57,7 +58,7 @@ defmodule Auth.PeopleRoles do
   @doc """
   revoke/3 grants a role to the given person
   revoker_id is the id of the person (admin) granting the role
-  grantee_id is the person.id of the person being granted the role
+  person_id is the person.id of the person being granted the role
   role_id is the role.id (int, e.g: 4) of th role being granted.
   """
   def revoke(revoker_id, person_id, role_id) do
@@ -67,12 +68,11 @@ defmodule Auth.PeopleRoles do
     record
     # |> Map.delete(:__meta__)
     |> cast(
-      %{revoker_id: revoker_id, revoked: DateTime.utc_now},
+      %{revoker_id: revoker_id, revoked: DateTime.utc_now()},
       [:revoker_id, :revoked]
     )
     # |> put_assoc(:person, Auth.Person.get_person_by_id(person_id))
     # |> put_assoc(:role, Auth.Role.get_role!(role_id))
     |> Repo.update()
   end
-
 end

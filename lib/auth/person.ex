@@ -67,7 +67,8 @@ defmodule Auth.Person do
       |> put_email_status_verified()
       # assign default role of "subscriber":
       |> put_assoc(:roles, [Auth.Role.get_role!(6)])
-      # other roles can be assigned in the UI
+
+    # other roles can be assigned in the UI
 
     case get_person_by_email(person.changes.email) do
       nil ->
