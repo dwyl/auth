@@ -124,7 +124,7 @@ defmodule Auth.Person do
   end
 
   def create_github_person(profile) do
-    transform_github_profile_data_to_person(profile) |> upsert_person()
+    upsert_person(transform_github_profile_data_to_person(profile))
   end
 
   @doc """
@@ -167,10 +167,7 @@ defmodule Auth.Person do
   end
 
   def create_google_person(profile) do
-    person =
-      transform_google_profile_data_to_person(profile)
-      |> upsert_person()
-
+    person = upsert_person(transform_google_profile_data_to_person(profile))
     Map.replace!(person, :roles, RBAC.transform_role_list_to_string(person.roles))
   end
 
