@@ -1,0 +1,16 @@
+<section class="w-100 center ph3 tc">
+  <h1> Welcome <%= @conn.assigns.person.givenName %>!
+  </h1>
+  <img width="128px" src="<%= @conn.assigns.person.picture %>"
+    class="center db br2"/>
+  <p class="f3"> You are <strong>signed in</strong>
+    with your <strong><%= String.capitalize(@conn.assigns.person.auth_provider) %> account</strong>.
+  <p/>
+
+  <br />
+  <a href="/settings/apikeys"
+  class="pointer ba border-box dwyl-bg-mint white pa3 ml1 mv1 f3
+  shadow-hover bg-animate hover-dwyl-teal-darkest no-underline">
+  Manage API Keys
+  </a>
+</section>
