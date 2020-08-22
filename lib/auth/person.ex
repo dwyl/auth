@@ -246,11 +246,7 @@ defmodule Auth.Person do
       # existing person
       ep ->
         merged = Map.merge(AuthPlug.Helpers.strip_struct_metadata(ep), person)
-
-        {:ok, person} =
-          changeset(%Person{id: ep.id}, merged)
-          |> Repo.update()
-
+        {:ok, person} = Repo.update(changeset(%Person{id: ep.id}, merged))
         # ensure that the preloads are returned:
         get_person_by_email(person.email)
     end

@@ -13,22 +13,12 @@ defmodule AuthWeb.PeopleRolesTest do
     assert roles =~ Integer.to_string(role_id)
 
     # check the latest people_roles record:
-    list = Auth.PeopleRoles.list_people_roles()
+    list = Auth.PeopleRoles.list_people_roles() |> IO.inspect()
     # IO.inspect(list, label: "list")
     pr = List.last(list)
     assert pr.granter_id == 1
     assert pr.person_id == grantee.id
   end
 
-  # test "attempt to grant_role/3 without admin should 401", %{conn: conn} do
-  #   alex = %{email: "alex_grant_role_fail@gmail.com", auth_provider: "email"}
-  #   grantee = Auth.Person.create_person(alex)
-  #   conn = assign(conn, :person, grantee)
-  #   role_id = 4
-  #   conn = Auth.PeopleRoles.insert(conn, grantee.id, role_id)
-  #   assert conn.status == 401
-  # end
-  # test "get list of roles" do
-  #   Auth.Role.list_roles() |> IO.inspect()
-  # end
+  # test "Auth.PeopleRoles.revoke/3 "
 end

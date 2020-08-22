@@ -103,4 +103,16 @@ defmodule AuthWeb.RoleControllerTest do
     role = fixture(:role)
     %{role: role}
   end
+
+  # test "attempt to grant_role/3 without admin should 401", %{conn: conn} do
+  #   alex = %{email: "alex_grant_role_fail@gmail.com", auth_provider: "email"}
+  #   grantee = Auth.Person.create_person(alex)
+  #   conn = assign(conn, :person, grantee)
+  #   role_id = 4
+  #   conn = Auth.PeopleRoles.insert(conn, grantee.id, role_id)
+  #   assert conn.status == 401
+  # end
+  # test "get list of roles" do
+  #   Auth.Role.list_roles() |> IO.inspect()
+  # end
 end

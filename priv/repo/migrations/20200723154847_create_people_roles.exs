@@ -7,6 +7,7 @@ defmodule Auth.Repo.Migrations.CreatePeopleRoles do
       add :role_id, references(:roles, on_delete: :nothing)
       add :granter_id, references(:people, on_delete: :nothing)
       add :revoked, :naive_datetime
+      add :revoker_id, references(:people, on_delete: :nothing)
 
       timestamps()
     end
