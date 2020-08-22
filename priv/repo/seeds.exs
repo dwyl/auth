@@ -122,4 +122,5 @@ defmodule SetupRoles do
 end
 
 SetupRoles.create_default_roles()
+# grant superadmin role to app owner:
 Auth.PeopleRoles.insert(1, 1, 1)

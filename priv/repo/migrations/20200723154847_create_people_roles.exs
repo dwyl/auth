@@ -6,7 +6,8 @@ defmodule Auth.Repo.Migrations.CreatePeopleRoles do
       add :person_id, references(:people, on_delete: :nothing)
       add :role_id, references(:roles, on_delete: :nothing)
       add :granter_id, references(:people, on_delete: :nothing)
-      add :revoked, :naive_datetime
+      # elixirforum.com/t/difference-between-utc-datetime-and-naive-datetime/12551
+      add :revoked, :utc_datetime
       add :revoker_id, references(:people, on_delete: :nothing)
 
       timestamps()
