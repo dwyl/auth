@@ -38,4 +38,8 @@ defmodule Auth.Status do
         status
     end
   end
+
+  def list_statuses do
+    Repo.all(__MODULE__)
+  end
 end

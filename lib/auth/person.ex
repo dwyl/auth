@@ -163,7 +163,8 @@ defmodule Auth.Person do
     Map.merge(profile, %{
       familyName: profile.family_name,
       givenName: profile.given_name,
-      auth_provider: "google"
+      auth_provider: "google",
+      status: 1
     })
   end
 
@@ -270,11 +271,7 @@ defmodule Auth.Person do
   Used for displaying the table of authenticated people.
   """
   def list_people do
-
-    Repo.all(
-      from(pr in __MODULE__, preload: [:roles, :statuses]
-      )
-    )
+    Repo.all(from(pr in __MODULE__, preload: [:roles, :statuses]))
 
     # query = """
     # SELECT DISTINCT ON (s.status_id, s.person_id) s.id, s.message_id,

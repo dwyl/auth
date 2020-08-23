@@ -1,16 +1,52 @@
 <section class="w-100 center ph3 tc">
-  <h1> Welcome <%= @conn.assigns.person.givenName %>!
-  </h1>
-  <img width="128px" src="<%= @conn.assigns.person.picture %>"
-    class="center db br2"/>
-  <p class="f3"> You are <strong>signed in</strong>
-    with your <strong><%= String.capitalize(@conn.assigns.person.auth_provider) %> account</strong>.
-  <p/>
+  <h1> People Authenticated with Auth</h1>
 
-  <br />
-  <a href="/settings/apikeys"
-  class="pointer ba border-box dwyl-bg-mint white pa3 ml1 mv1 f3
-  shadow-hover bg-animate hover-dwyl-teal-darkest no-underline">
-  Manage API Keys
-  </a>
+  <table class="w-100 center ph3 tc" id="table">
+    <thead>
+      <tr class="tl">
+        <th>ID</th>
+        <th>Pic</th>
+        <th>Name</th>
+        <th>Status</th>
+        <th>Time</th>
+        
+        <th>Email</th>
+        <th>Auth Provider</th>
+      </tr>
+    </thead>
+    <tbody>
+  <%= for {p, idx} <- Enum.with_index(@people) do %>
+      <tr class="hover-bg-light-gray
+        <%= if rem(idx,2) == 0 do %> bb b--moon-gray bg-light-gray <% end %>">
+        <td><%= p.id %></td>
+        <td><img width="64px" src="<%= p.picture %>" class="center db br2"/></td>
+        <td><%= p.givenName %></td>
+        <td class="<%= status_string(p.status, @statuses) %>"><%= status_string(p.status, @statuses) %></td>
+        <td><%= p.updated_at %></td>
+        <td><%= p.email %></td>
+        <td><%= String.capitalize(p.auth_provider) %></td>
+      </tr>
+  <% end %>
+    </tbody>
+  </table>
 </section>
+
+<style>
+  .verified { background-color: #7bed9f;}
+</style>
+
+<!-- DataTables is an *optional* progressive enhancement 
+  that allows sorting and filtering data in-browser -->
+<script src="https://code.jquery.com/jquery-2.2.4.min.js" 
+integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" 
+crossorigin="anonymous"></script>
+<link rel="stylesheet" type="text/css" 
+href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css">
+<script type="text/javascript" charset="utf8" 
+src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js"></script>
+
+<script>
+  $(document).ready(function () {
+      $('#table').DataTable();
+  });
+</script>
