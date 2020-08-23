@@ -25,7 +25,7 @@
         <td class="<%= status_string(p.status, @statuses) %>"><%= status_string(p.status, @statuses) %></td>
         <td><%= p.updated_at %></td>
         <td><%= p.email %></td>
-        <td><%= String.capitalize(p.auth_provider) %></td>
+        <td><%= p.auth_provider %></td>
         <td class="<%= role_string(p.roles) %>"><%= role_string(p.roles) %></td>
 
         
@@ -38,6 +38,7 @@
 <style>
   .verified { background-color: #7bed9f;}
   .superadmin { background-color: #ffa502; }
+  .subscriber { background-color: #00d2d3; }
 </style>
 
 <!-- DataTables is an *optional* progressive enhancement 
