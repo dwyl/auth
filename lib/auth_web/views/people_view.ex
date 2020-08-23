@@ -13,18 +13,8 @@ defmodule AuthWeb.PeopleView do
   end
 
   def role_string(person_roles)  do
-    IO.inspect(person_roles, label: "person_roles")
-    roles = Enum.map_join(person_roles, " ", fn r ->
+    Enum.map_join(person_roles, " ", fn r ->
       r.name
     end)
-
-    # if role_id != nil do
-    #   role = Enum.filter(roles, fn r ->
-    #     r.id == role_id
-    #   end) |> Enum.at(0)
-    #   role.name
-    # else
-    #   "none"
-    # end
   end
 end

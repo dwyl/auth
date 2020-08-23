@@ -163,8 +163,7 @@ defmodule Auth.Person do
     Map.merge(profile, %{
       familyName: profile.family_name,
       givenName: profile.given_name,
-      auth_provider: "google",
-      status: 1
+      auth_provider: "google"
     })
   end
 
