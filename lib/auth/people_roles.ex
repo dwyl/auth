@@ -28,12 +28,24 @@ defmodule Auth.PeopleRoles do
   end
 
   @doc """
-  get_record/0 returns the record where the person was granted a role.
+  get_record/2 returns the record where the person was granted a role.
   """
   def get_record(person_id, role_id) do
     Repo.one(
       from(pr in __MODULE__,
         where: pr.person_id == ^person_id and pr.role_id == ^role_id,
+        preload: [:person, :role]
+      )
+    )
+  end
+
+  @doc """
+  get_by_id!/1 returns the record with the given people_roles.id.
+  """
+  def get_by_id(id) do
+    Repo.one(
+      from(pr in __MODULE__,
+        where: pr.id == ^id,
         preload: [:person, :role]
       )
     )
@@ -72,9 +84,9 @@ defmodule Auth.PeopleRoles do
   person_id is the person.id of the person being granted the role
   role_id is the role.id (int, e.g: 4) of th role being granted.
   """
-  def revoke(revoker_id, person_id, role_id) do
+  def revoke(revoker_id, people_roles_id) do
     # get the people_role record that needs to be updated (revoked)
-    get_record(person_id, role_id)
+    get_by_id(people_roles_id)
     |> cast(
       %{revoker_id: revoker_id, revoked: DateTime.utc_now()},
       [:revoker_id, :revoked]

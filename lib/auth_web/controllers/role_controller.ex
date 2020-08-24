@@ -87,14 +87,14 @@ defmodule AuthWeb.RoleController do
     # confirm that the granter is either superadmin (conn.assigns.person.id == 1)
     # or has an "admin" role (1 || 2)
     if conn.assigns.person.id == 1 do
-      pr = Auth.PeopleRoles.get_record(
-        Map.get(params, "person_id"), Map.get(params, "role_id")
-      )
+      people_roles_id = Map.get(params, "people_roles_id")
+      pr = Auth.PeopleRoles.get_by_id(people_roles_id)
       IO.inspect(pr, label: "pr")
       if conn.method == "GET" do
-        render(conn, "revoke.html", role: pr)
+        render(conn, "revoke.html", role: pr, people_roles_id: people_roles_id)
       else
-
+        Auth.PeopleRoles.revoke(conn.assigns.person.id, people_roles_id)
+        redirect(conn, to: Routes.people_path(conn, :show, pr.person_id))
       end
     else
       AuthWeb.AuthController.unauthorized(conn)

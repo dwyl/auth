@@ -1,5 +1,14 @@
 <section class="mt4 w-100 center ph3 tc">
-  <h1>Are Your Sure You Want to Revoke this Role?</h1>
+  <p class="f3">Are your <em>sure</em> you want 
+  to <strong>revoke</strong> the 
+  <strong><%= @role.role.name %></strong> role
+  from <strong><%= @role.person.givenName %></strong>
+  ?</p>
+  
+  <%= form_for :revoke, Routes.role_path(AuthWeb.Endpoint, :revoke, @people_roles_id), fn f -> %>
+    <%= submit "Revoke", class: "pointer bn bg-red white f2 pa2 mt1 shadow-hover bg-animate" %>
+  <% end %>
+
 </section>
 
 <!--
