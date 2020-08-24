@@ -1,0 +1,59 @@
+<section class="mt4 w-100 center ph3 tc">
+  <img width="128px" src="<%= @person.picture %>"
+      class="center db br4"/>
+  <h1><%= @person.givenName %> <%= @person.familyName %></h1>
+  <div>
+    <strong class="f4"><%= @person.email %></strong> 
+    <span class="f4">(<%= String.capitalize(@person.auth_provider) %>) </span>
+  </div>
+  <div class="w-10 pa3 f3 mt3 center br3 <%= status_string(@person.status, @statuses) %>">
+    <%= String.capitalize(status_string(@person.status, @statuses)) %>
+  </div>
+  <div class="mt3 f4">Last login: <br /><strong><%= @person.updated_at %></strong></div>
+</section>
+
+<h1 class="tc mt3">Role Admin</h1>
+
+<table class="w-70 center tc ba bw1 pb2" id="table">
+    <thead>
+      <tr class="tc">
+        <th>ID</th>        
+        <th>Role</th>
+        <th>Granted</th>
+        <th>Granted by</th>
+        <th colspan="2" class="pa3">Revoke?</th>
+      </tr>
+    </thead>
+    <tbody class="tc">
+  <%= for {r, idx} <- Enum.with_index(@roles) do %>
+      <tr class="row pt2">
+        <td><%= r.role_id %></td>
+        <td><%= r.role.name %></td>
+        <td><%= r.inserted_at %></td>  
+        <td>
+          <%= if Map.has_key?(r, :granter_id) and not is_nil(r.granter_id) do %>
+            <%= r.granter_id %>
+          <% else %>
+            System
+          <% end %>
+        </td>  
+        <td>
+          <%= if Map.has_key?(r, :revoked) and not is_nil(r.revoked) do %>
+            <%= r.revoked %>
+          <% else %>
+            <a href="/roles/revoke/<%= r.id %>/<%= @person.id %>"
+            class="pointer ba border-box bg-red white f5 pa2 mt1
+            shadow-hover bg-animate no-underline">
+            Revoke Role
+            </a>
+          <% end %>
+        </td>    
+
+      </tr>
+  <% end %>
+    </tbody>
+  </table>
+
+<style>
+  .verified { background-color: #7bed9f;}
+</style>

@@ -41,9 +41,10 @@ defmodule AuthWeb.Router do
     pipe_through :auth
 
     get "/people", PeopleController, :index
-
+    get "/people/:person_id", PeopleController, :show
     get "/profile", AuthController, :admin
     resources "/roles", RoleController
+    get "/roles/revoke/:role_id/:person_id", RoleController, :revoke
     resources "/permissions", PermissionController
     resources "/settings/apikeys", ApikeyController
   end

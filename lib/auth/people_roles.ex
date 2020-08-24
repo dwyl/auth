@@ -40,6 +40,19 @@ defmodule Auth.PeopleRoles do
   end
 
   @doc """
+  get_roles_for_person/1 returns the list of roles for a given person.id
+  """
+  def get_roles_for_person(person_id) do
+    IO.inspect(person_id, label: "person_id")
+    Repo.all(
+      from(pr in __MODULE__,
+        where: pr.person_id == ^person_id,
+        preload: [:role]
+      )
+    )
+  end
+
+  @doc """
   insert/3 grants a role to the given person
   granter_id is the id of the person (admin) granting the role
   grantee_id is the person.id of the person being granted the role

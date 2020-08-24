@@ -77,4 +77,27 @@ defmodule AuthWeb.RoleController do
   #     AuthWeb.AuthController.unauthorized(conn)
   #   end
   # end
+
+  @doc """
+  revoke/2 revokes a role
+  """
+  def revoke(conn, params) do
+    IO.inspect(conn.method, label: "conn.method")
+    IO.inspect(params)
+    # confirm that the granter is either superadmin (conn.assigns.person.id == 1)
+    # or has an "admin" role (1 || 2)
+    if conn.assigns.person.id == 1 do
+      pr = Auth.PeopleRoles.get_record(
+        Map.get(params, "person_id"), Map.get(params, "role_id")
+      )
+      IO.inspect(pr, label: "pr")
+      if conn.method == "GET" do
+        render(conn, "revoke.html", role: pr)
+      else
+
+      end
+    else
+      AuthWeb.AuthController.unauthorized(conn)
+    end
+  end
 end
