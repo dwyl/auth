@@ -4,10 +4,10 @@
   <h1><%= @person.givenName %> <%= @person.familyName %></h1>
   <div>
     <strong class="f4"><%= @person.email %></strong> 
-    <span class="f4">(<%= String.capitalize(@person.auth_provider) %>) </span>
+    <span class="f4">(<%= @person.auth_provider |> capitalize() %>) </span>
   </div>
   <div class="w-10 pa3 f3 mt3 center br3 <%= status_string(@person.status, @statuses) %>">
-    <%= String.capitalize(status_string(@person.status, @statuses)) %>
+    <%= status_string(@person.status, @statuses) |> capitalize() %>
   </div>
   <div class="mt3 f4">Last login: <br /><strong><%= @person.updated_at %></strong></div>
 </section>
@@ -17,7 +17,7 @@
 <table class="w-70 center tc ba bw1 pb2" id="table">
     <thead>
       <tr class="tc">
-        <th>ID</th>        
+        <th>ID</th>
         <th>Role</th>
         <th>Granted</th>
         <th>Granted by</th>
@@ -25,7 +25,7 @@
       </tr>
     </thead>
     <tbody class="tc">
-  <%= for {r, idx} <- Enum.with_index(@roles) do %>
+  <%= for {r} <- Enum.with_index(@roles) do %>
       <tr class="row pt2">
         <td><%= r.role_id %></td>
         <td><%= r.role.name %></td>

@@ -82,14 +82,11 @@ defmodule AuthWeb.RoleController do
   revoke/2 revokes a role
   """
   def revoke(conn, params) do
-    IO.inspect(conn.method, label: "conn.method")
-    IO.inspect(params)
     # confirm that the granter is either superadmin (conn.assigns.person.id == 1)
     # or has an "admin" role (1 || 2)
     if conn.assigns.person.id == 1 do
       people_roles_id = Map.get(params, "people_roles_id")
       pr = Auth.PeopleRoles.get_by_id(people_roles_id)
-      IO.inspect(pr, label: "pr")
       if conn.method == "GET" do
         render(conn, "revoke.html", role: pr, people_roles_id: people_roles_id)
       else

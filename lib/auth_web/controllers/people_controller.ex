@@ -25,12 +25,10 @@ defmodule AuthWeb.PeopleController do
   `show/2` shows the profile of a person with all relevant info.
   """
   def show(conn, params) do
-    IO.inspect(params, label: "params")
     # should be visible to superadmin and people with "admin" role
     if conn.assigns.person.id == 1 do
       person = Auth.Person.get_person_by_id(Map.get(params, "person_id"))
-      IO.inspect(person, label: "person")
-      roles = Auth.PeopleRoles.get_roles_for_person(person.id) |> IO.inspect(label: "roles")
+      roles = Auth.PeopleRoles.get_roles_for_person(person.id)
       render(conn, :profile,
         person: person,
         roles: roles,

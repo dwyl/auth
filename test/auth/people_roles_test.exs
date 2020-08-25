@@ -27,7 +27,7 @@ defmodule AuthWeb.PeopleRolesTest do
     assert pr.person_id == grantee.id
   end
 
-  test "Auth.PeopleRoles.revoke/3 revokes a role" do
+  test "Auth.PeopleRoles.revoke/2 revokes a role" do
     # create a new person:
     alex = %{email: "alex_revoke@gmail.com", auth_provider: "email"}
     grantee = Auth.Person.create_person(alex)
@@ -42,7 +42,7 @@ defmodule AuthWeb.PeopleRolesTest do
     assert record.granter_id == 1
 
     # revoke the role!
-    Auth.PeopleRoles.revoke(1, grantee.id, role_id)
+    Auth.PeopleRoles.revoke(1, record.id)
 
     # confirm people_roles record was updated:
     record = Auth.PeopleRoles.get_record(grantee.id, role_id)

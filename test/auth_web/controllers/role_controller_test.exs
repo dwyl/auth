@@ -115,4 +115,33 @@ defmodule AuthWeb.RoleControllerTest do
   # test "get list of roles" do
   #   Auth.Role.list_roles() |> IO.inspect()
   # end
+
+  test "GET /roles/revoke/:people_roles_id displays confirm prompt", %{conn: conn} do
+    conn = admin_login(conn)
+    conn = get(conn, Routes.role_path(conn, :revoke, 1))
+    assert html_response(conn, 200) =~ "superadmin"
+  end
+
+  test "POST /roles/revoke/:people_roles_id revokes the role", %{conn: conn} do
+    conn = admin_login(conn)
+    conn = post(conn, Routes.role_path(conn, :revoke, 1))
+    assert html_response(conn, 302) =~ "redirected"
+
+    pr = Auth.PeopleRoles.get_by_id(1)
+    assert pr.revoker_id == 1
+  end
+
+  test "AuthWeb.RoleController.revoke/2 unauthorized if not admin", %{conn: conn} do
+    wrong_person_data = %{
+      email: "unauthorized@gmail.com",
+      auth_provider: "email",
+      id: 42
+    }
+
+    Auth.Person.create_person(wrong_person_data)
+    conn = AuthPlug.create_jwt_session(conn, wrong_person_data)
+
+    conn = AuthWeb.RoleController.revoke(conn, %{"people_roles_id" => 1})
+    assert conn.status == 401
+  end
 end
