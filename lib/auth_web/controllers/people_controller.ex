@@ -29,10 +29,13 @@ defmodule AuthWeb.PeopleController do
     if conn.assigns.person.id == 1 do
       person = Auth.Person.get_person_by_id(Map.get(params, "person_id"))
       roles = Auth.PeopleRoles.get_roles_for_person(person.id)
+      IO.inspect(roles, label: "roles")
+      all_roles = Auth.Role.list_roles()
       render(conn, :profile,
         person: person,
         roles: roles,
-        statuses: Auth.Status.list_statuses()
+        statuses: Auth.Status.list_statuses(),
+        all_roles: all_roles
       )
       # Note: this can easily be refactored to save on DB queries. #HelpWanted
     else

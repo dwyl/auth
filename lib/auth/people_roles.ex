@@ -55,7 +55,6 @@ defmodule Auth.PeopleRoles do
   get_roles_for_person/1 returns the list of roles for a given person.id
   """
   def get_roles_for_person(person_id) do
-    IO.inspect(person_id, label: "person_id")
     Repo.all(
       from(pr in __MODULE__,
         where: pr.person_id == ^person_id,

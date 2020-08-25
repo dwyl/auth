@@ -43,9 +43,12 @@ defmodule AuthWeb.Router do
     get "/people", PeopleController, :index
     get "/people/:person_id", PeopleController, :show
     get "/profile", AuthController, :admin
-    resources "/roles", RoleController
+
+    get "/roles/grant", RoleController, :grant
     get "/roles/revoke/:people_roles_id", RoleController, :revoke
     post "/roles/revoke/:people_roles_id", RoleController, :revoke
+    resources "/roles", RoleController
+
     resources "/permissions", PermissionController
     resources "/settings/apikeys", ApikeyController
   end

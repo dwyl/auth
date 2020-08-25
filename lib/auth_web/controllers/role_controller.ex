@@ -66,17 +66,23 @@ defmodule AuthWeb.RoleController do
   grantee_id should be a valid person.id (the person you want to grant the role to) and
   role_id a valid role.id
   """
-  # def grant_role(conn, grantee_id, role_id) do
-  #   # confirm that the granter is either superadmin (conn.assigns.person.id == 1)
-  #   # or has an "admin" role (1 || 2)
-  #   granter = conn.assigns.person
-
-  #   if granter.id == 1 do
-  #     conn
-  #   else
-  #     AuthWeb.AuthController.unauthorized(conn)
-  #   end
-  # end
+  def grant(conn, params) do
+    # confirm that the granter is either superadmin (conn.assigns.person.id == 1)
+    # or has an "admin" role (1 || 2)
+    granter_id = conn.assigns.person.id
+    IO.inspect(conn, label: "conn")
+    IO.inspect(params, label: "params")
+    role_id = Map.get(params, "role_id")
+    person_id = Map.get(params, "person_id")
+    Auth.PeopleRoles.insert(granter_id, person_id, role_id)
+    # redirect(conn, to: Routes.people_path(conn, :index))
+    redirect(conn, to: Routes.people_path(conn, :show, person_id))
+    # if granter.id == 1 do
+    #   conn
+    # else
+    #   AuthWeb.AuthController.unauthorized(conn)
+    # end
+  end
 
   @doc """
   revoke/2 revokes a role

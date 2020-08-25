@@ -3,9 +3,7 @@ defmodule AuthWeb.PeopleControllerTest do
   # @email System.get_env("ADMIN_EMAIL")
 
   test "GET /people displays list of people", %{conn: conn} do
-    conn = admin_login(conn)
-    |> get("/people")
-
+    conn = get(admin_login(conn)"/people")
     assert html_response(conn, 200) =~ "People Authenticated"
   end
 

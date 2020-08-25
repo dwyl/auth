@@ -4,17 +4,17 @@
   <h1><%= @person.givenName %> <%= @person.familyName %></h1>
   <div>
     <strong class="f4"><%= @person.email %></strong> 
-    <span class="f4">(<%= @person.auth_provider |> capitalize() %>) </span>
+    <span class="f4">(<%= capitalize(@person.auth_provider) %> Auth) </span>
+    <span class="w-10 pv1 ph2 f5 mt3 center br3 <%= status_string(@person.status, @statuses) %>">
+      <%= capitalize(status_string(@person.status, @statuses)) %>
+    </span>
   </div>
-  <div class="w-10 pa3 f3 mt3 center br3 <%= status_string(@person.status, @statuses) %>">
-    <%= status_string(@person.status, @statuses) |> capitalize() %>
-  </div>
-  <div class="mt3 f4">Last login: <br /><strong><%= @person.updated_at %></strong></div>
+  <div class="mt3 f4">Last login: <strong><%= @person.updated_at %></strong></div>
 </section>
 
 <h1 class="tc mt3">Roles</h1>
 
-<table class="w-70 center tc ba bw1 pb2" id="table">
+<table class="w-70 center tc ba bw1 pb2 pl2" id="table">
     <thead>
       <tr class="tc">
         <th>ID</th>
@@ -25,9 +25,9 @@
       </tr>
     </thead>
     <tbody class="tc">
-  <%= for {r} <- Enum.with_index(@roles) do %>
-      <tr class="row pt2">
-        <td><%= r.role_id %></td>
+  <%= for r <- @roles do %>
+      <tr class="row pt2 f4 datarow">
+        <td><%= r.id %></td>
         <td><%= r.role.name %></td>
         <td><%= r.inserted_at %></td>  
         <td>
@@ -54,6 +54,20 @@
     </tbody>
   </table>
 
+<h1 class="tc mt3">Grant a New Role</h1>
+<!-- Grant New Roles -->
+<%= form_tag("/roles/grant/", method: "get", class: "w-30 tc center mt2") do %>
+  <select name="role_id" id="1" class="center input-reset ba b--black-20 pa2 mb2 db w-15">
+    <option class="tc" value="">▼ Please Select a Role ▼</option>
+  <%= for r <- @all_roles do %>
+    <option value="<%= r.id %>"><%= r.name %></option>
+  <% end %>
+  </select>
+  <input name="person_id" type="hidden" value="<%= @person.id %>">
+  <%= submit "Grant Role", class: "pointer bn bg-green white f2 pa2 mt1 shadow-hover bg-animate pa3 br1" %>
+<% end %>
+
 <style>
-  .verified { background-color: #7bed9f;}
+  .verified { background-color: #91ff91;}
+  .datarow { line-height: 40px; }
 </style>

@@ -19,16 +19,14 @@
   <%= for {p, idx} <- Enum.with_index(@people) do %>
       <tr class="hover-bg-light-gray
         <%= if rem(idx,2) == 0 do %> bb b--moon-gray bg-light-gray <% end %>">
-        <td><%= p.id %></td>
+        <td><a href="/people/<%= p.id %>" class="no-underline"><%= p.id %></a></td>
         <td><img width="64px" src="<%= p.picture %>" class="center db br2"/></td>
         <td><%= p.givenName %></td>
         <td class="<%= status_string(p.status, @statuses) %>"><%= status_string(p.status, @statuses) %></td>
         <td><%= p.updated_at %></td>
         <td><%= p.email %></td>
         <td><%= p.auth_provider %></td>
-        <td class="<%= role_string(p.roles) %>"><%= role_string(p.roles) %></td>
-
-        
+        <td class="<%= role_string(p.roles) %>"><%= role_string(p.roles) %></td>  
       </tr>
   <% end %>
     </tbody>

@@ -25,9 +25,9 @@ defmodule AuthWeb.PeopleView do
   end
 
   @doc """
-  upcaseFirst/2 captalises the first character of a string.
-  stackoverflow.com/questions/58672621/elixir-upcase-only-first-letter
-  got: (FunctionClauseError) no function clause matching in String.capitalize/2
+  capitalize/1 captalises the first character of a string.
+  checks for nil values to avoid seeing the following error:
+  (FunctionClauseError) no function clause matching in String.capitalize/2
   """
   def capitalize(str) do
     if is_nil(str) do
