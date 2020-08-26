@@ -264,7 +264,6 @@ defmodule Auth.Person do
     end
   end
 
-
   @doc """
   `list_people/0` lists all people in the system.
   Used for displaying the table of authenticated people.

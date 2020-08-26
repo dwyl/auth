@@ -12,7 +12,6 @@ defmodule AuthWeb.PeopleControllerTest do
     assert conn.status == 302
   end
 
-
   test "Attempt to GET /people without admin role should 401", %{conn: conn} do
     wrong_person_data = %{
       email: "not_admin@gmail.com",

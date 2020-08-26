@@ -104,8 +104,6 @@ defmodule AuthWeb.RoleControllerTest do
     %{role: role}
   end
 
-
-
   test "POST /roles/grant without admin should 401", %{conn: conn} do
     alex = %{email: "alex_grant_role_fail@gmail.com", auth_provider: "email"}
     grantee = Auth.Person.create_person(alex)
@@ -118,9 +116,11 @@ defmodule AuthWeb.RoleControllerTest do
     alex = %{email: "alex_grant_success@gmail.com", auth_provider: "email"}
     grantee = Auth.Person.create_person(alex)
 
-
-    conn = get(admin_login(conn), Routes.role_path(conn, :grant,
-      %{"role_id" => 5, "person_id" => grantee.id}))
+    conn =
+      get(
+        admin_login(conn),
+        Routes.role_path(conn, :grant, %{"role_id" => 5, "person_id" => grantee.id})
+      )
 
     # the grant/2 controller handler redirects back to /person/:id
     assert html_response(conn, 302) =~ "redirected"

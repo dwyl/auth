@@ -70,6 +70,7 @@ defmodule AuthWeb.RoleController do
     # confirm that the granter is either superadmin (conn.assigns.person.id == 1)
     # or has an "admin" role (1 || 2)
     granter_id = conn.assigns.person.id
+
     if granter_id == 1 do
       role_id = Map.get(params, "role_id")
       person_id = Map.get(params, "person_id")
@@ -89,6 +90,7 @@ defmodule AuthWeb.RoleController do
     if conn.assigns.person.id == 1 do
       people_roles_id = Map.get(params, "people_roles_id")
       pr = Auth.PeopleRoles.get_by_id(people_roles_id)
+
       if conn.method == "GET" do
         render(conn, "revoke.html", role: pr, people_roles_id: people_roles_id)
       else
