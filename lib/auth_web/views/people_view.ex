@@ -6,12 +6,7 @@ defmodule AuthWeb.PeopleView do
   """
   def status_string(status_id, statuses) do
     if status_id != nil do
-      status =
-        Enum.filter(statuses, fn s ->
-          s.id == status_id
-        end)
-        |> Enum.at(0)
-
+      status = Enum.at(Enum.filter(statuses, fn s -> s.id == status_id end), 0)
       status.text
     else
       "none"
