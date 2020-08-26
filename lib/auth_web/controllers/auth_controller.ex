@@ -115,11 +115,18 @@ defmodule AuthWeb.AuthController do
   """
   def github_handler(conn, %{"code" => code, "state" => state}) do
     {:ok, profile} = ElixirAuthGithub.github_auth(code)
-    # save profile to people:
-    person = Person.create_github_person(profile)
 
-    # render or redirect:
-    handler(conn, person, state)
+    # redirect to error page when Github email is not public, see https://git.io/JUTn0
+    if is_nil(profile.email) do
+      person = Person.transform_github_profile_data_to_person(profile)
+      github_email_handler(conn, person, state)
+    else
+      # save profile to people:
+      person = Person.create_github_person(profile)
+
+      # render or redirect:
+      handler(conn, person, state)
+    end
   end
 
   @doc """
@@ -148,6 +155,10 @@ defmodule AuthWeb.AuthController do
     })
 
     redirect_or_render(conn, person, state)
+  end
+
+  def github_email_handler(conn, person, state) do
+    render(conn, :github_email, person: person)
   end
 
   @doc """

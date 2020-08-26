@@ -1,0 +1,18 @@
+<section class="w-100 center ph3 tc">
+  <h1> Hi <%= @person.givenName %>!
+  </h1>
+  <img width="128px" src="<%= @person.picture %>"
+    class="center db br2"/>
+  <p class="f3"> Unfortunately we cannot find any email addresses
+  linked to your Github account. This could happen if your email is set
+  as private.
+  <p/>
+
+<a href=https://docs.github.com/en/github/setting-up-and-managing-your-github-user-account/setting-your-commit-email-address""
+class="pointer f3">
+check your email settings documentation to see how
+to make your email public:
+</a>
+  
+
+</section>
