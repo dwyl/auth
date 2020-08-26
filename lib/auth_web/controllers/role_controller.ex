@@ -70,18 +70,14 @@ defmodule AuthWeb.RoleController do
     # confirm that the granter is either superadmin (conn.assigns.person.id == 1)
     # or has an "admin" role (1 || 2)
     granter_id = conn.assigns.person.id
-    IO.inspect(conn, label: "conn")
-    IO.inspect(params, label: "params")
-    role_id = Map.get(params, "role_id")
-    person_id = Map.get(params, "person_id")
-    Auth.PeopleRoles.insert(granter_id, person_id, role_id)
-    # redirect(conn, to: Routes.people_path(conn, :index))
-    redirect(conn, to: Routes.people_path(conn, :show, person_id))
-    # if granter.id == 1 do
-    #   conn
-    # else
-    #   AuthWeb.AuthController.unauthorized(conn)
-    # end
+    if granter_id == 1 do
+      role_id = Map.get(params, "role_id")
+      person_id = Map.get(params, "person_id")
+      Auth.PeopleRoles.insert(granter_id, person_id, role_id)
+      redirect(conn, to: Routes.people_path(conn, :show, person_id))
+    else
+      AuthWeb.AuthController.unauthorized(conn)
+    end
   end
 
   @doc """

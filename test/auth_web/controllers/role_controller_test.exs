@@ -104,17 +104,33 @@ defmodule AuthWeb.RoleControllerTest do
     %{role: role}
   end
 
-  # test "attempt to grant_role/3 without admin should 401", %{conn: conn} do
-  #   alex = %{email: "alex_grant_role_fail@gmail.com", auth_provider: "email"}
-  #   grantee = Auth.Person.create_person(alex)
-  #   conn = assign(conn, :person, grantee)
-  #   role_id = 4
-  #   conn = Auth.PeopleRoles.insert(conn, grantee.id, role_id)
-  #   assert conn.status == 401
-  # end
-  # test "get list of roles" do
-  #   Auth.Role.list_roles() |> IO.inspect()
-  # end
+
+
+  test "POST /roles/grant without admin should 401", %{conn: conn} do
+    alex = %{email: "alex_grant_role_fail@gmail.com", auth_provider: "email"}
+    grantee = Auth.Person.create_person(alex)
+    conn = assign(conn, :person, grantee)
+    conn = AuthWeb.RoleController.grant(conn, %{"role_id" => 5, "person_id" => grantee.id})
+    assert conn.status == 401
+  end
+
+  test "POST /roles/grant should create people_roles entry", %{conn: conn} do
+    alex = %{email: "alex_grant_success@gmail.com", auth_provider: "email"}
+    grantee = Auth.Person.create_person(alex)
+
+
+    conn = get(admin_login(conn), Routes.role_path(conn, :grant,
+      %{"role_id" => 5, "person_id" => grantee.id}))
+
+    # the grant/2 controller handler redirects back to /person/:id
+    assert html_response(conn, 302) =~ "redirected"
+
+    # check that the record was created:
+    pr = Auth.PeopleRoles.get_record(grantee.id, 5)
+    assert pr.person_id == grantee.id
+    assert pr.role_id == 5
+    assert pr.granter_id == 1
+  end
 
   test "GET /roles/revoke/:people_roles_id displays confirm prompt", %{conn: conn} do
     conn = admin_login(conn)

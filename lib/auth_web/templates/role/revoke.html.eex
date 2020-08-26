@@ -5,7 +5,7 @@
   from <strong><%= @role.person.givenName %></strong>
   ?</p>
   
-  <%= form_for :revoke, Routes.role_path(AuthWeb.Endpoint, :revoke, @people_roles_id), fn f -> %>
+  <%= form_for :revoke, Routes.role_path(AuthWeb.Endpoint, :revoke, @people_roles_id), fn _f -> %>
     <%= submit "Revoke", class: "pointer bn bg-red white f2 pa2 mt1 shadow-hover bg-animate" %>
   <% end %>
 
