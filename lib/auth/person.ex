@@ -116,6 +116,8 @@ defmodule Auth.Person do
     }
   """
   def transform_github_profile_data_to_person(profile) do
+
+    IO.inspect(profile, label: "profile")
     Map.merge(profile, %{
       username: profile.login,
       givenName: profile.name,
@@ -270,7 +272,8 @@ defmodule Auth.Person do
   """
   def list_people do
     Repo.all(from(pr in __MODULE__, preload: [:roles, :statuses]))
-
+    # keeping this query commented here for now in case I decide to use it
+    # instead of having to call PeopleView.status_string/2
     # query = """
     # SELECT DISTINCT ON (s.status_id, s.person_id) s.id, s.message_id,
     # s.updated_at, s.template, st.text as status, s.person_id
