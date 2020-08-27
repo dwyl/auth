@@ -116,8 +116,6 @@ defmodule Auth.Person do
     }
   """
   def transform_github_profile_data_to_person(profile) do
-
-    IO.inspect(profile, label: "profile")
     Map.merge(profile, %{
       username: profile.login,
       givenName: profile.name,
