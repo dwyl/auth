@@ -1,0 +1,32 @@
+<h1>Listing Apps</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Description</th>
+      <th>Url</th>
+      <th>End</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for app <- @apps do %>
+    <tr>
+      <td><%= app.name %></td>
+      <td><%= app.description %></td>
+      <td><%= app.url %></td>
+      <td><%= app.end %></td>
+
+      <td>
+        <span><%= link "Show", to: Routes.app_path(@conn, :show, app) %></span>
+        <span><%= link "Edit", to: Routes.app_path(@conn, :edit, app) %></span>
+        <span><%= link "Delete", to: Routes.app_path(@conn, :delete, app), method: :delete, data: [confirm: "Are you sure?"] %></span>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New App", to: Routes.app_path(@conn, :new) %></span>
