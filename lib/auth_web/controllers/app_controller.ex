@@ -1,21 +1,19 @@
 defmodule AuthWeb.AppController do
   use AuthWeb, :controller
-
-  alias Auth.Ctx
-  alias Auth.Ctx.App
+  alias Auth.App
 
   def index(conn, _params) do
-    apps = Ctx.list_apps()
+    apps = App.list_apps()
     render(conn, "index.html", apps: apps)
   end
 
   def new(conn, _params) do
-    changeset = Ctx.change_app(%App{})
+    changeset = App.change_app(%App{})
     render(conn, "new.html", changeset: changeset)
   end
 
   def create(conn, %{"app" => app_params}) do
-    case Ctx.create_app(app_params) do
+    case App.create_app(app_params) do
       {:ok, app} ->
         conn
         |> put_flash(:info, "App created successfully.")
@@ -27,20 +25,20 @@ defmodule AuthWeb.AppController do
   end
 
   def show(conn, %{"id" => id}) do
-    app = Ctx.get_app!(id)
+    app = App.get_app!(id)
     render(conn, "show.html", app: app)
   end
 
   def edit(conn, %{"id" => id}) do
-    app = Ctx.get_app!(id)
-    changeset = Ctx.change_app(app)
+    app = App.get_app!(id)
+    changeset = App.change_app(app)
     render(conn, "edit.html", app: app, changeset: changeset)
   end
 
   def update(conn, %{"id" => id, "app" => app_params}) do
-    app = Ctx.get_app!(id)
+    app = App.get_app!(id)
 
-    case Ctx.update_app(app, app_params) do
+    case App.update_app(app, app_params) do
       {:ok, app} ->
         conn
         |> put_flash(:info, "App updated successfully.")
@@ -52,8 +50,8 @@ defmodule AuthWeb.AppController do
   end
 
   def delete(conn, %{"id" => id}) do
-    app = Ctx.get_app!(id)
-    {:ok, _app} = Ctx.delete_app(app)
+    app = App.get_app!(id)
+    {:ok, _app} = App.delete_app(app)
 
     conn
     |> put_flash(:info, "App deleted successfully.")

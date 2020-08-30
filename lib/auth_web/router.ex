@@ -50,6 +50,7 @@ defmodule AuthWeb.Router do
     resources "/roles", RoleController
 
     resources "/permissions", PermissionController
+    resources "/apps", AppController
     resources "/settings/apikeys", ApikeyController
   end
 

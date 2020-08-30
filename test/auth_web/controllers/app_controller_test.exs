@@ -1,19 +1,20 @@
 defmodule AuthWeb.AppControllerTest do
   use AuthWeb.ConnCase
 
-  alias Auth.Ctx
+  alias Auth.App
 
   @create_attrs %{description: "some description", end: ~N[2010-04-17 14:00:00], name: "some name", url: "some url"}
   @update_attrs %{description: "some updated description", end: ~N[2011-05-18 15:01:01], name: "some updated name", url: "some updated url"}
   @invalid_attrs %{description: nil, end: nil, name: nil, url: nil}
 
   def fixture(:app) do
-    {:ok, app} = Ctx.create_app(@create_attrs)
+    {:ok, app} = App.create_app(@create_attrs)
     app
   end
 
   describe "index" do
     test "lists all apps", %{conn: conn} do
+      conn = admin_login(conn)
       conn = get(conn, Routes.app_path(conn, :index))
       assert html_response(conn, 200) =~ "Listing Apps"
     end

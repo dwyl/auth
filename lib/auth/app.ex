@@ -1,12 +1,32 @@
-defmodule Auth.Ctx do
+defmodule Auth.App do
   @moduledoc """
-  The Ctx context.
+  Schema and helper functions for creating/managing Apps.
   """
-
+  use Ecto.Schema
+  import Ecto.Changeset
   import Ecto.Query, warn: false
   alias Auth.Repo
+  # https://stackoverflow.com/a/47501059/1148249
+  alias __MODULE__
 
-  alias Auth.Ctx.App
+  schema "apps" do
+    field :description, :binary
+    field :end, :naive_datetime
+    field :name, :binary
+    field :url, :binary
+    field :person_id, :id
+    field :status, :id
+    field :apikey_id, :id
+
+    timestamps()
+  end
+
+  @doc false
+  def changeset(app, attrs) do
+    app
+    |> cast(attrs, [:name, :description, :url, :end])
+    |> validate_required([:name, :url])
+  end
 
   @doc """
   Returns the list of apps.

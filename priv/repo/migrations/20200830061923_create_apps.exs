@@ -9,7 +9,7 @@ defmodule Auth.Repo.Migrations.CreateApps do
       add :end, :naive_datetime
       add :person_id, references(:people, on_delete: :nothing)
       add :status, references(:status, on_delete: :nothing)
-      add :apikey_id, references(:api, on_delete: :nothing)
+      add :apikey_id, references(:apikeys, on_delete: :nothing)
 
       timestamps()
     end
