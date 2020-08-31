@@ -1,14 +1,11 @@
-<h1>Listing Apps</h1>
+<h1 class="tc mb4">Apps</h1>
 
-<table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Description</th>
-      <th>Url</th>
-      <th>End</th>
-
-      <th></th>
+  <table class="w-100 f3">
+    <thead>
+      <tr class="f3">
+        <th>Name</th>
+        <th>Description</th>
+        <th>Url</th>
     </tr>
   </thead>
   <tbody>
@@ -17,8 +14,6 @@
       <td><%= app.name %></td>
       <td><%= app.description %></td>
       <td><%= app.url %></td>
-      <td><%= app.end %></td>
-
       <td>
         <span><%= link "Show", to: Routes.app_path(@conn, :show, app) %></span>
         <span><%= link "Edit", to: Routes.app_path(@conn, :edit, app) %></span>
@@ -30,3 +25,14 @@
 </table>
 
 <span><%= link "New App", to: Routes.app_path(@conn, :new) %></span>
+
+  <style> /* stackoverflow.com/questions/9789723/css-text-overflow-table-cell */
+  td {
+      max-width: 400px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      text-align: center;
+      padding: 10px;
+  }
+  </style>
