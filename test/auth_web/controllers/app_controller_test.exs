@@ -22,6 +22,7 @@ defmodule AuthWeb.AppControllerTest do
 
   describe "new app" do
     test "renders form", %{conn: conn} do
+      conn = admin_login(conn)
       conn = get(conn, Routes.app_path(conn, :new))
       assert html_response(conn, 200) =~ "New App"
     end
@@ -29,6 +30,7 @@ defmodule AuthWeb.AppControllerTest do
 
   describe "create app" do
     test "redirects to show when data is valid", %{conn: conn} do
+      conn = admin_login(conn)
       conn = post(conn, Routes.app_path(conn, :create), app: @create_attrs)
 
       assert %{id: id} = redirected_params(conn)
@@ -39,6 +41,7 @@ defmodule AuthWeb.AppControllerTest do
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
+      conn = admin_login(conn)
       conn = post(conn, Routes.app_path(conn, :create), app: @invalid_attrs)
       assert html_response(conn, 200) =~ "New App"
     end
@@ -48,6 +51,7 @@ defmodule AuthWeb.AppControllerTest do
     setup [:create_app]
 
     test "renders form for editing chosen app", %{conn: conn, app: app} do
+      conn = admin_login(conn)
       conn = get(conn, Routes.app_path(conn, :edit, app))
       assert html_response(conn, 200) =~ "Edit App"
     end
@@ -57,6 +61,7 @@ defmodule AuthWeb.AppControllerTest do
     setup [:create_app]
 
     test "redirects when data is valid", %{conn: conn, app: app} do
+      conn = admin_login(conn)
       conn = put(conn, Routes.app_path(conn, :update, app), app: @update_attrs)
       assert redirected_to(conn) == Routes.app_path(conn, :show, app)
 
@@ -65,6 +70,7 @@ defmodule AuthWeb.AppControllerTest do
     end
 
     test "renders errors when data is invalid", %{conn: conn, app: app} do
+      conn = admin_login(conn)
       conn = put(conn, Routes.app_path(conn, :update, app), app: @invalid_attrs)
       assert html_response(conn, 200) =~ "Edit App"
     end
@@ -74,6 +80,7 @@ defmodule AuthWeb.AppControllerTest do
     setup [:create_app]
 
     test "deletes chosen app", %{conn: conn, app: app} do
+      conn = admin_login(conn)
       conn = delete(conn, Routes.app_path(conn, :delete, app))
       assert redirected_to(conn) == Routes.app_path(conn, :index)
       assert_error_sent 404, fn ->
