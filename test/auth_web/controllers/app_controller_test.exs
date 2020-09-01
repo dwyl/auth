@@ -37,7 +37,7 @@ defmodule AuthWeb.AppControllerTest do
       assert redirected_to(conn) == Routes.app_path(conn, :show, id)
 
       conn = get(conn, Routes.app_path(conn, :show, id))
-      assert html_response(conn, 200) =~ "Show App"
+      assert html_response(conn, 200) =~ "App"
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
