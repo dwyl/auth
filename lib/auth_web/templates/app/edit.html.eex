@@ -1,5 +1,13 @@
+<div class="f3 w-60 center">
 <h1>Edit App</h1>
 
 <%= render "form.html", Map.put(assigns, :action, Routes.app_path(@conn, :update, @app)) %>
 
-<span><%= link "Back", to: Routes.app_path(@conn, :index) %></span>
+
+  <span><%= link "< Back", to: Routes.app_path(@conn, :index),
+  class: "fl pointer br2 ba b--orange bg-gold white pa3 f4 mt3
+  shadow-hover bg-animate hover-bg-orange border-box no-underline",
+  data:
+   [confirm: "Any changes made will not be saved."]
+  %></span>
+</div>

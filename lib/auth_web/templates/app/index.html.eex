@@ -15,10 +15,25 @@
       <td><%= app.description %></td>
       <td><%= app.url %></td>
       <td>
-        <span><%= link "Show", to: Routes.app_path(@conn, :show, app) %></span>
-        <span><%= link "Edit", to: Routes.app_path(@conn, :edit, app) %></span>
-        <span><%= link "Delete", to: Routes.app_path(@conn, :delete, app), method: :delete, data: [confirm: "Are you sure?"] %></span>
-      </td>
+          <span><%= link "View", to: Routes.app_path(@conn, :show, app),
+          class: "pointer br2 ba b--dark-blue bg-blue white pa3 ml1 mv1 f4
+                  bg-animate hover-bg-dark-blue border-box no-underline"
+           %>
+         </span>
+          <span><%= link "Edit", to: Routes.app_path(@conn, :edit, app),
+          class: "pointer br2 ba b--orange bg-gold white pa3 ml1 mv1 f4
+                  bg-animate hover-bg-orange border-box no-underline"
+          %></span>
+          <span>
+          <%= link "Delete", to: Routes.app_path(@conn, :delete, app),
+          method: :delete,
+          class: "pointer br2 ba b--dark-red bg-red white pa3 ml1 mv1 f4
+                  bg-animate hover-bg-dark-red border-box no-underline",
+          data:
+           [confirm: "Are you sure you want to delete this App?
+          (This cannot be undone!)"] %>
+          </span>
+        </td>
     </tr>
 <% end %>
   </tbody>

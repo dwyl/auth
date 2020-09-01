@@ -16,7 +16,7 @@ defmodule AuthWeb.AppControllerTest do
     test "lists all apps", %{conn: conn} do
       conn = admin_login(conn)
       conn = get(conn, Routes.app_path(conn, :index))
-      assert html_response(conn, 200) =~ "Listing Apps"
+      assert html_response(conn, 200) =~ "Apps"
     end
   end
 

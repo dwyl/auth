@@ -1,28 +1,41 @@
-<h1>Show App</h1>
+<div class="f3 w-70 center">
+  <h1>Your App</h1>
 
-<ul>
 
-  <li>
-    <strong>Name:</strong>
-    <%= @app.name %>
-  </li>
 
-  <li>
+  <p>
+    <strong>App Name:</strong>
+    <span class="db ba b--black-80 pa2 bg-light-gray w-100 mt2">
+      <%= @app.name %>
+    </span>
+  </p>
+
+  <p>
     <strong>Description:</strong>
-    <%= @app.description %>
-  </li>
+    <span class="db ba b--black-80 pa2 bg-light-gray w-100 mt2">
+      <%= @app.description %>
+    </span>
+  </p>
 
-  <li>
-    <strong>Url:</strong>
-    <%= @app.url %>
-  </li>
+  <p>
+    <strong>URL:</strong>
+    <span class="db ba b--black-80 pa2 bg-light-gray w-100 mt2">
+      <%= @app.url %>
+    </span>
+  </p>
 
-  <li>
-    <strong>End:</strong>
-    <%= @app.end %>
-  </li>
 
-</ul>
+<span>
+  <%= link "< Back", to: Routes.app_path(@conn, :index),
+  class: "pointer br2 ba b--orange bg-gold white pa3 ml1 mv1 f4
+  shadow-hover bg-animate hover-bg-orange border-box no-underline"
+  %>
+</span>
+<span>
+  <%= link "Edit", to: Routes.app_path(@conn, :edit, @app),
+  class: "pointer br2 ba b--dark-green bg-green white pa3 ml1 mv1 f4
+  shadow-hover bg-animate hover-bg-dark-green border-box no-underline"
+  %>
+</span>
 
-<span><%= link "Edit", to: Routes.app_path(@conn, :edit, @app) %></span>
-<span><%= link "Back", to: Routes.app_path(@conn, :index) %></span>
+</div>
