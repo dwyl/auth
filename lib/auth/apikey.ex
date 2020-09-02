@@ -25,8 +25,9 @@ defmodule Auth.Apikey do
   @doc false
   def changeset(apikey, attrs) do
     apikey
-    |> cast(attrs, [:client_id, :client_secret, :person_id])
+    |> cast(attrs, [:client_id, :client_secret, :person_id, :app_id])
     |> validate_required([:client_secret])
+    # |> put_assoc(:app, attrs.app_id)
   end
 
   def change_apikey(%Apikey{} = apikey) do
@@ -47,6 +48,7 @@ defmodule Auth.Apikey do
       )
 
     Repo.all(query)
+    |> Repo.preload(:app)
   end
 
   @doc """
@@ -63,7 +65,10 @@ defmodule Auth.Apikey do
       ** (Ecto.NoResultsError)
 
   """
-  def get_apikey!(id), do: Repo.get!(__MODULE__, id)
+  def get_apikey!(id) do
+    Repo.get!(__MODULE__, id)
+    |> Repo.preload(:apps)
+  end
 
   @doc """
   Updates a apikey.

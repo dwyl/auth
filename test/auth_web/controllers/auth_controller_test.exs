@@ -58,10 +58,15 @@ defmodule AuthWeb.AuthControllerTest do
         auth_provider: "email"
       })
 
-    {:ok, key} =
-      %{"name" => "test key", "url" => "example.com"}
-      |> AuthWeb.ApikeyController.make_apikey(person.id)
-      |> Auth.Apikey.create_apikey()
+    app_data = %{
+      "name" => "example key",
+      "url" => "https://www.example.com",
+      "person_id" => person.id
+    }
+    {:ok, app} = Auth.App.create_app(app_data)
+    apikey_params = %{"app_id" => app.id}
+    key = AuthWeb.ApikeyController.make_apikey(apikey_params, person.id)
+    {:ok, key} = Auth.Apikey.create_apikey(key)
 
     state = "https://www.example.com/profile?auth_client_id=#{key.client_id}"
     secret = AuthWeb.AuthController.get_client_secret(key.client_id, state)
