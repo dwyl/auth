@@ -16,7 +16,8 @@ defmodule Auth.App do
     field :url, :binary
     field :person_id, :id
     field :status, :id
-    field :apikey_id, :id
+    # field :apikey_id, :id
+    # has_many :apikeys, Auth.Status
 
     timestamps()
   end

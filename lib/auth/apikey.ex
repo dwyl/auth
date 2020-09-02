@@ -12,11 +12,12 @@ defmodule Auth.Apikey do
   schema "apikeys" do
     field :client_secret, :binary
     field :client_id, :binary
-    field :description, :string
-    field :name, :string
-    field :url, :binary
+    # field :description, :string
+    # field :name, :string
+    # field :url, :binary
     field :person_id, :id
     field :status, :id
+    belongs_to :app, Auth.App
 
     timestamps()
   end
@@ -24,7 +25,7 @@ defmodule Auth.Apikey do
   @doc false
   def changeset(apikey, attrs) do
     apikey
-    |> cast(attrs, [:client_id, :client_secret, :name, :description, :url, :person_id])
+    |> cast(attrs, [:client_id, :client_secret, :person_id])
     |> validate_required([:client_secret])
   end
 
