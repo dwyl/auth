@@ -6,9 +6,6 @@
     <thead>
       <tr class="f3">
         <th>AUTH_API_KEY</th>
-        <th>Name</th>
-        <th>Description</th>
-        <th>Url</th>
       </tr>
     </thead>
     <tbody>
@@ -17,9 +14,6 @@
         <td style="width:200px;">
         <%= apikey.client_id %>/<%= apikey.client_secret %>
         </td>
-        <td><%= apikey.name %></td>
-        <td><%= apikey.description %></td>
-        <td><%= apikey.url %></td>
 
         <td>
           <span><%= link "View", to: Routes.apikey_path(@conn, :show, apikey),

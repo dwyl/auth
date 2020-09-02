@@ -25,27 +25,6 @@
   </p>
 
 
-  <p>
-    <strong>Key Name:</strong>
-    <span class="db ba b--black-80 pa2 bg-light-gray w-100 mt2">
-      <%= @apikey.name %>
-    </span>
-  </p>
-
-  <p>
-    <strong>Description:</strong>
-    <span class="db ba b--black-80 pa2 bg-light-gray w-100 mt2">
-      <%= @apikey.description %>
-    </span>
-  </p>
-
-  <p>
-    <strong>URL:</strong>
-    <span class="db ba b--black-80 pa2 bg-light-gray w-100 mt2">
-      <%= @apikey.url %>
-    </span>
-  </p>
-
 
 <span>
   <%= link "< Back", to: Routes.apikey_path(@conn, :index),

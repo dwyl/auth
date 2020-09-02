@@ -38,14 +38,18 @@ defmodule Auth.Seeds do
   end
 
   def create_apikey_for_admin(person) do
-    {:ok, key} =
+    {:ok, app} =
       %{
-        "name" => "system admin key",
+        "name" => "default system app",
         "description" => "Created by /priv/repo/seeds.exs during setup.",
         "url" => "localhost:4000"
       }
-      |> AuthWeb.ApikeyController.make_apikey(person.id)
+      |> Auth.App.create_app()
+
+    {:ok, key} = AuthWeb.ApikeyController.make_apikey(%{"app" => app}, person.id)
       |> Auth.Apikey.create_apikey()
+
+    # IO.inspect(key, label: "key")
 
     api_key = key.client_id <> "/" <> key.client_secret
     # set the AUTH_API_KEY environment variable during test run:

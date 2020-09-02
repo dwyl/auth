@@ -17,7 +17,7 @@ defmodule Auth.App do
     field :person_id, :id
     field :status, :id
     # field :apikey_id, :id
-    # has_many :apikeys, Auth.Status
+    has_many :apikeys, Auth.Apikey
 
     timestamps()
   end
@@ -27,6 +27,8 @@ defmodule Auth.App do
     app
     |> cast(attrs, [:name, :description, :url, :end])
     |> validate_required([:name, :url])
+
+
   end
 
   @doc """

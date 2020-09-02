@@ -5,7 +5,7 @@ defmodule AuthWeb.ApikeyControllerTest do
   # alias Auth.Apikey
   # alias AuthWeb.ApikeyController, as: Ctrl
   @email System.get_env("ADMIN_EMAIL")
-  @create_attrs %{description: "some description", name: "some name", url: "some url"}
+  @create_attrs %{description: "some description", name: "some name", url: "localhost"}
   @update_attrs %{
     client_secret: "updated client sec",
     description: "some updated desc",
@@ -94,9 +94,11 @@ defmodule AuthWeb.ApikeyControllerTest do
 
   describe "create apikey" do
     test "redirects to show when data is valid", %{conn: conn} do
+      {:ok, app} = Auth.App.create_app(@create_attrs)
+
       conn =
         admin_login(conn)
-        |> post(Routes.apikey_path(conn, :create), apikey: @create_attrs)
+        |> post(Routes.apikey_path(conn, :create), apikey: %{"app" => app})
 
       assert %{id: id} = redirected_params(conn)
       assert redirected_to(conn) == Routes.apikey_path(conn, :show, id)
@@ -162,9 +164,6 @@ defmodule AuthWeb.ApikeyControllerTest do
 
       conn = put(conn, Routes.apikey_path(conn, :update, key.id), apikey: @update_attrs)
       assert redirected_to(conn) == Routes.apikey_path(conn, :show, key)
-
-      conn = get(conn, Routes.apikey_path(conn, :show, key))
-      assert html_response(conn, 200) =~ "some updated desc"
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
