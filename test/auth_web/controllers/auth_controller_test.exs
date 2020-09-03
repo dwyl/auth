@@ -64,7 +64,7 @@ defmodule AuthWeb.AuthControllerTest do
       "person_id" => person.id
     }
     {:ok, app} = Auth.App.create_app(app_data)
-    apikey_params = %{"app_id" => app.id}
+    apikey_params = %{"app" => app}
     key = AuthWeb.ApikeyController.make_apikey(apikey_params, person.id)
     {:ok, key} = Auth.Apikey.create_apikey(key)
 
