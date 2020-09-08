@@ -8,9 +8,9 @@
   <p/>
 
   <br />
-  <a href="/settings/apikeys"
+  <a href="/apps"
   class="pointer ba border-box dwyl-bg-mint white pa3 ml1 mv1 f3
   shadow-hover bg-animate hover-dwyl-teal-darkest no-underline">
-  Manage API Keys
+  Manage Apps
   </a>
 </section>

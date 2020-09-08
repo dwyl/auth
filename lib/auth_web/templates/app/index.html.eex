@@ -39,7 +39,12 @@
   </tbody>
 </table>
 
-<span><%= link "New App", to: Routes.app_path(@conn, :new) %></span>
+  <span class="fr w-20 mt4 center">
+    <%= link "New App", to: Routes.app_path(@conn, :new),
+    class: "pointer br2 ba b--dark-green bg-green white pa3 ml1 mv1 f3
+    shadow-hover bg-animate hover-bg-dark-green border-box no-underline" %>
+  </span>
+
 
   <style> /* stackoverflow.com/questions/9789723/css-text-overflow-table-cell */
   td {
