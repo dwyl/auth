@@ -12,22 +12,22 @@
          <img src="https://dwyl.com/img/favicon-32x32.png" alt="dwyl logo"/>
        </a>
      </li>
-<!--
+
      <li class="di-l pl6 tl pt5-m pb2-m">
-       <a href="#" class="white link">Portfolio</a>
+       <a href="/apps" class="white link">Apps</a>
      </li>
      <li class="pl5 pl6-m di-l tl pb2-m">
-       <a href="#" class="white link">Blog</a>
+       <a href="/people" class="white link">People</a>
      </li>
      <li class="pl5 pl6-m di-l tl pb2-m">
-       <a href="#contact" id="contact-link" class="white link">Contact</a>
+       <a href="/roles" id="contact-link" class="white link">Roles</a>
      </li>
 
-     <li class="pl6-m tl dn-l pb3"> <!-- example of mobile-only menu item
+     <li class="pl6-m tl dn-l pb3">
        <a href="https://youtu.be/dQw4w9WgXcQ"
          class="white link">S'up?</a>
      </li>
--->
+
    </ul>
  </nav>
 
