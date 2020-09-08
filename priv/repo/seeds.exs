@@ -10,7 +10,7 @@
 defmodule Auth.Seeds do
   alias Auth.{Person, Repo, Status}
   # put_assoc
-  import Ecto.Changeset
+  # import Ecto.Changeset
 
   def create_admin do
     email = System.get_env("ADMIN_EMAIL")
@@ -20,8 +20,9 @@ defmodule Auth.Seeds do
         nil ->
           %Person{}
           |> Person.changeset(%{email: email})
-          |> put_assoc(:statuses, [%Status{text: "verified"}])
+          # |> put_assoc(:statuses, [%Status{text: "verified"}])
           |> Repo.insert!()
+
 
         person ->
           person
@@ -103,8 +104,8 @@ Auth.Seeds.create_admin()
 |> Auth.Seeds.create_apikey_for_admin()
 
 # scripts for creating default roles and permissions
-defmodule SetupRoles do
-  alias Auth.Role
+defmodule SeedData do
+  alias Auth.{Role, Status}
 
   def get_json(filepath) do
     # IO.inspect(filepath, label: "filepath")
@@ -116,7 +117,7 @@ defmodule SetupRoles do
     json
   end
 
-  def create_default_roles() do
+  def create_default_roles do
     json = get_json("/priv/repo/default_roles.json")
 
     Enum.each(json, fn role ->
@@ -124,8 +125,17 @@ defmodule SetupRoles do
       # |> IO.inspect()
     end)
   end
+
+  def insert_statuses do
+    json = get_json("/priv/repo/statuses.json")
+    Enum.each(json, fn s ->
+      Status.upsert_status(s)
+    end)
+
+  end
 end
 
-SetupRoles.create_default_roles()
+SeedData.create_default_roles()
+SeedData.insert_statuses()
 # grant superadmin role to app owner:
 Auth.PeopleRoles.insert(1, 1, 1)

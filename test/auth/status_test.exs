@@ -3,10 +3,10 @@ defmodule Auth.StatusTest do
   alias Auth.{Status}
 
   test "upsert_status/1 inserts or updates a status record" do
-    status = Status.upsert_status("verified")
+    status = Status.upsert_status(%{"text" => "verified"})
     assert status.id == 1
 
-    new_status = Status.upsert_status("amaze")
-    assert new_status.id == 2
+    new_status = Status.upsert_status(%{"text" => "amaze"})
+    assert new_status.id == 12
   end
 end

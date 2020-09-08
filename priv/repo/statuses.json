@@ -1,23 +1,23 @@
 [
   {
-    "text": "unverified", 
-    "id": "1",
-    "desc": "People are considered unverified until they confirm their email address"
-  },
-  {
     "text": "verified", 
-    "id": "2",
+    "id": "1",
     "desc": "People are verified once they confirm their email address"
   },
   {
     "text": "uncategorized", 
-    "id": "3",
-    "desc": "All items are uncategorized when they are first created. (Yes, American spelling)"
+    "id": "2",
+    "desc": "All items are uncategorized when they are first created. (Yes, US spelling)"
   },
   {
     "text": "active", 
-    "id": "4",
+    "id": "3",
     "desc": "An App, Item or Person can be active; this is the default state for an App"
+  },
+  {
+    "text": "done", 
+    "id": "4",
+    "desc": "Items marked as done are complete"
   },
   {
     "text": "flagged", 

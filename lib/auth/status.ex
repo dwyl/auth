@@ -7,6 +7,7 @@ defmodule Auth.Status do
 
   schema "status" do
     field :text, :string
+    field :desc, :string
     belongs_to :person, Auth.Person
 
     timestamps()
@@ -15,24 +16,26 @@ defmodule Auth.Status do
   @doc false
   def changeset(status, attrs) do
     status
-    |> cast(attrs, [:text])
+    |> cast(attrs, [:text, :desc])
     |> validate_required([:text])
   end
 
-  def create_status(text, person) do
+  def create_status(attrs, person) do
     %Status{}
-    |> changeset(%{text: text})
+    |> changeset(attrs)
     |> put_assoc(:person, person)
     |> Repo.insert!()
   end
 
-  def upsert_status(text) do
+  def upsert_status(attrs) do
+    text = Map.get(attrs, "text")
+    |> IO.inspect(label: "text")
     case Auth.Repo.get_by(__MODULE__, text: text) do
       # create status
       nil ->
         email = System.get_env("ADMIN_EMAIL")
         person = Auth.Person.get_person_by_email(email)
-        create_status(text, person)
+        create_status(attrs, person)
 
       status ->
         status
