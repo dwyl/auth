@@ -1,10 +1,10 @@
 <div class="f3 w-70 center">
-  <h1>Your App</h1>
+  <h1 class="tc">Your App</h1>
 
 
 
   <p>
-    <strong>App Name:</strong>
+    <strong>Name:</strong>
     <span class="db ba b--black-80 pa2 bg-light-gray w-100 mt2">
       <%= @app.name %>
     </span>
@@ -24,16 +24,36 @@
     </span>
   </p>
 
+  <%= for apikey <- @app.apikeys do %>
+    <p><strong>AUTH_API_KEY:</strong>
+      <div style="font-size: 1.2em;
+      overflow-wrap: break-word; font-family: monospace;
+      border: 1px solid black; padding: 10px; background-color: #EBEDEF;">
+      <%= apikey.client_id %>/<%= apikey.client_secret %>
+      </div>
+    </p>
+
+    <p> Export it as an environment variable:
+      <div style="font-size: 1.2em;
+      overflow-wrap: break-word; font-family: monospace;
+      border: 1px solid black; padding: 10px; background-color: #EBEDEF;">
+      export AUTH_API_KEY=<%= apikey.client_id %>/<%= apikey.client_secret %>
+      </div>
+    </p>
+  <% end %>
+
+
+
 
 <span>
   <%= link "< Back", to: Routes.app_path(@conn, :index),
-  class: "pointer br2 ba b--orange bg-gold white pa3 ml1 mv1 f4
+  class: "fl pointer br2 ba b--orange bg-gold white pa3 ml1 mv1 f4
   shadow-hover bg-animate hover-bg-orange border-box no-underline"
   %>
 </span>
 <span>
   <%= link "Edit", to: Routes.app_path(@conn, :edit, @app),
-  class: "pointer br2 ba b--dark-green bg-green white pa3 ml1 mv1 f4
+  class: "fr pointer br2 ba b--dark-green bg-green white pa3 ml1 mv1 f4
   shadow-hover bg-animate hover-bg-dark-green border-box no-underline"
   %>
 </span>

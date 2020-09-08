@@ -42,7 +42,8 @@ defmodule Auth.Seeds do
       %{
         "name" => "default system app",
         "description" => "Created by /priv/repo/seeds.exs during setup.",
-        "url" => "localhost:4000"
+        "url" => "localhost:4000",
+        "person_id" => person.id
       }
       |> Auth.App.create_app()
 

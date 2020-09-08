@@ -26,6 +26,7 @@ defmodule AuthWeb.AppController do
 
   def show(conn, %{"id" => id}) do
     app = App.get_app!(id)
+    IO.inspect(app, label: "app 29")
     render(conn, "show.html", app: app)
   end
 

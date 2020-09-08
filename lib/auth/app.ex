@@ -25,7 +25,7 @@ defmodule Auth.App do
   @doc false
   def changeset(app, attrs) do
     app
-    |> cast(attrs, [:name, :description, :url, :end])
+    |> cast(attrs, [:name, :description, :url, :end, :person_id])
     |> validate_required([:name, :url])
 
 
@@ -58,7 +58,10 @@ defmodule Auth.App do
       ** (Ecto.NoResultsError)
 
   """
-  def get_app!(id), do: Repo.get!(App, id)
+  def get_app!(id) do
+    Repo.get!(App, id)
+    |> Repo.preload(:apikeys)
+  end
 
   @doc """
   Creates a app.
@@ -73,9 +76,16 @@ defmodule Auth.App do
 
   """
   def create_app(attrs \\ %{}) do
-    %App{}
+    {:ok, app} = %App{}
     |> App.changeset(attrs)
     |> Repo.insert()
+
+    # Create API Key for App https://github.com/dwyl/auth/issues/97
+    AuthWeb.ApikeyController.make_apikey(%{"app" => app}, app.person_id)
+    |> Auth.Apikey.create_apikey()
+
+    # return the App with the API Key preloaded:
+    {:ok, get_app!(app.id)}
   end
 
   @doc """

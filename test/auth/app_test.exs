@@ -24,8 +24,9 @@ defmodule Auth.AppTest do
     end
 
     test "get_app!/1 returns the app with given id" do
-      app = app_fixture()
-      assert App.get_app!(app.id) == app
+      app = app_fixture(%{person_id: 1})
+      a = App.get_app!(app.id)
+      assert a.id == app.id
     end
 
     test "create_app/1 with valid data creates a app" do
