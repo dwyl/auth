@@ -42,7 +42,6 @@ defmodule Auth.App do
     App
     |> where([a], a.status != 6)
     |> Repo.all()
-
   end
 
   @doc """
@@ -70,8 +69,8 @@ defmodule Auth.App do
     # |> select([:id, :name, :url, :desc])
     |> Repo.one()
     |> Repo.preload(:apikeys)
-    # |> IO.inspect(label: "app:69")
 
+    # |> IO.inspect(label: "app:69")
   end
 
   @doc """

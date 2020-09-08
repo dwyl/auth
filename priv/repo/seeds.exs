@@ -132,6 +132,7 @@ defmodule SeedData do
 end
 
 SeedData.insert_statuses()
+
 Auth.Seeds.create_admin()
 |> Auth.Seeds.create_apikey_for_admin()
 
