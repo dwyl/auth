@@ -76,16 +76,18 @@ defmodule Auth.App do
 
   """
   def create_app(attrs \\ %{}) do
-    {:ok, app} = %App{}
-    |> App.changeset(attrs)
-    |> Repo.insert()
+    case %App{} |> App.changeset(attrs) |> Repo.insert() do
+      {:ok, app} ->
+        # Create API Key for App https://github.com/dwyl/auth/issues/97
+        AuthWeb.ApikeyController.make_apikey(%{"app" => app}, app.person_id)
+        |> Auth.Apikey.create_apikey()
 
-    # Create API Key for App https://github.com/dwyl/auth/issues/97
-    AuthWeb.ApikeyController.make_apikey(%{"app" => app}, app.person_id)
-    |> Auth.Apikey.create_apikey()
+        # return the App with the API Key preloaded:
+        {:ok, get_app!(app.id)}
 
-    # return the App with the API Key preloaded:
-    {:ok, get_app!(app.id)}
+      {:error, err} ->
+        {:error, err}
+    end
   end
 
   @doc """
