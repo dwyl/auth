@@ -28,11 +28,7 @@ defmodule Auth.Status do
   end
 
   def upsert_status(attrs) do
-    text =
-      Map.get(attrs, "text")
-      |> IO.inspect(label: "text")
-
-    case Auth.Repo.get_by(__MODULE__, text: text) do
+    case Auth.Repo.get_by(__MODULE__, text: Map.get(attrs, "text")) do
       # create status
       nil ->
         email = System.get_env("ADMIN_EMAIL")

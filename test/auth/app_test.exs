@@ -5,16 +5,18 @@ defmodule Auth.AppTest do
     alias Auth.App
 
     @valid_attrs %{
-      description: "some description",
+      desc: "some description",
       end: ~N[2010-04-17 14:00:00],
       name: "some name",
-      url: "some url"
+      url: "some url",
+      status: 3
     }
     @update_attrs %{
-      description: "some updated description",
+      desc: "some updated description",
       end: ~N[2011-05-18 15:01:01],
       name: "some updated name",
-      url: "some updated url"
+      url: "some updated url",
+      status: 3
     }
     @invalid_attrs %{description: nil, end: nil, name: nil, url: nil}
 
@@ -41,7 +43,7 @@ defmodule Auth.AppTest do
 
     test "create_app/1 with valid data creates a app" do
       assert {:ok, %App{} = app} = App.create_app(@valid_attrs)
-      assert app.description == "some description"
+      assert app.desc == "some description"
       assert app.end == ~N[2010-04-17 14:00:00]
       assert app.name == "some name"
       assert app.url == "some url"
@@ -54,7 +56,7 @@ defmodule Auth.AppTest do
     test "update_app/2 with valid data updates the app" do
       app = app_fixture()
       assert {:ok, %App{} = app} = App.update_app(app, @update_attrs)
-      assert app.description == "some updated description"
+      assert app.desc == "some updated description"
       assert app.end == ~N[2011-05-18 15:01:01]
       assert app.name == "some updated name"
       assert app.url == "some updated url"
@@ -69,7 +71,8 @@ defmodule Auth.AppTest do
     test "delete_app/1 deletes the app" do
       app = app_fixture()
       assert {:ok, %App{}} = App.delete_app(app)
-      assert_raise Ecto.NoResultsError, fn -> App.get_app!(app.id) end
+      app = App.get_app!(app.id)
+      assert is_nil(app)
     end
 
     test "change_app/1 returns a app changeset" do

@@ -41,17 +41,16 @@ defmodule Auth.Seeds do
     {:ok, app} =
       %{
         "name" => "default system app",
-        "description" => "Created by /priv/repo/seeds.exs during setup.",
+        "desc" => "Created by /priv/repo/seeds.exs during setup.",
         "url" => "localhost:4000",
-        "person_id" => person.id
+        "person_id" => person.id,
+        "status" => 3
       }
       |> Auth.App.create_app()
 
-    {:ok, key} =
-      AuthWeb.ApikeyController.make_apikey(%{"app" => app}, person.id)
-      |> Auth.Apikey.create_apikey()
-
-    # IO.inspect(key, label: "key")
+    # API Key is automatically created by create_app/1
+    # https://github.com/dwyl/auth/issues/97
+    key = List.first(app.apikeys)
 
     api_key = key.client_id <> "/" <> key.client_secret
     # set the AUTH_API_KEY environment variable during test run:
@@ -100,9 +99,6 @@ defmodule Auth.Seeds do
   end
 end
 
-Auth.Seeds.create_admin()
-|> Auth.Seeds.create_apikey_for_admin()
-
 # scripts for creating default roles and permissions
 defmodule SeedData do
   alias Auth.{Role, Status}
@@ -135,7 +131,10 @@ defmodule SeedData do
   end
 end
 
-SeedData.create_default_roles()
 SeedData.insert_statuses()
+Auth.Seeds.create_admin()
+|> Auth.Seeds.create_apikey_for_admin()
+
+SeedData.create_default_roles()
 # grant superadmin role to app owner:
 Auth.PeopleRoles.insert(1, 1, 1)

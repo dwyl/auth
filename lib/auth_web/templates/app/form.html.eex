@@ -10,10 +10,10 @@
     placeholder: "A distinctive name"%>
   <%= error_tag f, :name %>
   <br />
-  <%= label f, :description, class: "mt3" %>
-  <%= textarea f, :description, class: "db w-100 mt2 pa2 ba b--black",
+  <%= label f, :desc, class: "mt3" %>
+  <%= textarea f, :desc, class: "db w-100 mt2 pa2 ba b--black",
     placeholder: "Be as descriptive as possible." %>
-  <%= error_tag f, :description %>
+  <%= error_tag f, :desc %>
   <br />
   <%= label f, :url, class: "pt3" %>
   <%= text_input f, :url, class: "db w-100 mt2 pa2 ba b--dark-grey",

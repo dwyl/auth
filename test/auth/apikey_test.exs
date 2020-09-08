@@ -8,7 +8,7 @@ defmodule Auth.ApikeyTest do
     person = Auth.Person.get_person_by_email(@email)
 
     keys = Auth.Apikey.list_apikeys_for_person(person.id)
-    assert length(keys) > 1
+    assert length(keys) == 1
 
     # Insert Two API keys:
     params = %{
@@ -27,6 +27,6 @@ defmodule Auth.ApikeyTest do
     |> Auth.Apikey.create_apikey()
 
     keys = Auth.Apikey.list_apikeys_for_person(person.id)
-    assert length(keys) > 3
+    assert length(keys) == 3
   end
 end

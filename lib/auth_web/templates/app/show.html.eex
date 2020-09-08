@@ -13,7 +13,7 @@
   <p>
     <strong>Description:</strong>
     <span class="db ba b--black-80 pa2 bg-light-gray w-100 mt2">
-      <%= @app.description %>
+      <%= @app.desc %>
     </span>
   </p>
 

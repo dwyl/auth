@@ -13,8 +13,10 @@ defmodule AuthWeb.AppController do
   end
 
   def create(conn, %{"app" => app_params}) do
+    # IO.inspect(app_params, label: "app_params:16")
     case App.create_app(app_params) do
       {:ok, app} ->
+        # IO.inspect(app, label: "app:19")
         conn
         |> put_flash(:info, "App created successfully.")
         |> redirect(to: Routes.app_path(conn, :show, app))
@@ -31,6 +33,7 @@ defmodule AuthWeb.AppController do
   end
 
   def edit(conn, %{"id" => id}) do
+    # IO.inspect(id, label: "edit id:36")
     app = App.get_app!(id)
     changeset = App.change_app(app)
     render(conn, "edit.html", app: app, changeset: changeset)

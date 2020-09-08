@@ -61,7 +61,8 @@ defmodule AuthWeb.AuthControllerTest do
     app_data = %{
       "name" => "example key",
       "url" => "https://www.example.com",
-      "person_id" => person.id
+      "person_id" => person.id,
+      "status" => 3
     }
 
     {:ok, app} = Auth.App.create_app(app_data)

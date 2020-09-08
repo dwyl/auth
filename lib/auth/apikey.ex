@@ -101,6 +101,6 @@ defmodule Auth.Apikey do
 
   """
   def delete_apikey(%Apikey{} = apikey) do
-    Repo.delete(apikey)
+    Repo.delete(apikey) |> IO.inspect(label: "delete_apikey:104")
   end
 end

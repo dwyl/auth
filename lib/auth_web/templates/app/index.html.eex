@@ -12,7 +12,7 @@
 <%= for app <- @apps do %>
     <tr>
       <td><%= app.name %></td>
-      <td><%= app.description %></td>
+      <td><%= app.desc %></td>
       <td><%= app.url %></td>
       <td>
           <span><%= link "View", to: Routes.app_path(@conn, :show, app),

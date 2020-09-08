@@ -10,7 +10,7 @@ defmodule Auth.App do
   alias __MODULE__
 
   schema "apps" do
-    field :description, :binary
+    field :desc, :binary
     field :end, :naive_datetime
     field :name, :binary
     field :url, :binary
@@ -25,7 +25,7 @@ defmodule Auth.App do
   @doc false
   def changeset(app, attrs) do
     app
-    |> cast(attrs, [:name, :description, :url, :end, :person_id])
+    |> cast(attrs, [:name, :desc, :url, :end, :person_id, :status])
     |> validate_required([:name, :url])
   end
 
@@ -39,7 +39,10 @@ defmodule Auth.App do
 
   """
   def list_apps do
-    Repo.all(App)
+    App
+    |> where([a], a.status != 6)
+    |> Repo.all()
+
   end
 
   @doc """
@@ -57,8 +60,18 @@ defmodule Auth.App do
 
   """
   def get_app!(id) do
-    Repo.get!(App, id)
+    # IO.inspect(id, label: "get_app!/1 id:60")
+    # Repo.get!(App, id, where: :status != 6)
+    # Repo.get!(App, id, where: :status not in [6])
+    # |> Repo.preload(:apikeys)
+    # |> IO.inspect(label: "get_app!:63")
+    App
+    |> where([a], a.id == ^id and a.status != 6)
+    # |> select([:id, :name, :url, :desc])
+    |> Repo.one()
     |> Repo.preload(:apikeys)
+    # |> IO.inspect(label: "app:69")
+
   end
 
   @doc """
@@ -74,6 +87,8 @@ defmodule Auth.App do
 
   """
   def create_app(attrs \\ %{}) do
+    # IO.inspect(attrs, label: "attrs:87")
+    # attrs = Map.merge(attrs, %{status: 3}) # active
     case %App{} |> App.changeset(attrs) |> Repo.insert() do
       {:ok, app} ->
         # Create API Key for App https://github.com/dwyl/auth/issues/97
@@ -119,7 +134,11 @@ defmodule Auth.App do
 
   """
   def delete_app(%App{} = app) do
-    Repo.delete(app)
+    # IO.inspect(app, label: "app:131")
+    # Repo.delete(app)
+    # |> IO.inspect(label: "delete")
+    update_app(app, %{status: 6})
+    # |> IO.inspect(label: "delete:135")
   end
 
   @doc """

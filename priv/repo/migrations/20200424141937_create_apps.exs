@@ -4,7 +4,7 @@ defmodule Auth.Repo.Migrations.CreateApps do
   def change do
     create table(:apps) do
       add :name, :binary
-      add :description, :binary
+      add :desc, :binary
       add :url, :binary
       add :end, :naive_datetime
       add :person_id, references(:people, on_delete: :nothing)

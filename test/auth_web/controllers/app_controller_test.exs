@@ -4,16 +4,18 @@ defmodule AuthWeb.AppControllerTest do
   alias Auth.App
 
   @create_attrs %{
-    description: "some description",
+    desc: "some description",
     end: ~N[2010-04-17 14:00:00],
     name: "some name",
-    url: "some url"
+    url: "some url",
+    status: 3
   }
   @update_attrs %{
-    description: "some updated description",
+    desc: "some updated description",
     end: ~N[2011-05-18 15:01:01],
     name: "some updated name",
-    url: "some updated url"
+    url: "some updated url",
+    status: 3
   }
   @invalid_attrs %{description: nil, end: nil, name: nil, url: nil, person_id: nil}
 
@@ -94,7 +96,7 @@ defmodule AuthWeb.AppControllerTest do
       conn = delete(conn, Routes.app_path(conn, :delete, app))
       assert redirected_to(conn) == Routes.app_path(conn, :index)
 
-      assert_error_sent 404, fn ->
+      assert_error_sent 500, fn ->
         get(conn, Routes.app_path(conn, :show, app))
       end
     end
