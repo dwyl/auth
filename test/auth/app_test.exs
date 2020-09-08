@@ -4,8 +4,18 @@ defmodule Auth.AppTest do
   describe "apps" do
     alias Auth.App
 
-    @valid_attrs %{description: "some description", end: ~N[2010-04-17 14:00:00], name: "some name", url: "some url"}
-    @update_attrs %{description: "some updated description", end: ~N[2011-05-18 15:01:01], name: "some updated name", url: "some updated url"}
+    @valid_attrs %{
+      description: "some description",
+      end: ~N[2010-04-17 14:00:00],
+      name: "some name",
+      url: "some url"
+    }
+    @update_attrs %{
+      description: "some updated description",
+      end: ~N[2011-05-18 15:01:01],
+      name: "some updated name",
+      url: "some updated url"
+    }
     @invalid_attrs %{description: nil, end: nil, name: nil, url: nil}
 
     def app_fixture(attrs \\ %{}) do
@@ -19,7 +29,7 @@ defmodule Auth.AppTest do
 
     test "list_apps/0 returns all apps" do
       app = app_fixture()
-      a = List.first(Enum.filter(App.list_apps(), fn(a) -> a.id == app.id end))
+      a = List.first(Enum.filter(App.list_apps(), fn a -> a.id == app.id end))
       assert a.id == app.id
     end
 

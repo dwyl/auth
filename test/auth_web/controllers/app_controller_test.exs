@@ -3,8 +3,18 @@ defmodule AuthWeb.AppControllerTest do
 
   alias Auth.App
 
-  @create_attrs %{description: "some description", end: ~N[2010-04-17 14:00:00], name: "some name", url: "some url"}
-  @update_attrs %{description: "some updated description", end: ~N[2011-05-18 15:01:01], name: "some updated name", url: "some updated url"}
+  @create_attrs %{
+    description: "some description",
+    end: ~N[2010-04-17 14:00:00],
+    name: "some name",
+    url: "some url"
+  }
+  @update_attrs %{
+    description: "some updated description",
+    end: ~N[2011-05-18 15:01:01],
+    name: "some updated name",
+    url: "some updated url"
+  }
   @invalid_attrs %{description: nil, end: nil, name: nil, url: nil, person_id: nil}
 
   def fixture(:app) do
@@ -83,6 +93,7 @@ defmodule AuthWeb.AppControllerTest do
       conn = admin_login(conn)
       conn = delete(conn, Routes.app_path(conn, :delete, app))
       assert redirected_to(conn) == Routes.app_path(conn, :index)
+
       assert_error_sent 404, fn ->
         get(conn, Routes.app_path(conn, :show, app))
       end

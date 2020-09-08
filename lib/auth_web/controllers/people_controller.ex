@@ -29,6 +29,7 @@ defmodule AuthWeb.PeopleController do
     # should be visible to superadmin and people with "admin" role
     if conn.assigns.person.id == 1 do
       person = Auth.Person.get_person_by_id(Map.get(params, "person_id"))
+
       render(conn, :profile,
         person: person,
         roles: Auth.PeopleRoles.get_roles_for_person(person.id),

@@ -26,7 +26,7 @@ defmodule AuthWeb.AppController do
 
   def show(conn, %{"id" => id}) do
     app = App.get_app!(id)
-    # restrict viewership to owner||admin https://github.com/dwyl/auth/issues/99
+    #  restrict viewership to owner||admin https://github.com/dwyl/auth/issues/99
     render(conn, "show.html", app: app)
   end
 

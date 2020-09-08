@@ -23,7 +23,6 @@ defmodule Auth.Seeds do
           # |> put_assoc(:statuses, [%Status{text: "verified"}])
           |> Repo.insert!()
 
-
         person ->
           person
       end
@@ -48,7 +47,8 @@ defmodule Auth.Seeds do
       }
       |> Auth.App.create_app()
 
-    {:ok, key} = AuthWeb.ApikeyController.make_apikey(%{"app" => app}, person.id)
+    {:ok, key} =
+      AuthWeb.ApikeyController.make_apikey(%{"app" => app}, person.id)
       |> Auth.Apikey.create_apikey()
 
     # IO.inspect(key, label: "key")
@@ -128,10 +128,10 @@ defmodule SeedData do
 
   def insert_statuses do
     json = get_json("/priv/repo/statuses.json")
+
     Enum.each(json, fn s ->
       Status.upsert_status(s)
     end)
-
   end
 end
 

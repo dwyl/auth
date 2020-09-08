@@ -27,8 +27,6 @@ defmodule Auth.App do
     app
     |> cast(attrs, [:name, :description, :url, :end, :person_id])
     |> validate_required([:name, :url])
-
-
   end
 
   @doc """

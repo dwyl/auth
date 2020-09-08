@@ -63,6 +63,7 @@ defmodule AuthWeb.AuthControllerTest do
       "url" => "https://www.example.com",
       "person_id" => person.id
     }
+
     {:ok, app} = Auth.App.create_app(app_data)
     apikey_params = %{"app" => app}
     key = AuthWeb.ApikeyController.make_apikey(apikey_params, person.id)
