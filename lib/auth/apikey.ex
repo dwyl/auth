@@ -41,13 +41,11 @@ defmodule Auth.Apikey do
   end
 
   def list_apikeys_for_person(person_id) do
-    query =
-      from(
-        a in __MODULE__,
-        where: a.person_id == ^person_id
-      )
-
-    Repo.all(query)
+    from(
+      a in __MODULE__,
+      where: a.person_id == ^person_id
+    )
+    |> Repo.all()
     |> Repo.preload(:app)
   end
 
@@ -66,7 +64,8 @@ defmodule Auth.Apikey do
 
   """
   def get_apikey!(id) do
-    Repo.get!(__MODULE__, id)
+    __MODULE__
+    |> Repo.get!(id)
     |> Repo.preload(:app)
   end
 

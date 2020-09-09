@@ -64,7 +64,9 @@ defmodule AuthWeb.PermissionControllerTest do
 
     test "redirects when data is valid", %{conn: conn, permission: permission} do
       conn = admin_login(conn)
-      conn = put(conn, Routes.permission_path(conn, :update, permission), permission: @update_attrs)
+
+      conn =
+        put(conn, Routes.permission_path(conn, :update, permission), permission: @update_attrs)
 
       assert redirected_to(conn) == Routes.permission_path(conn, :show, permission)
 
@@ -74,7 +76,9 @@ defmodule AuthWeb.PermissionControllerTest do
 
     test "renders errors when data is invalid", %{conn: conn, permission: permission} do
       conn = admin_login(conn)
-      conn = put(conn, Routes.permission_path(conn, :update, permission), permission: @invalid_attrs)
+
+      conn =
+        put(conn, Routes.permission_path(conn, :update, permission), permission: @invalid_attrs)
 
       assert html_response(conn, 200) =~ "Edit Permission"
     end

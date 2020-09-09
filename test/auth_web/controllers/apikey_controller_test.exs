@@ -74,9 +74,8 @@ defmodule AuthWeb.ApikeyControllerTest do
   #
   describe "index" do
     test "lists all apikeys", %{conn: conn} do
-      conn =
-        admin_login(conn)
-        |> get(Routes.apikey_path(conn, :index))
+      conn = admin_login(conn)
+      conn = get(conn, Routes.apikey_path(conn, :index))
 
       assert html_response(conn, 200) =~ "Auth API Keys"
     end

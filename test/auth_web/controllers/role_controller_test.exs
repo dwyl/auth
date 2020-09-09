@@ -113,9 +113,7 @@ defmodule AuthWeb.RoleControllerTest do
     grantee = Auth.Person.create_person(alex)
 
     conn = admin_login(conn)
-    conn = get(conn, Routes.role_path(conn, :grant,
-      %{"role_id" => 5, "person_id" => grantee.id})
-    )
+    conn = get(conn, Routes.role_path(conn, :grant, %{"role_id" => 5, "person_id" => grantee.id}))
 
     # the grant/2 controller handler redirects back to /person/:id
     assert html_response(conn, 302) =~ "redirected"
