@@ -12,9 +12,6 @@ defmodule Auth.Apikey do
   schema "apikeys" do
     field :client_secret, :binary
     field :client_id, :binary
-    # field :description, :string
-    # field :name, :string
-    # field :url, :binary
     field :person_id, :id
     field :status, :id
     belongs_to :app, Auth.App
