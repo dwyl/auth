@@ -59,18 +59,10 @@ defmodule Auth.App do
 
   """
   def get_app!(id) do
-    # IO.inspect(id, label: "get_app!/1 id:60")
-    # Repo.get!(App, id, where: :status != 6)
-    # Repo.get!(App, id, where: :status not in [6])
-    # |> Repo.preload(:apikeys)
-    # |> IO.inspect(label: "get_app!:63")
     App
     |> where([a], a.id == ^id and a.status != 6)
-    # |> select([:id, :name, :url, :desc])
     |> Repo.one()
     |> Repo.preload(:apikeys)
-
-    # |> IO.inspect(label: "app:69")
   end
 
   @doc """
@@ -86,12 +78,11 @@ defmodule Auth.App do
 
   """
   def create_app(attrs \\ %{}) do
-    # IO.inspect(attrs, label: "attrs:87")
-    # attrs = Map.merge(attrs, %{status: 3}) # active
     case %App{} |> App.changeset(attrs) |> Repo.insert() do
       {:ok, app} ->
         # Create API Key for App https://github.com/dwyl/auth/issues/97
-        AuthWeb.ApikeyController.make_apikey(%{"app" => app}, app.person_id)
+        %{"app" => app}
+        |> AuthWeb.ApikeyController.make_apikey(app.person_id)
         |> Auth.Apikey.create_apikey()
 
         # return the App with the API Key preloaded:
@@ -133,11 +124,8 @@ defmodule Auth.App do
 
   """
   def delete_app(%App{} = app) do
-    # IO.inspect(app, label: "app:131")
-    # Repo.delete(app)
-    # |> IO.inspect(label: "delete")
+    # this is a "soft delete" for autiting purposes:
     update_app(app, %{status: 6})
-    # |> IO.inspect(label: "delete:135")
   end
 
   @doc """
