@@ -46,7 +46,7 @@
 
 
 <span>
-  <%= link "< Back", to: Routes.app_path(@conn, :index),
+  <%= link "< All Apps", to: Routes.app_path(@conn, :index),
   class: "fl pointer br2 ba b--orange bg-gold white pa3 ml1 mv1 f4
   shadow-hover bg-animate hover-bg-orange border-box no-underline"
   %>

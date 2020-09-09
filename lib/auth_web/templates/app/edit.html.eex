@@ -4,7 +4,7 @@
 <%= render "form.html", Map.put(assigns, :action, Routes.app_path(@conn, :update, @app)) %>
 
 
-  <span><%= link "< Back", to: Routes.app_path(@conn, :index),
+  <span><%= link "< All Apps", to: Routes.app_path(@conn, :index),
   class: "fl pointer br2 ba b--orange bg-gold white pa3 f4 mt3
   shadow-hover bg-animate hover-bg-orange border-box no-underline",
   data:
