@@ -2,8 +2,6 @@ defmodule AuthWeb.ApikeyControllerTest do
   use AuthWeb.ConnCase
   use ExUnitProperties
 
-  # alias Auth.Apikey
-  # alias AuthWeb.ApikeyController, as: Ctrl
   @email System.get_env("ADMIN_EMAIL")
   @create_attrs %{description: "some description", name: "some name", url: "localhost"}
   @update_attrs %{
@@ -67,11 +65,6 @@ defmodule AuthWeb.ApikeyControllerTest do
     end
   end
 
-  # def fixture(:apikey) do
-  #   {:ok, apikey} = Ctx.create_apikey(@create_attrs)
-  #   apikey
-  # end
-  #
   describe "index" do
     test "lists all apikeys", %{conn: conn} do
       conn = admin_login(conn)
@@ -83,9 +76,8 @@ defmodule AuthWeb.ApikeyControllerTest do
 
   describe "new apikey" do
     test "renders form", %{conn: conn} do
-      conn =
-        admin_login(conn)
-        |> get(Routes.apikey_path(conn, :new))
+      conn = admin_login(conn)
+      conn = get(conn, Routes.apikey_path(conn, :new))
 
       assert html_response(conn, 200) =~ "New Apikey"
     end
@@ -95,9 +87,8 @@ defmodule AuthWeb.ApikeyControllerTest do
     test "redirects to show when data is valid", %{conn: conn} do
       {:ok, app} = Auth.App.create_app(@create_attrs)
 
-      conn =
-        admin_login(conn)
-        |> post(Routes.apikey_path(conn, :create), apikey: %{"app" => app})
+      conn = admin_login(conn)
+      conn = post(conn, Routes.apikey_path(conn, :create), apikey: %{"app" => app})
 
       assert %{id: id} = redirected_params(conn)
       assert redirected_to(conn) == Routes.apikey_path(conn, :show, id)
@@ -105,14 +96,6 @@ defmodule AuthWeb.ApikeyControllerTest do
       conn = get(conn, Routes.apikey_path(conn, :show, id))
       assert html_response(conn, 200) =~ "Your AUTH_API_KEY"
     end
-
-    # test "renders errors when data is invalid", %{conn: conn} do
-    #   person = Auth.Person.get_person_by_email(@email)
-    #   conn = AuthPlug.create_jwt_session(conn, %{email: @email, id: person.id})
-    #
-    #   conn = post(conn, Routes.apikey_path(conn, :create), apikey: @invalid_attrs)
-    #   assert html_response(conn, 200) =~ "New Apikey"
-    # end
   end
 
   describe "edit apikey" do
