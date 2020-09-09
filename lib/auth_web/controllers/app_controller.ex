@@ -14,9 +14,13 @@ defmodule AuthWeb.AppController do
 
   def create(conn, %{"app" => app_params}) do
     # IO.inspect(app_params, label: "app_params:16")
-    case App.create_app(app_params) do
+    attrs = Map.merge(app_params, %{
+    "person_id" => conn.assigns.person.id,
+    "status" => 3
+    })
+    case App.create_app(attrs) do
       {:ok, app} ->
-        # IO.inspect(app, label: "app:19")
+        # IO.inspect(app, label: "app:23")
         conn
         |> put_flash(:info, "App created successfully.")
         |> redirect(to: Routes.app_path(conn, :show, app))

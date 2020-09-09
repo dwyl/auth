@@ -22,7 +22,7 @@ defmodule Auth.Apikey do
   @doc false
   def changeset(apikey, attrs) do
     apikey
-    |> cast(attrs, [:client_id, :client_secret, :person_id])
+    |> cast(attrs, [:client_id, :client_secret, :person_id, :status])
     |> validate_required([:client_secret])
     |> put_assoc(:app, Map.get(attrs, "app"))
   end
