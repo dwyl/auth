@@ -231,7 +231,7 @@ defmodule Auth.Person do
     __MODULE__
     |> Repo.get_by(email_hash: email)
     |> Repo.preload(:roles)
-    |> Repo.preload(:statuses)
+    |> Repo.preload([:statuses, :roles])
   end
 
   @doc """
