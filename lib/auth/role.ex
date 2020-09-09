@@ -121,8 +121,7 @@ defmodule Auth.Role do
 
   # @doc """
   # grants the default "subscriber" (6) role to the person
-  # """ 
+  # """
   # def set_default_role(person) do
-
   # end
 end

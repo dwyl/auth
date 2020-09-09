@@ -182,7 +182,7 @@ defmodule AuthWeb.AuthController do
     end
   end
 
-  # TODO: create a human-friendy response
+  # create a human-friendy response?
   def unauthorized(conn) do
     conn
     |> put_resp_content_type("text/html")
@@ -190,7 +190,7 @@ defmodule AuthWeb.AuthController do
     |> halt()
   end
 
-  # TODO: refactor this to render a template with a nice layout.
+  # refactor this to render a template with a nice layout?
   def not_found(conn, message) do
     conn
     |> put_resp_content_type("text/html")

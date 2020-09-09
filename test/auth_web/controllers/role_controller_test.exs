@@ -14,23 +14,24 @@ defmodule AuthWeb.RoleControllerTest do
 
   describe "index" do
     test "lists all roles", %{conn: conn} do
-      conn = admin_login(conn) |> get(Routes.role_path(conn, :index))
+      conn = admin_login(conn)
+      conn = get(conn, Routes.role_path(conn, :index))
       assert html_response(conn, 200) =~ "Listing Roles"
     end
   end
 
   describe "new role" do
     test "renders form", %{conn: conn} do
-      conn = admin_login(conn) |> get(Routes.role_path(conn, :new))
+      conn = admin_login(conn)
+      conn = get(conn, Routes.role_path(conn, :new))
       assert html_response(conn, 200) =~ "New Role"
     end
   end
 
   describe "create role" do
     test "redirects to show when data is valid", %{conn: conn} do
-      conn =
-        admin_login(conn)
-        |> post(Routes.role_path(conn, :create), role: @create_attrs)
+      conn = admin_login(conn)
+      conn = post(conn, Routes.role_path(conn, :create), role: @create_attrs)
 
       assert %{id: id} = redirected_params(conn)
       assert redirected_to(conn) == Routes.role_path(conn, :show, id)
@@ -40,9 +41,8 @@ defmodule AuthWeb.RoleControllerTest do
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
-      conn =
-        admin_login(conn)
-        |> post(Routes.role_path(conn, :create), role: @invalid_attrs)
+      conn = admin_login(conn)
+      conn = post(conn, Routes.role_path(conn, :create), role: @invalid_attrs)
 
       assert html_response(conn, 200) =~ "New Role"
     end
@@ -52,9 +52,8 @@ defmodule AuthWeb.RoleControllerTest do
     setup [:create_role]
 
     test "renders form for editing chosen role", %{conn: conn, role: role} do
-      conn =
-        admin_login(conn)
-        |> get(Routes.role_path(conn, :edit, role))
+      conn = admin_login(conn)
+      conn = get(conn, Routes.role_path(conn, :edit, role))
 
       assert html_response(conn, 200) =~ "Edit Role"
     end
@@ -64,9 +63,8 @@ defmodule AuthWeb.RoleControllerTest do
     setup [:create_role]
 
     test "redirects when data is valid", %{conn: conn, role: role} do
-      conn =
-        admin_login(conn)
-        |> put(Routes.role_path(conn, :update, role), role: @update_attrs)
+      conn = admin_login(conn)
+      conn = put(conn, Routes.role_path(conn, :update, role), role: @update_attrs)
 
       assert redirected_to(conn) == Routes.role_path(conn, :show, role)
 
@@ -75,9 +73,8 @@ defmodule AuthWeb.RoleControllerTest do
     end
 
     test "renders errors when data is invalid", %{conn: conn, role: role} do
-      conn =
-        admin_login(conn)
-        |> put(Routes.role_path(conn, :update, role), role: @invalid_attrs)
+      conn = admin_login(conn)
+      conn = put(conn, Routes.role_path(conn, :update, role), role: @invalid_attrs)
 
       assert html_response(conn, 200) =~ "Edit Role"
     end
@@ -87,9 +84,8 @@ defmodule AuthWeb.RoleControllerTest do
     setup [:create_role]
 
     test "deletes chosen role", %{conn: conn, role: role} do
-      conn =
-        admin_login(conn)
-        |> delete(Routes.role_path(conn, :delete, role))
+      conn = admin_login(conn)
+      conn = delete(conn, Routes.role_path(conn, :delete, role))
 
       assert redirected_to(conn) == Routes.role_path(conn, :index)
 
@@ -116,11 +112,10 @@ defmodule AuthWeb.RoleControllerTest do
     alex = %{email: "alex_grant_success@gmail.com", auth_provider: "email"}
     grantee = Auth.Person.create_person(alex)
 
-    conn =
-      get(
-        admin_login(conn),
-        Routes.role_path(conn, :grant, %{"role_id" => 5, "person_id" => grantee.id})
-      )
+    conn = admin_login(conn)
+    conn = get(conn, Routes.role_path(conn, :grant,
+      %{"role_id" => 5, "person_id" => grantee.id})
+    )
 
     # the grant/2 controller handler redirects back to /person/:id
     assert html_response(conn, 302) =~ "redirected"
