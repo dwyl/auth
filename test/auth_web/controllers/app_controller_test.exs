@@ -25,10 +25,20 @@ defmodule AuthWeb.AppControllerTest do
   end
 
   describe "index" do
+    setup [:create_app]
+
     test "lists all apps", %{conn: conn} do
       conn = admin_login(conn)
       conn = get(conn, Routes.app_path(conn, :index))
       assert html_response(conn, 200) =~ "Apps"
+    end
+
+    test "non-admin cannot see admin apps", %{conn: conn, app: app} do
+      conn = non_admin_login(conn)
+      conn = get(conn, Routes.app_path(conn, :index))
+      assert html_response(conn, 200) =~ "Apps"
+      # the non-admin cannot see the app created in setup:
+      assert not String.contains?(conn.resp_body, app.name)
     end
   end
 
