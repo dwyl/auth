@@ -59,7 +59,9 @@ defmodule Auth.App do
   """
   def get_app!(id) do
     App
-    |> where([a], a.id == ^id and a.status != 6)
+    |> where([a], a.id == ^id and a.status != 6,
+         preload: [:apikeys]
+    )
     |> Repo.one()
     |> Repo.preload(:apikeys)
   end
