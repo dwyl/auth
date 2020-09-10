@@ -2,6 +2,13 @@ defmodule AuthWeb.AuthControllerTest do
   use AuthWeb.ConnCase
   # @email System.get_env("ADMIN_EMAIL")
 
+  @app_data %{
+    "name" => "example key",
+    "url" => "https://www.example.com",
+    "person_id" => 1,
+    "status" => 3
+  }
+
   test "GET /", %{conn: conn} do
     conn = get(conn, "/")
     assert html_response(conn, 200) =~ "Sign in"
@@ -52,23 +59,8 @@ defmodule AuthWeb.AuthControllerTest do
   end
 
   test "get_client_secret(client_id, state) gets the secret for the given client_id" do
-    person =
-      Auth.Person.create_person(%{
-        email: "alex@gmail.com",
-        auth_provider: "email"
-      })
-
-    app_data = %{
-      "name" => "example key",
-      "url" => "https://www.example.com",
-      "person_id" => person.id,
-      "status" => 3
-    }
-
-    {:ok, app} = Auth.App.create_app(app_data)
-    apikey_params = %{"app" => app}
-    key = AuthWeb.ApikeyController.make_apikey(apikey_params, person.id)
-    {:ok, key} = Auth.Apikey.create_apikey(key)
+    {:ok, app} = Auth.App.create_app(@app_data)
+    key = List.first(app.apikeys)
 
     state = "https://www.example.com/profile?auth_client_id=#{key.client_id}"
     secret = AuthWeb.AuthController.get_client_secret(key.client_id, state)
@@ -109,10 +101,8 @@ defmodule AuthWeb.AuthControllerTest do
   test "google_handler/2 show welcome page", %{conn: conn} do
     # Google Auth Mock makes the state https://www.example.com
     # so we need to create a new API_KEY with that url:
-    {:ok, key} =
-      %{"name" => "example key", "url" => "https://www.example.com"}
-      |> AuthWeb.ApikeyController.make_apikey(1)
-      |> Auth.Apikey.create_apikey()
+    {:ok, app} = Auth.App.create_app(@app_data)
+    key = List.first(app.apikeys)
 
     conn =
       get(conn, "/auth/google/callback", %{
@@ -295,7 +285,7 @@ defmodule AuthWeb.AuthControllerTest do
 
     params = %{
       "person" => %{
-        "email" => AuthWeb.ApikeyController.encrypt_encode("anabela@mail.com"),
+        "email" => Auth.Apikey.encrypt_encode("anabela@mail.com"),
         "password" => "thiswillbehashed"
       }
     }
@@ -307,7 +297,7 @@ defmodule AuthWeb.AuthControllerTest do
   test "password_create/2 display form when password not valid", %{conn: conn} do
     params = %{
       "person" => %{
-        "email" => AuthWeb.ApikeyController.encrypt_encode("anabela@mail.com"),
+        "email" => Auth.Apikey.encrypt_encode("anabela@mail.com"),
         "password" => "short"
       }
     }
@@ -348,7 +338,7 @@ defmodule AuthWeb.AuthControllerTest do
 
     params = %{
       "person" => %{
-        "email" => AuthWeb.ApikeyController.encrypt_encode(data.email),
+        "email" => Auth.Apikey.encrypt_encode(data.email),
         "password" => "thiswillbehashed",
         "state" => state
       }
@@ -374,7 +364,7 @@ defmodule AuthWeb.AuthControllerTest do
 
     params = %{
       "person" => %{
-        "email" => AuthWeb.ApikeyController.encrypt_encode(data.email),
+        "email" => Auth.Apikey.encrypt_encode(data.email),
         "password" => "fail",
         "state" => state
       }

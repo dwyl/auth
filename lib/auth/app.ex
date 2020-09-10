@@ -80,9 +80,7 @@ defmodule Auth.App do
     case %App{} |> App.changeset(attrs) |> Repo.insert() do
       {:ok, app} ->
         # Create API Key for App https://github.com/dwyl/auth/issues/97
-        %{"app" => app, "status" => 3}
-        |> AuthWeb.ApikeyController.make_apikey(app.person_id)
-        |> Auth.Apikey.create_apikey()
+        Auth.Apikey.create_apikey(app)
 
         # return the App with the API Key preloaded:
         {:ok, get_app!(app.id)}

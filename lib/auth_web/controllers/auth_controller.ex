@@ -297,7 +297,7 @@ defmodule AuthWeb.AuthController do
       changeset: Auth.Person.password_new_changeset(%{email: email}),
       # so we can redirect after creatig a password
       state: state,
-      email: AuthWeb.ApikeyController.encrypt_encode(email)
+      email: Auth.Apikey.encrypt_encode(email)
     )
   end
 
@@ -312,7 +312,7 @@ defmodule AuthWeb.AuthController do
   def make_verify_link(conn, person, state) do
     AuthPlug.Helpers.get_baseurl_from_conn(conn) <>
       "/auth/verify?id=" <>
-      AuthWeb.ApikeyController.encrypt_encode(person.id) <>
+      Auth.Apikey.encrypt_encode(person.id) <>
       "&referer=" <> state
   end
 
@@ -322,7 +322,7 @@ defmodule AuthWeb.AuthController do
   #   |> render("password_create.html",
   #     changeset: Auth.Person.password_new_changeset(%{email: params["email"]}),
   #     state: params["state"], # so we can redirect after creatig a password
-  #     email: AuthWeb.ApikeyController.encrypt_encode(params["email"])
+  #     email: AuthWeb.Apikey.encrypt_encode(params["email"])
   #   )
   # end
 
@@ -394,7 +394,7 @@ defmodule AuthWeb.AuthController do
   end
 
   def verify_email(conn, params) do
-    id = AuthWeb.ApikeyController.decode_decrypt(params["id"])
+    id = Auth.Apikey.decode_decrypt(params["id"])
     person = Auth.Person.verify_person_by_id(id)
     redirect_or_render(conn, person, params["referer"])
   end
@@ -421,7 +421,7 @@ defmodule AuthWeb.AuthController do
   end
 
   def get_client_secret(client_id, state) do
-    person_id = AuthWeb.ApikeyController.decode_decrypt(client_id)
+    person_id = Auth.Apikey.decode_decrypt(client_id)
     # decode_decrypt fails with state 0
     if person_id == 0 do
       0

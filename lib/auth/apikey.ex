@@ -19,19 +19,62 @@ defmodule Auth.Apikey do
     timestamps()
   end
 
+
+  @doc """
+  `encrypt_encode/1` does exactly what it's name suggests,
+  AES Encrypts a string of plaintext and then Base58 encodes it.
+  We encode it using Base58 so it's human-friendly (readable).
+  """
+  def encrypt_encode(plaintext) do
+    Fields.AES.encrypt(plaintext) |> Base58.encode()
+  end
+
+  @doc """
+  `create_api_key/1` uses the `encrypt_encode/1` to create an API Key
+  that is just two strings joined with a forwardslash ("/").
+  This allows us to use a *single* environment variable.
+  """
+  def create_api_key(person_id) do
+    encrypt_encode(person_id) <> "/" <> encrypt_encode(person_id)
+  end
+
+  @doc """
+  `decode_decrypt/1` accepts a `key` and attempts to Base58.decode
+  followed by AES.decrypt it. If decode or decrypt fails, return 0 (zero).
+  """
+  def decode_decrypt(key) do
+    try do
+      key |> Base58.decode() |> Fields.AES.decrypt() |> String.to_integer()
+    rescue
+      ArgumentError ->
+        0
+    end
+  end
+
+  def decrypt_api_key(key) do
+    key |> String.split("/") |> List.first() |> decode_decrypt()
+  end
+
+
   @doc false
   def changeset(apikey, attrs) do
     apikey
     |> cast(attrs, [:client_id, :client_secret, :person_id, :status])
-    |> validate_required([:client_secret])
     |> put_assoc(:app, Map.get(attrs, "app"))
   end
 
-  def change_apikey(%Apikey{} = apikey) do
-    Apikey.changeset(apikey, %{})
-  end
+  # def change_apikey(%Apikey{} = apikey) do
+  #   Apikey.changeset(apikey, %{})
+  # end
 
-  def create_apikey(attrs \\ %{}) do
+  def create_apikey(app) do
+    attrs = %{
+      "client_secret" => encrypt_encode(app.person_id),
+      "client_id" => encrypt_encode(app.person_id),
+      "person_id" => app.person_id,
+      "status" => 3,
+      "app" => app
+    }
     %Apikey{}
     |> Apikey.changeset(attrs)
     |> Repo.insert()
