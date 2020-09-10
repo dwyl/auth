@@ -21,4 +21,20 @@ defmodule AuthTest do
     # IO.inspect(person, label: "person")
     AuthPlug.create_jwt_session(conn, data)
   end
+
+  def non_admin_login(conn) do
+    person = Auth.Person.upsert_person(%{
+      email: "alex@gmail.com",
+      auth_provider: "email",
+      password: "thiswillbehashed"
+    })
+
+    data = %{
+      id: person.id,
+      email: person.email,
+      auth_provider: person.auth_provider
+    }
+
+    AuthPlug.create_jwt_session(conn, data)
+  end
 end

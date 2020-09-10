@@ -43,6 +43,12 @@ defmodule Auth.App do
     |> Repo.all()
   end
 
+  def list_apps(person_id) do
+    App
+    |> where([a], a.status != 6 and a.person_id == ^person_id)
+    |> Repo.all()
+  end
+
   @doc """
   Gets a single app.
 

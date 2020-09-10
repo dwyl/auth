@@ -8,14 +8,14 @@ defmodule AuthWeb.AppControllerTest do
     end: ~N[2010-04-17 14:00:00],
     name: "some name",
     url: "some url",
-    status: 3
+    status: 3,
+    person_id: 1
   }
   @update_attrs %{
     desc: "some updated description",
     end: ~N[2011-05-18 15:01:01],
     name: "some updated name",
-    url: "some updated url",
-    status: 3
+    url: "some updated url"
   }
   @invalid_attrs %{description: nil, end: nil, name: nil, url: nil, person_id: nil}
 
@@ -59,6 +59,16 @@ defmodule AuthWeb.AppControllerTest do
     end
   end
 
+  describe "show app" do
+    setup [:create_app]
+
+    test "attempt to VIEW app you don't own > 404", %{conn: conn, app: app} do
+      conn = non_admin_login(conn)
+      conn = get(conn, Routes.app_path(conn, :show, app))
+      assert html_response(conn, 404) =~ "can't touch this."
+    end
+  end
+
   describe "edit app" do
     setup [:create_app]
 
@@ -66,6 +76,12 @@ defmodule AuthWeb.AppControllerTest do
       conn = admin_login(conn)
       conn = get(conn, Routes.app_path(conn, :edit, app))
       assert html_response(conn, 200) =~ "Edit App"
+    end
+
+    test "attempt to EDIT app you don't own > 404", %{conn: conn, app: app} do
+      conn = non_admin_login(conn)
+      conn = get(conn, Routes.app_path(conn, :edit, app))
+      assert html_response(conn, 404) =~ "can't touch this."
     end
   end
 
@@ -86,6 +102,12 @@ defmodule AuthWeb.AppControllerTest do
       conn = put(conn, Routes.app_path(conn, :update, app), app: @invalid_attrs)
       assert html_response(conn, 200) =~ "Edit App"
     end
+
+    test "attempt UPDATE app you don't own > 404", %{conn: conn, app: app} do
+      conn = non_admin_login(conn)
+      conn = get(conn, Routes.app_path(conn, :update, app))
+      assert html_response(conn, 404) =~ "can't touch this."
+    end
   end
 
   describe "delete app" do
@@ -99,6 +121,12 @@ defmodule AuthWeb.AppControllerTest do
       assert_error_sent 500, fn ->
         get(conn, Routes.app_path(conn, :show, app))
       end
+    end
+
+    test "attempt DELETE app you don't own > 404", %{conn: conn, app: app} do
+      conn = non_admin_login(conn)
+      conn = get(conn, Routes.app_path(conn, :delete, app))
+      assert html_response(conn, 404) =~ "can't touch this."
     end
   end
 
@@ -114,6 +142,12 @@ defmodule AuthWeb.AppControllerTest do
       conn = admin_login(conn)
       conn = get(conn, Routes.app_path(conn, :resetapikey, app))
       assert html_response(conn, 200) =~ "successfully reset"
+    end
+
+    test "attempt reset apikey you don't own > 404", %{conn: conn, app: app} do
+      conn = non_admin_login(conn)
+      conn = get(conn, Routes.app_path(conn, :resetapikey, app))
+      assert html_response(conn, 404) =~ "can't touch this."
     end
   end
 end
