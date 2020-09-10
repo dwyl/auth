@@ -19,14 +19,13 @@ defmodule Auth.Apikey do
     timestamps()
   end
 
-
   @doc """
   `encrypt_encode/1` does exactly what it's name suggests,
   AES Encrypts a string of plaintext and then Base58 encodes it.
   We encode it using Base58 so it's human-friendly (readable).
   """
   def encrypt_encode(plaintext) do
-    Fields.AES.encrypt(plaintext) |> Base58.encode()
+    plaintext |> Fields.AES.encrypt() |> Base58.encode()
   end
 
   @doc """
@@ -69,6 +68,7 @@ defmodule Auth.Apikey do
       "status" => 3,
       "app" => app
     }
+
     %Apikey{}
     |> Apikey.changeset(attrs)
     |> Repo.insert()

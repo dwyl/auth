@@ -3,11 +3,13 @@ defmodule AuthWeb.AppController do
   alias Auth.App
 
   def index(conn, _params) do
-    apps = if conn.assigns.person.id == 1 do
-      App.list_apps()
-    else
-      App.list_apps(conn.assigns.person.id)
-    end
+    apps =
+      if conn.assigns.person.id == 1 do
+        App.list_apps()
+      else
+        App.list_apps(conn.assigns.person.id)
+      end
+
     render(conn, "index.html", apps: apps)
   end
 
@@ -18,10 +20,12 @@ defmodule AuthWeb.AppController do
 
   def create(conn, %{"app" => app_params}) do
     # IO.inspect(app_params, label: "app_params:16")
-    attrs = Map.merge(app_params, %{
-    "person_id" => conn.assigns.person.id,
-    "status" => 3
-    })
+    attrs =
+      Map.merge(app_params, %{
+        "person_id" => conn.assigns.person.id,
+        "status" => 3
+      })
+
     case App.create_app(attrs) do
       {:ok, app} ->
         # IO.inspect(app, label: "app:23")
@@ -76,6 +80,7 @@ defmodule AuthWeb.AppController do
 
   def delete(conn, %{"id" => id}) do
     app = App.get_app!(id)
+
     if conn.assigns.person.id != app.person_id || conn.assigns.person.id !== 1 do
       AuthWeb.AuthController.not_found(conn, "can't touch this.")
     else
@@ -92,6 +97,7 @@ defmodule AuthWeb.AppController do
   """
   def resetapikey(conn, %{"id" => id}) do
     app = App.get_app!(id)
+
     if conn.assigns.person.id != app.person_id || conn.assigns.person.id !== 1 do
       AuthWeb.AuthController.not_found(conn, "can't touch this.")
     else
@@ -111,6 +117,4 @@ defmodule AuthWeb.AppController do
       |> render("show.html", app: App.get_app!(id))
     end
   end
-
-
 end

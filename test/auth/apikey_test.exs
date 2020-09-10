@@ -53,9 +53,7 @@ defmodule Auth.ApikeyTest do
 
     property "Check a batch of int values can be decoded decode_decrypt/1" do
       check all(int <- integer()) do
-        assert Auth.Apikey.decode_decrypt(
-                 Auth.Apikey.encrypt_encode(int)
-               ) == int
+        assert Auth.Apikey.decode_decrypt(Auth.Apikey.encrypt_encode(int)) == int
       end
     end
   end
