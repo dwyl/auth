@@ -40,11 +40,13 @@ defmodule AuthWeb.AppController do
 
   def show(conn, %{"id" => id}) do
     app = App.get_app!(id)
+    # IO.inspect(app, label: "app:43")
+    # IO.inspect(conn.assigns.person, label: "conn.assigns.person:44")
     #  restrict viewership to owner||admin https://github.com/dwyl/auth/issues/99
-    if conn.assigns.person.id != app.person_id || conn.assigns.person.id !== 1 do
-      AuthWeb.AuthController.not_found(conn, "can't touch this.")
-    else
+    if conn.assigns.person.id == app.person_id || conn.assigns.person.id == 1 do
       render(conn, "show.html", app: app)
+    else
+      AuthWeb.AuthController.not_found(conn, "can't touch this.")
     end
   end
 
@@ -52,20 +54,18 @@ defmodule AuthWeb.AppController do
     # IO.inspect(id, label: "edit id:36")
     app = App.get_app!(id)
     #  restrict viewership to owner||admin https://github.com/dwyl/auth/issues/99
-    if conn.assigns.person.id != app.person_id || conn.assigns.person.id !== 1 do
-      AuthWeb.AuthController.not_found(conn, "can't touch this.")
-    else
+    if conn.assigns.person.id == app.person_id || conn.assigns.person.id == 1 do
       changeset = App.change_app(app)
       render(conn, "edit.html", app: app, changeset: changeset)
+    else
+      AuthWeb.AuthController.not_found(conn, "can't touch this.")
     end
   end
 
   def update(conn, %{"id" => id, "app" => app_params}) do
     app = App.get_app!(id)
     #  restrict viewership to owner||admin https://github.com/dwyl/auth/issues/99
-    if conn.assigns.person.id != app.person_id || conn.assigns.person.id !== 1 do
-      AuthWeb.AuthController.not_found(conn, "can't touch this.")
-    else
+    if conn.assigns.person.id == app.person_id || conn.assigns.person.id == 1 do
       case App.update_app(app, app_params) do
         {:ok, app} ->
           conn
@@ -75,20 +75,22 @@ defmodule AuthWeb.AppController do
         {:error, %Ecto.Changeset{} = changeset} ->
           render(conn, "edit.html", app: app, changeset: changeset)
       end
+    else
+      AuthWeb.AuthController.not_found(conn, "can't touch this.")
     end
   end
 
   def delete(conn, %{"id" => id}) do
     app = App.get_app!(id)
 
-    if conn.assigns.person.id != app.person_id || conn.assigns.person.id !== 1 do
-      AuthWeb.AuthController.not_found(conn, "can't touch this.")
-    else
+    if conn.assigns.person.id == app.person_id || conn.assigns.person.id == 1 do
       {:ok, _app} = App.delete_app(app)
 
       conn
       |> put_flash(:info, "App deleted successfully.")
       |> redirect(to: Routes.app_path(conn, :index))
+    else
+      AuthWeb.AuthController.not_found(conn, "can't touch this.")
     end
   end
 
