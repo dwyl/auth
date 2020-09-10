@@ -434,7 +434,7 @@ defmodule AuthWeb.AuthController do
           k.client_id == client_id
         else
           # check url matches the state for all other keys:
-          k.client_id == client_id and state =~ k.app.url
+          k.client_id == client_id and state =~ k.app.url and k.status != 6
         end
       end)
       |> List.first()
