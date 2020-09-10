@@ -25,7 +25,7 @@
   </p>
 
   <%= for apikey <- @app.apikeys do %>
-    <p><strong>AUTH_API_KEY:</strong>
+    <p><strong>API KEY:</strong>
       <div style="font-size: 1.2em;
       overflow-wrap: break-word; font-family: monospace;
       border: 1px solid black; padding: 10px; background-color: #EBEDEF;">
@@ -47,14 +47,22 @@
 
 <span>
   <%= link "< All Apps", to: Routes.app_path(@conn, :index),
-  class: "fl pointer br2 ba b--orange bg-gold white pa3 ml1 mv1 f4
-  shadow-hover bg-animate hover-bg-orange border-box no-underline"
+  class: "fl pointer br2 ba b--dark-blue bg-blue white pa3 ml1 mv1 f4
+  shadow-hover bg-animate hover-bg-dark-blue border-box no-underline"
   %>
 </span>
+
 <span>
   <%= link "Edit", to: Routes.app_path(@conn, :edit, @app),
   class: "fr pointer br2 ba b--dark-green bg-green white pa3 ml1 mv1 f4
   shadow-hover bg-animate hover-bg-dark-green border-box no-underline"
+  %>
+</span>
+
+<span>
+  <%= link "Reset API Key", to: Routes.app_path(@conn, :resetapikey, @app),
+  class: "fl ml5 pointer br2 ba b--orange bg-gold white pa3 ml1 mv1 f4
+  shadow-hover bg-animate hover-bg-orange border-box no-underline"
   %>
 </span>
 
