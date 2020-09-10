@@ -4,6 +4,7 @@ defmodule Auth.Status do
   alias Auth.Repo
   # https://stackoverflow.com/a/47501059/1148249
   alias __MODULE__
+  @admin_email System.get_env("ADMIN_EMAIL")
 
   schema "status" do
     field :text, :string
@@ -31,9 +32,7 @@ defmodule Auth.Status do
     case Auth.Repo.get_by(__MODULE__, text: Map.get(attrs, "text")) do
       # create status
       nil ->
-        email = System.get_env("ADMIN_EMAIL")
-        person = Auth.Person.get_person_by_email(email)
-        create_status(attrs, person)
+        create_status(attrs, Auth.Person.get_person_by_email(@admin_email))
 
       status ->
         status
