@@ -55,17 +55,11 @@ defmodule Auth.Apikey do
     key |> String.split("/") |> List.first() |> decode_decrypt()
   end
 
-
-  @doc false
   def changeset(apikey, attrs) do
     apikey
     |> cast(attrs, [:client_id, :client_secret, :person_id, :status])
     |> put_assoc(:app, Map.get(attrs, "app"))
   end
-
-  # def change_apikey(%Apikey{} = apikey) do
-  #   Apikey.changeset(apikey, %{})
-  # end
 
   def create_apikey(app) do
     attrs = %{
@@ -90,28 +84,6 @@ defmodule Auth.Apikey do
   end
 
   @doc """
-  Gets a single apikey.
-
-  Raises `Ecto.NoResultsError` if the Apikey does not exist.
-
-  ## Examples
-
-      iex> get_apikey!(123)
-      %Apikey{}
-
-      iex> get_apikey!(456)
-      ** (Ecto.NoResultsError)
-
-  """
-  def get_apikey!(id) do
-    __MODULE__
-    # |> Repo.get!(id)
-    |> where([a], a.id == ^id and a.status != 6)
-    |> Repo.one()
-    |> Repo.preload(:app)
-  end
-
-  @doc """
   Updates a apikey.
 
   ## Examples
@@ -127,23 +99,5 @@ defmodule Auth.Apikey do
     apikey
     |> changeset(attrs)
     |> Repo.update()
-  end
-
-  @doc """
-  Deletes a apikey.
-
-  ## Examples
-
-      iex> delete_apikey(apikey)
-      {:ok, %Apikey{}}
-
-      iex> delete_apikey(apikey)
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def delete_apikey(%Apikey{} = apikey) do
-    # Repo.delete(apikey)
-    # "soft delete" for autiting purposes:
-    update_apikey(apikey, %{status: 6})
   end
 end

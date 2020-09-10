@@ -68,26 +68,23 @@ defmodule AuthWeb.AppController do
 
   @doc """
   Reset the API Key in case of suspected compromise.
-
   """
   def resetapikey(conn, %{"id" => id}) do
-    IO.inspect(id, label: "id:74")
     app = App.get_app!(id)
-    IO.inspect(app, label: "app:76")
 
     Enum.each(app.apikeys, fn k ->
-      IO.inspect(k, label: "apikey:78")
       if k.status == 3 do
-        # soft delete the apikey
+        # retire the apikey
         Auth.Apikey.update_apikey(Map.delete(k, :app), %{status: 6})
       end
     end)
 
-
-
+    # Create New API Key:
+    Auth.Apikey.create_apikey(app)
 
     # get the app again and render it:
-
-    render(conn, "show.html", app: app)
+    conn
+    |> put_flash(:info, "Your API Key has been successfully reset")
+    |> render("show.html", app: App.get_app!(id))
   end
 end

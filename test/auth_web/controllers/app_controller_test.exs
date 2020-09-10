@@ -106,4 +106,14 @@ defmodule AuthWeb.AppControllerTest do
     app = fixture(:app)
     %{app: app}
   end
+
+  describe "reset apikey" do
+    setup [:create_app]
+
+    test "reset apikey for an app", %{conn: conn, app: app} do
+      conn = admin_login(conn)
+      conn = get(conn, Routes.app_path(conn, :resetapikey, app))
+      assert html_response(conn, 200) =~ "successfully reset"
+    end
+  end
 end
