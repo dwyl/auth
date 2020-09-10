@@ -106,6 +106,7 @@ defmodule Auth.App do
   """
   def update_app(%App{} = app, attrs) do
     app
+    # |> IO.inspect(label: "update_app/2:109")
     |> App.changeset(attrs)
     |> Repo.update()
   end
@@ -123,7 +124,7 @@ defmodule Auth.App do
 
   """
   def delete_app(%App{} = app) do
-    # this is a "soft delete" for autiting purposes:
+    # "soft delete" for autiting purposes:
     update_app(app, %{status: 6})
   end
 

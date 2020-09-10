@@ -62,7 +62,9 @@ defmodule Auth.Apikey do
   """
   def get_apikey!(id) do
     __MODULE__
-    |> Repo.get!(id)
+    # |> Repo.get!(id)
+    |> where([a], a.id == ^id and a.status != 6)
+    |> Repo.one()
     |> Repo.preload(:app)
   end
 
@@ -97,6 +99,8 @@ defmodule Auth.Apikey do
 
   """
   def delete_apikey(%Apikey{} = apikey) do
-    Repo.delete(apikey)
+    # Repo.delete(apikey)
+    # "soft delete" for autiting purposes:
+    update_apikey(apikey, %{status: 6})
   end
 end

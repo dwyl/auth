@@ -51,7 +51,7 @@ defmodule AuthWeb.Router do
 
     resources "/permissions", PermissionController
     resources "/apps", AppController
-    resources "/settings/apikeys", ApikeyController
+    # resources "/settings/apikeys", ApikeyController
   end
 
   # Other scopes may use custom stacks.
