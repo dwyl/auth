@@ -9,9 +9,17 @@ defmodule AuthWeb.RoleController do
     render(conn, "index.html", roles: roles)
   end
 
+  defp list_apps(person_id) do
+    case person_id == 1 do
+      true -> Auth.App.list_apps()
+      false -> Auth.App.list_apps(person_id)
+    end
+  end
+
   def new(conn, _params) do
     changeset = Role.change_role(%Role{})
-    render(conn, "new.html", changeset: changeset)
+    apps = list_apps(conn.assigns.person.id)
+    render(conn, "new.html", changeset: changeset, apps: apps)
   end
 
   def create(conn, %{"role" => role_params}) do
@@ -22,7 +30,8 @@ defmodule AuthWeb.RoleController do
         |> redirect(to: Routes.role_path(conn, :show, role))
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, "new.html", changeset: changeset)
+        apps = list_apps(conn.assigns.person.id)
+        render(conn, "new.html", changeset: changeset, apps: apps)
     end
   end
 
@@ -34,7 +43,8 @@ defmodule AuthWeb.RoleController do
   def edit(conn, %{"id" => id}) do
     role = Role.get_role!(id)
     changeset = Role.change_role(role)
-    render(conn, "edit.html", role: role, changeset: changeset)
+    apps = list_apps(conn.assigns.person.id)
+    render(conn, "edit.html", role: role, changeset: changeset, apps: apps)
   end
 
   def update(conn, %{"id" => id, "role" => role_params}) do
@@ -47,7 +57,8 @@ defmodule AuthWeb.RoleController do
         |> redirect(to: Routes.role_path(conn, :show, role))
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, "edit.html", role: role, changeset: changeset)
+        apps = list_apps(conn.assigns.person.id)
+        render(conn, "edit.html", role: role, changeset: changeset, apps: apps)
     end
   end
 

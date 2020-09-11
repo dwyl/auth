@@ -3,7 +3,7 @@ defmodule AuthWeb.RoleControllerTest do
 
   alias Auth.Role
 
-  @create_attrs %{desc: "some desc", name: "some name"}
+  @create_attrs %{desc: "some desc", name: "some name", app_id: 1}
   @update_attrs %{desc: "some updated desc", name: "some updated name"}
   @invalid_attrs %{desc: nil, name: nil}
 

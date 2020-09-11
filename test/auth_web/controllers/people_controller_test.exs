@@ -12,7 +12,7 @@ defmodule AuthWeb.PeopleControllerTest do
     assert conn.status == 302
   end
 
-  test "Attempt to GET /people without admin role should 401", %{conn: conn} do
+  test "Attempt to GET /people without admin role should 404", %{conn: conn} do
     wrong_person_data = %{
       email: "not_admin@gmail.com",
       auth_provider: "email",
@@ -23,7 +23,7 @@ defmodule AuthWeb.PeopleControllerTest do
     conn = AuthPlug.create_jwt_session(conn, wrong_person_data)
 
     conn = get(conn, "/people")
-    assert conn.status == 401
+    assert conn.status == 404
   end
 
   test "GET /people/:person_id displays person", %{conn: conn} do

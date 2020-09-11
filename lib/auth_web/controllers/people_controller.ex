@@ -18,7 +18,7 @@ defmodule AuthWeb.PeopleController do
 
       # Note: this can easily be refactored to save on DB queries. #HelpWanted
     else
-      AuthWeb.AuthController.unauthorized(conn)
+      AuthWeb.AuthController.not_found(conn, "Only admins can see people ... for now!")
     end
   end
 

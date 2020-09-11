@@ -1,28 +1,42 @@
-<h1>Listing Roles</h1>
+<h1 class="tc">Listing Roles</h1>
 
-<table>
+<table class="center w-90 mh2 f4">
   <thead>
     <tr>
-      <th>Name</th>
-      <th>Desc</th>
-
+      <th class="fw6 bb b--black-20 tl pb3 pr3">id</th>
+      <th class="fw6 bb b--black-20 tl pb3 pr3">Name</th>
+      <th class="fw6 bb b--black-20 tl pb3 pr3">Description</th>
+      <th class="fw6 bb b--black-20 tc pb3 pr3 w-10">app id</th>
+      <th class="fw6 bb b--black-20 tl pb3 pr3"><!-- Controls --></th>
       <th></th>
     </tr>
   </thead>
   <tbody>
 <%= for role <- @roles do %>
     <tr>
-      <td><%= role.name %></td>
-      <td><%= role.desc %></td>
-
-      <td>
-        <span><%= link "Show", to: Routes.role_path(@conn, :show, role) %></span>
-        <span><%= link "Edit", to: Routes.role_path(@conn, :edit, role) %></span>
-        <span><%= link "Delete", to: Routes.role_path(@conn, :delete, role), method: :delete, data: [confirm: "Are you sure?"] %></span>
+      <td class="bb b--black-20 pa2"><%= role.id %></td>
+      <td class="bb b--black-20 pa2"><%= role.name %></td>
+      <td class="bb b--black-20 w-50 pa2"><%= role.desc %></td>
+      <td class="bb b--black-20 pa2 no-underline tc"><%= raw app_link(role.app_id) %></td>
+      <td class="bb b--black-20 w-30">
+        <span><%= link "Show", to: Routes.role_path(@conn, :show, role), 
+                  class: "pointer br2 ba b--dark-blue bg-blue white pa1 ml1 mv1 f4
+                  bg-animate hover-bg-dark-blue border-box no-underline" %></span>
+        <span><%= link "Edit", to: Routes.role_path(@conn, :edit, role), 
+                  class: "pointer br2 ba b--orange bg-gold white pa1 ml1 mv1 f4
+                  bg-animate hover-bg-orange border-box no-underline" %></span>
+        <span><%= link "Delete", to: Routes.role_path(@conn, :delete, role), method: :delete, 
+                  data: [confirm: "Are you sure you want to delete this role?"],
+                  class: "pointer br2 ba b--dark-red bg-red white pa1 ml1 mv1 f4
+                            bg-animate hover-bg-dark-red border-box no-underline" %></span>
       </td>
     </tr>
 <% end %>
   </tbody>
 </table>
 
-<span><%= link "New Role", to: Routes.role_path(@conn, :new) %></span>
+<span class="mt3">
+<%= link "New Role", to: Routes.role_path(@conn, :new), 
+  class: "pointer br2 ba b--dark-green bg-green white pa3 fr mr5 mv1 f3
+  shadow-hover bg-animate hover-bg-dark-green border-box no-underline" %>
+</span>

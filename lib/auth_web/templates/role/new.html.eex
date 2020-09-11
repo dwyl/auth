@@ -1,5 +1,12 @@
+<div class="f3 w-70 center">
 <h1>New Role</h1>
 
 <%= render "form.html", Map.put(assigns, :action, Routes.role_path(@conn, :create)) %>
 
-<span><%= link "Back", to: Routes.role_path(@conn, :index) %></span>
+<span><%= link "< Back", to: Routes.role_path(@conn, :index),
+  class: "fl pointer br2 ba b--orange bg-gold white pv2 ph3 f4 mt1
+  shadow-hover bg-animate hover-bg-orange border-box no-underline",
+  data:
+   [confirm: "Are you sure you want to disguard this form?
+    (The data cannot be recovered!)"] %></span>
+</div>
