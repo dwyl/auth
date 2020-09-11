@@ -13,6 +13,7 @@ defmodule Auth.Role do
     field :desc, :string
     field :name, :string
     field :person_id, :id
+    field :app_id, :id
     # many_to_many :roles, Auth.Role, join_through: Auth.PeopleRoles
 
     timestamps()

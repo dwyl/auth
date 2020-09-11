@@ -5,6 +5,7 @@ defmodule AuthWeb.AppController do
   def index(conn, _params) do
     apps =
       if conn.assigns.person.id == 1 do
+        # IO.inspect(conn.assigns.person, label: "conn.assigns.person")
         App.list_apps()
       else
         App.list_apps(conn.assigns.person.id)
@@ -40,8 +41,6 @@ defmodule AuthWeb.AppController do
 
   def show(conn, %{"id" => id}) do
     app = App.get_app!(id)
-    # IO.inspect(app, label: "app:43")
-    # IO.inspect(conn.assigns.person, label: "conn.assigns.person:44")
     #  restrict viewership to owner||admin https://github.com/dwyl/auth/issues/99
     if conn.assigns.person.id == app.person_id || conn.assigns.person.id == 1 do
       render(conn, "show.html", app: app)
@@ -53,7 +52,7 @@ defmodule AuthWeb.AppController do
   def edit(conn, %{"id" => id}) do
     # IO.inspect(id, label: "edit id:36")
     app = App.get_app!(id)
-    #  restrict viewership to owner||admin https://github.com/dwyl/auth/issues/99
+    #  restrict editing to owner||admin https://github.com/dwyl/auth/issues/99
     if conn.assigns.person.id == app.person_id || conn.assigns.person.id == 1 do
       changeset = App.change_app(app)
       render(conn, "edit.html", app: app, changeset: changeset)
@@ -64,7 +63,7 @@ defmodule AuthWeb.AppController do
 
   def update(conn, %{"id" => id, "app" => app_params}) do
     app = App.get_app!(id)
-    #  restrict viewership to owner||admin https://github.com/dwyl/auth/issues/99
+    #  restrict updating to owner||admin https://github.com/dwyl/auth/issues/99
     if conn.assigns.person.id == app.person_id || conn.assigns.person.id == 1 do
       case App.update_app(app, app_params) do
         {:ok, app} ->

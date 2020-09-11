@@ -111,17 +111,13 @@ defmodule SeedData do
   end
 
   def create_default_roles do
-    json = get_json("/priv/repo/default_roles.json")
-
-    Enum.each(json, fn role ->
+    Enum.each(get_json("/priv/repo/default_roles.json"), fn role ->
       Role.create_role(role)
     end)
   end
 
   def insert_statuses do
-    json = get_json("/priv/repo/statuses.json")
-
-    Enum.each(json, fn s ->
+    Enum.each(get_json("/priv/repo/statuses.json"), fn s ->
       Status.upsert_status(s)
     end)
   end
@@ -131,6 +127,9 @@ SeedData.insert_statuses()
 
 Auth.Seeds.create_admin()
 |> Auth.Seeds.create_apikey_for_admin()
+
+# Update status of Admin to "Verified"
+Auth.Person.verify_person_by_id(1)
 
 SeedData.create_default_roles()
 # grant superadmin role to app owner:
