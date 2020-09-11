@@ -1,18 +1,28 @@
-<h1>Show Role</h1>
+<div class="f3 w-70 center">
+  <h1 class="tc">Role</h1>
 
-<ul>
+  <ul>
 
-  <li>
-    <strong>Name:</strong>
-    <%= @role.name %>
-  </li>
+    <p>
+      <strong>Name:</strong>
+      <span class="db ba b--black-80 pa2 bg-light-gray w-100 mt2">
+        <%= @role.name %>
+      </span>
+    </p>
 
-  <li>
-    <strong>Desc:</strong>
-    <%= @role.desc %>
-  </li>
+    <p>
+      <strong>Description:</strong>
+      <span class="db ba b--black-80 pa2 bg-light-gray w-100 mt2">
+        <%= @role.desc %>
+      </span>
+    </p>
 
-</ul>
+  </ul>
 
-<span><%= link "Edit", to: Routes.role_path(@conn, :edit, @role) %></span>
-<span><%= link "Back", to: Routes.role_path(@conn, :index) %></span>
+  <span><%= link "< All Roles", to: Routes.role_path(@conn, :index),
+   class: "fl pointer br2 ba b--dark-blue bg-blue white pa3 ml1 mv1 f4
+  shadow-hover bg-animate hover-bg-dark-blue border-box no-underline" %></span>
+  <span><%= link "Edit", to: Routes.role_path(@conn, :edit, @role),
+  class: "fr pointer br2 ba b--dark-green bg-green white pa3 ml1 mv1 f4
+  shadow-hover bg-animate hover-bg-dark-green border-box no-underline" %></span>
+</div>

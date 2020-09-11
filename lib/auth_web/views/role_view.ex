@@ -1,7 +1,6 @@
 defmodule AuthWeb.RoleView do
   use AuthWeb, :view
 
-
   def app_link(app_id) do
     case is_nil(app_id) do
       true -> "all"
