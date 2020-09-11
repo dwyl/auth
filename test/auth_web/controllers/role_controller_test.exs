@@ -18,11 +18,24 @@ defmodule AuthWeb.RoleControllerTest do
       conn = get(conn, Routes.role_path(conn, :index))
       assert html_response(conn, 200) =~ "Listing Roles"
     end
+
+    test "non-admin can see all system and owned roles", %{conn: conn} do
+      conn = non_admin_login(conn)
+      conn = post(conn, Routes.role_path(conn, :create), role: @create_attrs)
+      conn = get(conn, Routes.role_path(conn, :index))
+      assert html_response(conn, 200) =~ "Listing Roles"
+    end
   end
 
   describe "new role" do
     test "renders form", %{conn: conn} do
       conn = admin_login(conn)
+      conn = get(conn, Routes.role_path(conn, :new))
+      assert html_response(conn, 200) =~ "New Role"
+    end
+
+    test "non-admin person create role", %{conn: conn} do
+      conn = non_admin_login(conn)
       conn = get(conn, Routes.role_path(conn, :new))
       assert html_response(conn, 200) =~ "New Role"
     end
