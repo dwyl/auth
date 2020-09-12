@@ -1,7 +1,7 @@
 defmodule AuthWeb.AppControllerTest do
   use AuthWeb.ConnCase
-
-  alias Auth.{App, Role}
+  alias Auth.App
+  alias Auth.Role
 
   @create_attrs %{
     desc: "some description",
@@ -199,7 +199,6 @@ defmodule AuthWeb.AppControllerTest do
       last = List.last(roles2)
       assert last.name == admin_role.name
 
-
       # login as non-admin person
       conn2 = non_admin_login(conn)
 
@@ -234,7 +233,7 @@ defmodule AuthWeb.AppControllerTest do
       should_be_empty = Enum.filter(json, fn r ->
         Map.get(r, "name") == admin_role.name
       end)
-      assert length(should_be_empty) == 0
+      assert should_be_empty == []
     end
   end
 end
