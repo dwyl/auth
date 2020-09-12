@@ -436,7 +436,8 @@ defmodule AuthWeb.AuthController do
         apikey.client_id == client_id && state =~ apikey.app.url && apikey.status != 6 ->
           apikey.client_secret
 
-        true -> 0
+        true ->
+          0
       end
     end
   end

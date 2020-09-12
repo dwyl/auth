@@ -68,7 +68,7 @@ defmodule AuthWeb.AuthControllerTest do
 
   test "get_client_secret/2 for non_admin key" do
     person = non_admin_person()
-    app_data = Map.merge(@app_data, %{ "person_id" => person.id})
+    app_data = Map.merge(@app_data, %{"person_id" => person.id})
     {:ok, app} = Auth.App.create_app(app_data)
     key = List.first(app.apikeys)
     state = "#{app.url}/profile?auth_client_id=#{key.client_id}"

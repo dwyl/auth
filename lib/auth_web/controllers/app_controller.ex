@@ -98,6 +98,7 @@ defmodule AuthWeb.AppController do
   """
   def resetapikey(conn, %{"id" => id}) do
     app = App.get_app!(id)
+
     if conn.assigns.person.id != app.person_id && conn.assigns.person.id != 1 do
       AuthWeb.AuthController.not_found(conn, "can't touch this.")
     else
