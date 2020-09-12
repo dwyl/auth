@@ -160,4 +160,12 @@ defmodule AuthWeb.AppControllerTest do
       assert html_response(conn, 404) =~ "can't touch this."
     end
   end
+
+  describe "GET /approles/:client_id" do
+    test "returns (JSON) list of roles", %{conn: conn, app: app} do
+      conn = admin_login(conn)
+      conn = get(conn, Routes.app_path(conn, :approles, app.apikey))
+      assert html_response(conn, 200) =~ "successfully reset"
+    end
+  end
 end

@@ -109,7 +109,7 @@ defmodule Auth.Role do
     end
   end
 
-  defp strip_meta(struct) do
+  def strip_meta(struct) do
     struct
     |> Map.delete(:__meta__)
     |> Map.delete(:__struct__)

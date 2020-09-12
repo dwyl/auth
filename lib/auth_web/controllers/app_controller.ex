@@ -119,10 +119,15 @@ defmodule AuthWeb.AppController do
     end
   end
 
-  # @doc """
-  # approles/2 Return the (JSON) List of Roles for a given App based on apikey.client_id
-  # """
-  # def approles(conn, %{"client_id" => client_id}) do
+  @doc """
+  approles/2 Return the (JSON) List of Roles for a given App based on apikey.client_id
+  """
+  def approles(conn, %{"client_id" => client_id}) do
+    IO.inspect(client_id)
+    # return empty JSON list with 401 status if client_id is invalid
 
-  # end
+    roles = Auth.Role.list_roles()
+    roles = Enum.map(roles, fn role -> Auth.Role.strip_meta(role) end)
+    json(conn, roles)
+  end
 end

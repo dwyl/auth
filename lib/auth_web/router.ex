@@ -12,10 +12,6 @@ defmodule AuthWeb.Router do
     plug :put_secure_browser_headers
   end
 
-  # pipeline :api do
-  #   plug :accepts, ["json"]
-  # end
-
   scope "/", AuthWeb do
     pipe_through :browser
 
@@ -27,7 +23,6 @@ defmodule AuthWeb.Router do
     # get "/auth/password/new", AuthController, :password_input
     post "/auth/password/create", AuthController, :password_create
     post "/auth/password/verify", AuthController, :password_prompt
-    # get "/approles/:client_id", AppController, :approles
     # https://github.com/dwyl/ping
     get "/ping", PingController, :ping
   end
@@ -55,8 +50,14 @@ defmodule AuthWeb.Router do
     # resources "/settings/apikeys", ApikeyController
   end
 
+  pipeline :api do
+    plug :accepts, ["json"]
+  end
+
   # Other scopes may use custom stacks.
-  # scope "/api", AuthWeb do
-  #   pipe_through :api
-  # end
+  scope "/", AuthWeb do
+    pipe_through :api
+
+    get "/approles/:client_id", AppController, :approles
+  end
 end
