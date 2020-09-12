@@ -39,6 +39,12 @@ defmodule Auth.Role do
     Repo.all(__MODULE__)
   end
 
+  def list_roles_for_app(app_id) do
+    __MODULE__
+    |> where([r], r.app_id == ^app_id or is_nil(r.app_id)) # and a.status != 6)
+    |> Repo.all()
+  end
+
   @doc """
   Gets a single role.
 

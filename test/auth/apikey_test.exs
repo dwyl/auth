@@ -17,10 +17,10 @@ defmodule Auth.ApikeyTest do
     end
 
     test "decode_decrypt/1 reverses the operation of encrypt_encode/1" do
-      person_id = 4_869_234_521
-      key = Auth.Apikey.encrypt_encode(person_id)
+      app_id = 4_869_234_521
+      key = Auth.Apikey.encrypt_encode(app_id)
       id = Auth.Apikey.decode_decrypt(key)
-      assert person_id == id
+      assert app_id == id
     end
 
     test "create_api_key/1 creates an AUTH_API_KEY" do
@@ -32,16 +32,16 @@ defmodule Auth.ApikeyTest do
     end
 
     test "decrypt_api_key/1 decrypts an AUTH_API_KEY" do
-      person_id = 1234
-      key = Auth.Apikey.create_api_key(person_id)
+      app_id = 1234
+      key = Auth.Apikey.create_api_key(app_id)
       decrypted = Auth.Apikey.decrypt_api_key(key)
-      assert decrypted == person_id
+      assert decrypted == app_id
     end
 
     test "decode_decrypt/1 with invalid client_id" do
       valid_key = Auth.Apikey.encrypt_encode(1)
-      person_id = Auth.Apikey.decode_decrypt(valid_key)
-      assert person_id == 1
+      app_id = Auth.Apikey.decode_decrypt(valid_key)
+      assert app_id == 1
 
       invalid_key = String.slice(valid_key, 0..-2)
       error = Auth.Apikey.decode_decrypt(invalid_key)

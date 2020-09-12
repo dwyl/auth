@@ -47,6 +47,8 @@ defmodule Auth.Apikey do
     rescue
       ArgumentError ->
         0
+      ArithmeticError ->
+        0
     end
   end
 
