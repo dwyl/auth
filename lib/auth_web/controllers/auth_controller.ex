@@ -446,13 +446,13 @@ defmodule AuthWeb.AuthController do
 
   def add_jwt_url_param(person, state, client_secret) do
     data = %{
-      aup: person.auth_provider,
-      n: person.givenName,
+      auth_provider: person.auth_provider,
+      givenName: person.givenName,
       id: person.id,
-      pic: person.picture,
-      s: person.status,
-      e: person.email,
-      r: RBAC.transform_role_list_to_string(person.roles)
+      picture: person.picture,
+      status: person.status,
+      email: person.email,
+      roles: RBAC.transform_role_list_to_string(person.roles)
     }
 
     jwt = AuthPlug.Token.generate_jwt!(data, client_secret)

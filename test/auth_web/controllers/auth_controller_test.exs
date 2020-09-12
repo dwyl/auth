@@ -29,7 +29,6 @@ defmodule AuthWeb.AuthControllerTest do
     }
 
     person = Auth.Person.create_person(data)
-
     conn =
       AuthPlug.create_jwt_session(conn, Map.merge(data, %{id: person.id}))
       |> get("/profile", %{})
@@ -158,7 +157,6 @@ defmodule AuthWeb.AuthControllerTest do
     }
 
     Auth.Person.upsert_person(data)
-
     conn =
       AuthPlug.create_jwt_session(conn, data)
       |> get("/auth/google/callback", %{"code" => "234", "state" => nil})
@@ -313,7 +311,7 @@ defmodule AuthWeb.AuthControllerTest do
   end
 
   test "password_create/2 create a new password", %{conn: conn} do
-    %{email: "anabela@mail.com", auth_provider: "email"}
+    %{email: "anabela@mail.com", auth_provider: "email", givenName: "timmy"}
     |> Auth.Person.upsert_person()
 
     params = %{
