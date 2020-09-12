@@ -53,6 +53,6 @@
     "desc": "Can manage their own App(s).", 
     "person_id": "1",
     "id": "8",
-    "permissions": "manage_apps, create_content, upload_images, edit_own_content, delete_own_content, invite_people"
+    "permissions": "manage_own_apps, create_content, upload_images, edit_own_content, delete_own_content, invite_people"
   }
 ]

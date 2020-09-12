@@ -176,6 +176,8 @@ defmodule AuthWeb.AuthController do
 
       # display welcome page on Auth site:
       false ->
+        # Grant app_admin role to person who authenticated directly on auth app
+        # Auth.PeopleRoles.insert(1, person.id, 8)
         conn
         |> AuthPlug.create_jwt_session(person)
         |> render(:welcome, person: person)

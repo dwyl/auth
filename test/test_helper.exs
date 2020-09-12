@@ -23,9 +23,11 @@ defmodule AuthTest do
   end
 
   def non_admin_person() do
-    rand = :rand.uniform(1000000)
+    rand = :rand.uniform(1_000_000)
+
     Auth.Person.upsert_person(%{
       email: "alex+#{rand}@gmail.com",
+      givenName: "Alexander McAwesome",
       auth_provider: "email",
       password: "thiswillbehashed"
     })

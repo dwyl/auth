@@ -91,6 +91,16 @@ defmodule AuthWeb.AuthControllerTest do
     end
   end
 
+  # test "redirect_or_render assigns app_admin role if direct auth", %{conn: conn} do
+  #   conn = non_admin_login(conn)
+  #   IO.inspect(conn, label: "conn:96")
+  #   person = conn.assigns.person
+  #   IO.inspect(person, label: "person:98")
+
+  #   AuthWeb.AuthController.redirect_or_render(conn, person, "")
+  #   IO.inspect(conn, label: "conn:100")
+  # end
+
   test "github_handler/2 github auth callback", %{conn: conn} do
     baseurl = AuthPlug.Helpers.get_baseurl_from_conn(conn)
 

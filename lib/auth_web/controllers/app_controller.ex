@@ -119,7 +119,6 @@ defmodule AuthWeb.AppController do
     end
   end
 
-
   # @doc """
   # approles/2 Return the (JSON) List of Roles for a given App based on apikey.client_id
   # """
