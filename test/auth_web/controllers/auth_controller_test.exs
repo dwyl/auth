@@ -66,12 +66,22 @@ defmodule AuthWeb.AuthControllerTest do
     assert secret == key.client_secret
   end
 
+  test "get_client_secret/2 for non_admin key" do
+    person = non_admin_person()
+    app_data = Map.merge(@app_data, %{ "person_id" => person.id})
+    {:ok, app} = Auth.App.create_app(app_data)
+    key = List.first(app.apikeys)
+    state = "#{app.url}/profile?auth_client_id=#{key.client_id}"
+    secret = AuthWeb.AuthController.get_client_secret(key.client_id, state)
+    assert secret == key.client_secret
+  end
+
   test "get_client_secret(client_id, state) for 'deleted' apikey (non-admin)" do
     person = non_admin_person()
     {:ok, app} = Auth.App.create_app(Map.merge(@app_data, %{"person_id" => person.id}))
     key = List.first(app.apikeys)
     Auth.Apikey.update_apikey(Map.delete(key, :app), %{status: 6})
-    state = "https://www.example.com/profile?auth_client_id=#{key.client_id}"
+    state = "#{app.url}/profile?auth_client_id=#{key.client_id}"
     # Note: not sure what to assert here ... ¯\_(ツ)_/¯
     # The API Key is "deleted" so it won't be found in the lookup
     try do

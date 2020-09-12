@@ -33,8 +33,8 @@ defmodule Auth.Apikey do
   that is just two strings joined with a forwardslash ("/").
   This allows us to use a *single* environment variable.
   """
-  def create_api_key(person_id) do
-    encrypt_encode(person_id) <> "/" <> encrypt_encode(person_id)
+  def create_api_key(id) do
+    encrypt_encode(id) <> "/" <> encrypt_encode(id)
   end
 
   @doc """
@@ -56,14 +56,14 @@ defmodule Auth.Apikey do
 
   def changeset(apikey, attrs) do
     apikey
-    |> cast(attrs, [:client_id, :client_secret, :person_id, :status])
+    |> cast(attrs, [:client_id, :client_secret, :status, :person_id])
     |> put_assoc(:app, Map.get(attrs, "app"))
   end
 
   def create_apikey(app) do
     attrs = %{
-      "client_secret" => encrypt_encode(app.person_id),
-      "client_id" => encrypt_encode(app.person_id),
+      "client_secret" => encrypt_encode(app.id),
+      "client_id" => encrypt_encode(app.id),
       "person_id" => app.person_id,
       "status" => 3,
       "app" => app
@@ -74,12 +74,12 @@ defmodule Auth.Apikey do
     |> Repo.insert()
   end
 
-  def list_apikeys_for_person(person_id) do
+  def get_apikey_by_app_id(app_id) do
     from(
       a in __MODULE__,
-      where: a.person_id == ^person_id
+      where: a.app_id == ^app_id
     )
-    |> Repo.all()
+    |> Repo.one()
     |> Repo.preload(:app)
   end
 

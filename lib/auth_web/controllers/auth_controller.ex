@@ -190,7 +190,7 @@ defmodule AuthWeb.AuthController do
     |> halt()
   end
 
-  # refactor this to render a template with a nice layout?
+  # refactor this to render a template with a nice layout? #HelpWanted
   def not_found(conn, message) do
     conn
     |> put_resp_content_type("text/html")
@@ -421,24 +421,23 @@ defmodule AuthWeb.AuthController do
   end
 
   def get_client_secret(client_id, state) do
-    person_id = Auth.Apikey.decode_decrypt(client_id)
-    # decode_decrypt fails with state 0
-    if person_id == 0 do
+    app_id = Auth.Apikey.decode_decrypt(client_id)
+    # decode_decrypt fails with 0:
+    if app_id == 0 do
       0
     else
-      apikeys = Auth.Apikey.list_apikeys_for_person(person_id)
+      apikey = Auth.Apikey.get_apikey_by_app_id(app_id)
 
-      Enum.filter(apikeys, fn k ->
-        # if the API Key belongs to Super Admin, don't check URL as it's the "setup key":
-        if person_id == 1 do
-          k.client_id == client_id
-        else
-          # check url matches the state for all other keys:
-          k.client_id == client_id and state =~ k.app.url and k.status != 6
-        end
-      end)
-      |> List.first()
-      |> Map.get(:client_secret)
+      cond do
+        apikey.app.person_id == 1 ->
+          apikey.client_secret
+
+        # all other keys require matching the app url and status to not be "deleted":
+        apikey.client_id == client_id && state =~ apikey.app.url && apikey.status != 6 ->
+          apikey.client_secret
+
+        true -> 0
+      end
     end
   end
 
