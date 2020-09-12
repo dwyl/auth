@@ -162,10 +162,20 @@ defmodule AuthWeb.AppControllerTest do
   end
 
   describe "GET /approles/:client_id" do
+    setup [:create_app]
+
     test "returns (JSON) list of roles", %{conn: conn, app: app} do
-      conn = admin_login(conn)
-      conn = get(conn, Routes.app_path(conn, :approles, app.apikey))
-      assert html_response(conn, 200) =~ "successfully reset"
+      key = List.first(app.apikeys)
+      IO.inspect(app, label: "app")
+      conn = conn
+      |> admin_login()
+      |> put_req_header("accept", "application/json")
+      |> get("/approles/#{key.client_id}")
+
+      assert conn.status == 200
+      {:ok, json} = Jason.decode(conn.resp_body)
+      IO.inspect(json)
+      # assert html_response(conn, 200) =~ "successfully reset"
     end
   end
 end
