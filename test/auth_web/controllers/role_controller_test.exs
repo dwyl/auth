@@ -34,8 +34,21 @@ defmodule AuthWeb.RoleControllerTest do
       assert html_response(conn, 200) =~ "New Role"
     end
 
+    test "attempt to /roles/new without App redirects to /apps/new", %{conn: conn} do
+      conn = non_admin_login(conn)
+      conn = get(conn, Routes.role_path(conn, :new))
+      assert html_response(conn, 302) =~ "redirected"
+    end
+
     test "non-admin person create role", %{conn: conn} do
       conn = non_admin_login(conn)
+      {:ok, _app} = Auth.App.create_app(%{
+        "name" => "default system app",
+        "desc" => "Demo App",
+        "url" => "localhost:4000",
+        "person_id" => conn.assigns.person.id,
+        "status" => 3
+      })
       conn = get(conn, Routes.role_path(conn, :new))
       assert html_response(conn, 200) =~ "New Role"
     end

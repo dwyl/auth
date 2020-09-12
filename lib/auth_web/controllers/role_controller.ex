@@ -19,7 +19,16 @@ defmodule AuthWeb.RoleController do
   def new(conn, _params) do
     changeset = Role.change_role(%Role{})
     apps = list_apps(conn.assigns.person.id)
-    render(conn, "new.html", changeset: changeset, apps: apps)
+    # Roles Ref/Require Apps: https://github.com/dwyl/auth/issues/112
+    # Check if the person already has apps:
+    if length(apps) > 0 do
+      render(conn, "new.html", changeset: changeset, apps: apps)
+    else
+      # No apps, instruct them to create an App before Role(s):
+      conn
+      |> put_flash(:info, "Please create an App before attempting to create Roles")
+      |> redirect(to: Routes.app_path(conn, :new))
+    end
   end
 
   def create(conn, %{"role" => role_params}) do

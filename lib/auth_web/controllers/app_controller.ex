@@ -118,4 +118,12 @@ defmodule AuthWeb.AppController do
       |> render("show.html", app: App.get_app!(id))
     end
   end
+
+
+  # @doc """
+  # approles/2 Return the (JSON) List of Roles for a given App based on apikey.client_id
+  # """
+  # def approles(conn, %{"client_id" => client_id}) do
+
+  # end
 end
