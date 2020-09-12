@@ -47,5 +47,12 @@
     "person_id": "1",
     "id": "7",
     "permissions": "view_content, view_profile, delete_own_content, delete_own_profile"
+  },
+  {
+    "name": "app_admin", 
+    "desc": "Can manage their own App(s).", 
+    "person_id": "1",
+    "id": "8",
+    "permissions": "manage_apps, create_content, upload_images, edit_own_content, delete_own_content, invite_people"
   }
 ]

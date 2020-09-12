@@ -91,6 +91,30 @@ defmodule Auth.Role do
     |> Repo.update()
   end
 
+  def upsert_role(role) do
+    id = Map.get(role, :id)
+    # if the role Map has no "id" field its not a DB record
+    if is_nil(id) do
+      create_role(role)
+    else
+      case Repo.get_by(__MODULE__, id: id) do
+        # record does not exist so create it:
+        nil ->
+          create_role(role)
+
+        # record exists, lets update it:
+        existing_role ->
+          update_role(existing_role, strip_meta(role))
+      end
+    end
+  end
+
+  defp strip_meta(struct) do
+    struct
+    |> Map.delete(:__meta__)
+    |> Map.delete(:__struct__)
+  end
+
   @doc """
   Deletes a role.
 

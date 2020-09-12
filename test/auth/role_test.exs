@@ -61,6 +61,25 @@ defmodule Auth.RoleTest do
       role = role_fixture()
       assert %Ecto.Changeset{} = Role.change_role(role)
     end
+
+    test "upsert_role/1 inserts or updates a role" do
+      # role without :id -> create_role
+      assert {:ok, %Role{} = role} = Role.upsert_role(@valid_attrs)
+      assert role.desc == "some desc"
+      assert role.name == "some name"
+
+      # existing role with id -> update_role
+      updated_role = Map.merge(role, @update_attrs)
+      assert {:ok, %Role{} = role} = Role.upsert_role(updated_role)
+      assert role.desc == "some updated desc"
+      assert role.name == "some updated name"
+
+      # attempt to "upsert" a role that does not exist:
+      non_existent_role = %{name: "hello", desc: "world", id: 1492}
+      assert {:ok, %Role{} = role} = Role.upsert_role(non_existent_role)
+      assert role.name == "hello"
+      assert role.id != non_existent_role.id
+    end
   end
 
   describe "permissions" do

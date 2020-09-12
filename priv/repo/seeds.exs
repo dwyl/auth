@@ -117,8 +117,8 @@ defmodule SeedData do
   end
 
   def insert_statuses do
-    Enum.each(get_json("/priv/repo/statuses.json"), fn s ->
-      Status.upsert_status(s)
+    Enum.each(get_json("/priv/repo/statuses.json"), fn status ->
+      Status.upsert_status(status)
     end)
   end
 end
