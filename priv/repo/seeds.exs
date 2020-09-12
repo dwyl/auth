@@ -112,7 +112,7 @@ defmodule SeedData do
 
   def create_default_roles do
     Enum.each(get_json("/priv/repo/default_roles.json"), fn role ->
-      Role.create_role(role)
+      Role.upsert_role(role)
     end)
   end
 
