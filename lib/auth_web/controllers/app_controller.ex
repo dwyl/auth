@@ -123,13 +123,10 @@ defmodule AuthWeb.AppController do
   approles/2 Return the (JSON) List of Roles for a given App based on apikey.client_id
   """
   def approles(conn, %{"client_id" => client_id}) do
-    IO.inspect(client_id, label: "client_id:126")
-    # return empty JSON list with 401 status if client_id is invalid
     app_id = Auth.Apikey.decode_decrypt(client_id)
-    IO.inspect(app_id, label: "app_id:129")
 
+    # return empty JSON list with 401 status if client_id is invalid
     if app_id == 0 or is_nil(app_id) do
-      # invalid client_id > 401
       AuthWeb.AuthController.unauthorized(conn)
     else
       roles = Auth.Role.list_roles_for_app(app_id)
