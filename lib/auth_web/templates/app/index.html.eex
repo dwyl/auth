@@ -3,6 +3,8 @@
   <table class="w-100 f3">
     <thead>
       <tr class="f3">
+        <th>id</th>
+         <th>Owner</th>
         <th>Name</th>
         <th>Description</th>
         <th>Url</th>
@@ -11,6 +13,8 @@
   <tbody>
 <%= for app <- @apps do %>
     <tr>
+      <td><a href="/apps/<%= app.id %>" class="no-underline blue"><%= app.id %></a></td>
+      <td><a href="/people/<%= app.person_id %>" class="no-underline blue"><%= app.person_id %></a></td>
       <td><%= app.name %></td>
       <td><%= app.desc %></td>
       <td><%= app.url %></td>
