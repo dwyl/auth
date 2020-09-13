@@ -44,13 +44,6 @@ defmodule AuthWeb.AuthController do
         nil
       end
 
-    # TODO: add friendly error message when email address is invalid
-    # errors = if not is_nil(email) and not Fields.Validate.email(email) do
-    #   [email: "email address is invalid"]
-    # else
-    #   []
-    # end
-
     state =
       if not is_nil(params_person) and
            not is_nil(Map.get(params_person, "state")) do
@@ -118,11 +111,22 @@ defmodule AuthWeb.AuthController do
   """
   def github_handler(conn, %{"code" => code, "state" => state}) do
     {:ok, profile} = ElixirAuthGithub.github_auth(code)
+    app_id = get_app_id(state)
+
     # save profile to people:
-    person = Person.create_github_person(profile)
+    person = Person.create_github_person(Map.merge(profile, %{app_id: app_id}))
 
     # render or redirect:
     handler(conn, person, state)
+  end
+
+  def get_app_id(state) do
+    client_id = get_client_secret_from_state(state)
+    app_id = Auth.Apikey.decode_decrypt(client_id)
+    case app_id == 0 do
+      true -> 1
+      false -> app_id
+    end
   end
 
   @doc """
@@ -132,7 +136,8 @@ defmodule AuthWeb.AuthController do
     {:ok, token} = ElixirAuthGoogle.get_token(code, conn)
     {:ok, profile} = ElixirAuthGoogle.get_user_profile(token.access_token)
     # save profile to people:
-    person = Person.create_google_person(profile)
+    app_id = get_app_id(state)
+    person = Person.create_google_person(Map.merge(profile, %{app_id: app_id}))
 
     # render or redirect:
     handler(conn, person, state)
@@ -376,9 +381,6 @@ defmodule AuthWeb.AuthController do
         msg = """
         That password is incorrect.
         """
-
-        # log password incorrect
-
         user_agent = get_user_agent(conn)
         ip_address = get_ip_address(conn)
 
@@ -401,6 +403,11 @@ defmodule AuthWeb.AuthController do
     redirect_or_render(conn, person, params["referer"])
   end
 
+  def get_client_id_from_state(state) do
+    query = URI.decode_query(List.last(String.split(state, "?")))
+    Map.get(query, "auth_client_id")
+  end
+
   @doc """
   `get_client_secret_from_state/1` gets the client_id from state,
   attempts to decode_decrypt it and then look it up in apikeys
@@ -408,8 +415,7 @@ defmodule AuthWeb.AuthController do
   All other failure conditions return a 0 (zero) which results in a 401.
   """
   def get_client_secret_from_state(state) do
-    query = URI.decode_query(List.last(String.split(state, "?")))
-    client_id = Map.get(query, "auth_client_id")
+    client_id = get_client_id_from_state(state)
 
     case not is_nil(client_id) do
       # Lookup client_id in apikeys table
@@ -452,7 +458,8 @@ defmodule AuthWeb.AuthController do
       picture: person.picture,
       status: person.status,
       email: person.email,
-      roles: RBAC.transform_role_list_to_string(person.roles)
+      roles: RBAC.transform_role_list_to_string(person.roles),
+      app_id: person.app_id
     }
 
     jwt = AuthPlug.Token.generate_jwt!(data, client_secret)

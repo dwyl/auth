@@ -24,6 +24,7 @@ defmodule Auth.Person do
     field :status, :id
     field :tag, :id
     field :key_id, :integer
+    field :app_id, :integer
     # many_to_many :roles, Auth.Role, join_through: "people_roles"
     # has_many :roles, through: [:people_roles, :role]
     many_to_many :roles, Auth.Role, join_through: Auth.PeopleRoles
@@ -54,7 +55,8 @@ defmodule Auth.Person do
       :picture,
       :username,
       :auth_provider,
-      :status
+      :status,
+      :app_id
     ])
     |> validate_required([:email])
     |> put_email_hash()
