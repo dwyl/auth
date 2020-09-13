@@ -1,3 +1,4 @@
+require Logger
 # Script for populating the database. You can run it as:
 #
 # mix run priv/repo/seeds.exs
@@ -54,11 +55,15 @@ defmodule Auth.Seeds do
 
     api_key = key.client_id <> "/" <> key.client_secret
     # set the AUTH_API_KEY environment variable during test run:
-    if(Mix.env() == :test) do
-      System.put_env("AUTH_API_KEY", api_key)
-    else
-      # update the AUTH_API_KEY in the .env file:
-      write_env("AUTH_API_KEY", api_key)
+    IO.inspect(Mix.env(), label: "Mix.env()")
+    case Mix.env() do
+      :test ->
+        System.put_env("AUTH_API_KEY", api_key)
+      :prod ->
+        Logger.info("export AUTH_API_KEY=#{api_key}")
+      _ ->
+        # update the AUTH_API_KEY in the .env file on dev/localhost:
+        write_env("AUTH_API_KEY", api_key)
     end
   end
 
