@@ -78,15 +78,7 @@ defmodule Auth.Seeds do
   def load_env() do
     path = File.cwd!() <> "/.env"
     IO.inspect(path, label: ".env file path")
-    data = try do
-      case File.read(path) do
-      {:ok, data} -> data
-      _ -> "export MIX_ENV=test"
-      end
-    rescue
-      MatchError ->
-       "export MIX_ENV=test"
-    end
+    {:ok, data} -> File.read(path)
 
     Enum.map(String.split(data, "\n"), fn line ->
       line =
