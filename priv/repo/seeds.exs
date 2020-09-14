@@ -16,6 +16,7 @@ defmodule Auth.Seeds do
     if is_nil(System.get_env("TRAVIS")) do
       load_env()
     end
+
     email = System.get_env("ADMIN_EMAIL")
 
     person =
@@ -57,18 +58,22 @@ defmodule Auth.Seeds do
       "client_secret" => AuthPlug.Token.client_secret()
     }
 
-    {:ok, key} = Auth.Apikey.get_apikey_by_app_id(app.id)
+    {:ok, key} =
+      Auth.Apikey.get_apikey_by_app_id(app.id)
       |> cast(update_attrs, [:client_id, :client_secret])
       |> Repo.update()
 
     api_key = key.client_id <> "/" <> key.client_secret
     # set the AUTH_API_KEY environment variable during test run:
     IO.inspect(Mix.env(), label: "Mix.env()")
+
     case Mix.env() do
       :test ->
         System.put_env("AUTH_API_KEY", api_key)
+
       :prod ->
         Logger.info("export AUTH_API_KEY=#{api_key}")
+
       _ ->
         nil
     end

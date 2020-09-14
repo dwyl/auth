@@ -165,9 +165,10 @@ defmodule AuthWeb.AppControllerTest do
     setup [:create_app]
 
     test "returns 401 if client_id is invalid", %{conn: conn} do
-      conn = conn
-      |> put_req_header("accept", "application/json")
-      |> get("/approles/invalid")
+      conn =
+        conn
+        |> put_req_header("accept", "application/json")
+        |> get("/approles/invalid")
 
       assert html_response(conn, 401) =~ "invalid"
     end
@@ -176,10 +177,11 @@ defmodule AuthWeb.AppControllerTest do
       roles = Auth.Role.list_roles_for_app(app.id)
       key = List.first(app.apikeys)
       # IO.inspect(app, label: "app")
-      conn = conn
-      |> admin_login()
-      |> put_req_header("accept", "application/json")
-      |> get("/approles/#{key.client_id}")
+      conn =
+        conn
+        |> admin_login()
+        |> put_req_header("accept", "application/json")
+        |> get("/approles/#{key.client_id}")
 
       assert conn.status == 200
       {:ok, json} = Jason.decode(conn.resp_body)
@@ -203,25 +205,30 @@ defmodule AuthWeb.AppControllerTest do
       conn2 = non_admin_login(conn)
 
       # create non-admin app (to get API Key)
-      {:ok, non_admin_app} = Auth.App.create_app(%{
-        "name" => "default system app",
-        "desc" => "Demo App",
-        "url" => "localhost:4000",
-        "person_id" => conn2.assigns.person.id,
-        "status" => 3
-      })
+      {:ok, non_admin_app} =
+        Auth.App.create_app(%{
+          "name" => "default system app",
+          "desc" => "Demo App",
+          "url" => "localhost:4000",
+          "person_id" => conn2.assigns.person.id,
+          "status" => 3
+        })
+
       # create non-admin role:
       role_data = %{
-        desc: "non-admin role", name: "non-admin role",
+        desc: "non-admin role",
+        name: "non-admin role",
         app_id: non_admin_app.id
       }
+
       {:ok, %Role{} = role2} = Role.create_role(role_data)
       key = List.first(non_admin_app.apikeys)
 
-      conn3 = conn2
-      |> admin_login()
-      |> put_req_header("accept", "application/json")
-      |> get("/approles/#{key.client_id}")
+      conn3 =
+        conn2
+        |> admin_login()
+        |> put_req_header("accept", "application/json")
+        |> get("/approles/#{key.client_id}")
 
       assert conn3.status == 200
       {:ok, json} = Jason.decode(conn3.resp_body)
@@ -230,9 +237,11 @@ defmodule AuthWeb.AppControllerTest do
       assert Map.get(last_role, "name") == role2.name
 
       # confirm the admin_role is NOT in the JSON reponse:
-      should_be_empty = Enum.filter(json, fn r ->
-        Map.get(r, "name") == admin_role.name
-      end)
+      should_be_empty =
+        Enum.filter(json, fn r ->
+          Map.get(r, "name") == admin_role.name
+        end)
+
       assert should_be_empty == []
     end
   end

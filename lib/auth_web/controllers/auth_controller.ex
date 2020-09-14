@@ -3,14 +3,12 @@ defmodule AuthWeb.AuthController do
   Defines AuthController and all functions for authenticaiton
   """
   use AuthWeb, :controller
-  alias Auth.Person
   alias Auth.App
+  alias Auth.Person
 
   # https://github.com/dwyl/auth/issues/46
   def admin(conn, _params) do
-    apps = App.list_apps(conn.assigns.person.id)
-    conn
-    |> render(:welcome, apps: apps)
+    render(conn, :welcome, apps: App.list_apps(conn.assigns.person.id))
   end
 
   defp get_user_agent_string(conn) do
@@ -125,6 +123,7 @@ defmodule AuthWeb.AuthController do
   def get_app_id(state) do
     client_id = get_client_secret_from_state(state)
     app_id = Auth.Apikey.decode_decrypt(client_id)
+
     case app_id == 0 do
       true -> 1
       false -> app_id
@@ -383,6 +382,7 @@ defmodule AuthWeb.AuthController do
         msg = """
         That password is incorrect.
         """
+
         user_agent = get_user_agent(conn)
         ip_address = get_ip_address(conn)
 
