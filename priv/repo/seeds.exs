@@ -10,10 +10,10 @@ require Logger
 # mix ecto.setup
 defmodule Auth.Seeds do
   alias Auth.{Person, Repo, Status}
-  # put_assoc
-  # import Ecto.Changeset
+  import Ecto.Changeset
 
   def create_admin do
+    load_env()
     email = System.get_env("ADMIN_EMAIL")
 
     person =
@@ -49,9 +49,15 @@ defmodule Auth.Seeds do
       }
       |> Auth.App.create_app()
 
-    # API Key is automatically created by create_app/1
-    # https://github.com/dwyl/auth/issues/97
-    key = List.first(app.apikeys)
+    # set the api key to AUTH_API_KEY in env:
+    update_attrs = %{
+      "client_id" => AuthPlug.Token.client_id(),
+      "client_secret" => AuthPlug.Token.client_secret()
+    }
+
+    {:ok, key} = Auth.Apikey.get_apikey_by_app_id(app.id)
+      |> cast(update_attrs, [:client_id, :client_secret])
+      |> Repo.update()
 
     api_key = key.client_id <> "/" <> key.client_secret
     # set the AUTH_API_KEY environment variable during test run:
@@ -62,44 +68,29 @@ defmodule Auth.Seeds do
       :prod ->
         Logger.info("export AUTH_API_KEY=#{api_key}")
       _ ->
-        # update the AUTH_API_KEY in the .env file on dev/localhost:
-        write_env("AUTH_API_KEY", api_key)
+        nil
     end
   end
 
-  # write the key:value pair to project .env file
-  def write_env(key, value) do
-    # IO.inspect(File.cwd!, label: "cwd")
+  # load the .env file
+  def load_env() do
     path = File.cwd!() <> "/.env"
     IO.inspect(path, label: ".env file path")
     {:ok, data} = File.read(path)
-    # IO.inspect(data)
 
-    lines =
-      String.split(data, "\n")
-      |> Enum.filter(fn line ->
-        not String.contains?(line, key)
-      end)
-
-    # |> IO.inspect
-    str = "export #{key}=#{value}"
-    vars = lines ++ [str]
-    content = Enum.join(vars, "\n")
-    File.write!(path, content) |> File.close()
-    env(vars)
-  end
-
-  # export all the environment variables during app excution/tests
-  def env(vars) do
-    Enum.map(vars, fn line ->
-      parts =
+    Enum.map(String.split(data, "\n"), fn line ->
+      line =
         line
         |> String.replace("export ", "")
         |> String.replace("'", "")
-        |> String.split("=")
 
-      # IO.inspect(List.last(parts), label: List.first(parts))
-      System.put_env(List.first(parts), List.last(parts))
+      # this part is convoluted because some .env values can contain "=" chacter:
+      {index, _} = :binary.match(line, "=")
+      len = String.length(line)
+      value = String.slice(line, index + 1, len)
+      [key | _rest] = String.split(line, "=")
+      # IO.inspect(value, label: key)
+      System.put_env(key, value)
     end)
   end
 end
