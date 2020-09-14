@@ -78,7 +78,7 @@ defmodule Auth.Seeds do
   def load_env() do
     path = File.cwd!() <> "/.env"
     IO.inspect(path, label: ".env file path")
-    {:ok, data} -> File.read(path)
+    {:ok, data} = File.read(path)
 
     Enum.map(String.split(data, "\n"), fn line ->
       line =
