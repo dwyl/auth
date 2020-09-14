@@ -6,6 +6,10 @@ defmodule Auth.Application do
   use Application
 
   def start(_type, _args) do
+    RBAC.init_roles_cache(
+      "https://dwylauth.herokuapp.com",
+      AuthPlug.Token.client_id()
+    )
     # List all child processes to be supervised
     children = [
       # Start the Ecto repository
