@@ -4,11 +4,13 @@ defmodule AuthWeb.AuthController do
   """
   use AuthWeb, :controller
   alias Auth.Person
+  alias Auth.App
 
   # https://github.com/dwyl/auth/issues/46
   def admin(conn, _params) do
+    apps = App.list_apps(conn.assigns.person.id)
     conn
-    |> render(:welcome)
+    |> render(:welcome, apps: apps)
   end
 
   defp get_user_agent_string(conn) do
@@ -185,7 +187,7 @@ defmodule AuthWeb.AuthController do
         # Auth.PeopleRoles.insert(1, person.id, 8)
         conn
         |> AuthPlug.create_jwt_session(person)
-        |> render(:welcome, person: person)
+        |> render(:welcome, person: person, apps: App.list_apps(person.id))
     end
   end
 

@@ -1,5 +1,5 @@
 <div class="f3 w-60 center">
-  <h1>Edit App</h1>
+  <h1 class="tc">Edit App</h1>
 
   <%= render "form.html", Map.put(assigns, :action, Routes.app_path(@conn, :update, @app)) %>
 
