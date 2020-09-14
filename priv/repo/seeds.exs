@@ -77,8 +77,10 @@ defmodule Auth.Seeds do
     path = File.cwd!() <> "/.env"
     IO.inspect(path, label: ".env file path")
     data = try do
-      {:ok, data} = File.read(path)
-      data
+      case File.read(path) do
+      {:ok, data} -> data
+      _ -> "export MIX_ENV=test"
+      end
     rescue
       MatchError ->
        "export MIX_ENV=test"
