@@ -13,7 +13,9 @@ defmodule Auth.Seeds do
   import Ecto.Changeset
 
   def create_admin do
-    load_env()
+    if is_nil(System.get_env("TRAVIS")) do
+      load_env()
+    end
     email = System.get_env("ADMIN_EMAIL")
 
     person =
