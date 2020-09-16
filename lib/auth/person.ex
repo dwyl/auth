@@ -229,12 +229,18 @@ defmodule Auth.Person do
   @doc """
   `get_person_by_email/1` returns the person based on email address.
   """
-  def get_person_by_email(email) do
+  def get_person_by_email(email) when not is_nil(email) do
     __MODULE__
     |> Repo.get_by(email_hash: email)
-    |> Repo.preload(:roles)
     |> Repo.preload([:statuses, :roles])
   end
+
+  # def get_person_by_email(email) do
+  #   IO.inspect(email, label: "email")
+  #   __MODULE__
+  #   |> Repo.get_by(email_hash: email)
+  #   |> Repo.preload([:statuses, :roles])
+  # end
 
   @doc """
   `upsert_person/1` inserts or updates a person record.

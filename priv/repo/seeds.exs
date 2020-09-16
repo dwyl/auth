@@ -66,7 +66,7 @@ defmodule Auth.Seeds do
     api_key = key.client_id <> "/" <> key.client_secret
     # set the AUTH_API_KEY environment variable during test run:
     IO.inspect(Mix.env(), label: "Mix.env()")
-
+    # IO.inspect(person)
     case Mix.env() do
       :test ->
         System.put_env("AUTH_API_KEY", api_key)
@@ -126,10 +126,10 @@ defmodule SeedData do
   end
 end
 
+person = Auth.Seeds.create_admin()
 SeedData.insert_statuses()
 
-Auth.Seeds.create_admin()
-|> Auth.Seeds.create_apikey_for_admin()
+Auth.Seeds.create_apikey_for_admin(person)
 
 # Update status of Admin to "Verified"
 Auth.Person.verify_person_by_id(1)
