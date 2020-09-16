@@ -51,7 +51,8 @@ defmodule Auth.Role do
   """
   def list_roles_for_apps(app_ids) do
     __MODULE__
-    |> where([r], r.app_id in ^app_ids or is_nil(r.app_id)) # and r.status != 6
+    # and r.status != 6
+    |> where([r], r.app_id in ^app_ids or is_nil(r.app_id))
     |> Repo.all()
   end
 
@@ -77,6 +78,7 @@ defmodule Auth.Role do
     __MODULE__
     |> where([r], r.id == ^id and r.person_id == ^person_id)
     |> Repo.one()
+
     # |> IO.inspect()
   end
 

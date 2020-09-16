@@ -8,7 +8,7 @@ defmodule AuthWeb.RoleController do
   def index(conn, _params) do
     # restrict viewing to only roles owned by the person or default roles:
     apps = Auth.App.list_apps(conn.assigns.person.id)
-    app_ids = Enum.map(apps, fn(a) -> a.id end)
+    app_ids = Enum.map(apps, fn a -> a.id end)
     roles = Role.list_roles_for_apps(app_ids)
     render(conn, "index.html", roles: roles)
   end
@@ -37,7 +37,7 @@ defmodule AuthWeb.RoleController do
 
   def create(conn, %{"role" => role_params}) do
     apps = Auth.App.list_apps(conn.assigns.person.id)
-    app_ids = Enum.map(apps, fn(a) -> to_string(a.id) end)
+    app_ids = Enum.map(apps, fn a -> to_string(a.id) end)
 
     # check that the role_params.app_id is owned by the person:
     # IO.inspect(app_ids, label: "app_ids")
@@ -46,6 +46,7 @@ defmodule AuthWeb.RoleController do
     if Enum.member?(app_ids, Map.get(role_params, "app_id")) do
       # never allow the request to define the person_id:
       create_attrs = Map.merge(role_params, %{"person_id" => conn.assigns.person.id})
+
       case Role.create_role(create_attrs) do
         {:ok, role} ->
           conn
@@ -55,15 +56,14 @@ defmodule AuthWeb.RoleController do
         {:error, %Ecto.Changeset{} = changeset} ->
           render(conn, "new.html", changeset: changeset, apps: apps)
       end
-
     else
       # request is attempting to create a role for an app they don't own ...
       changeset = Auth.Role.changeset(%Role{}, role_params)
+
       conn
       |> put_status(:not_found)
       |> put_flash(:info, "Please select an app you own.")
       |> render("new.html", changeset: changeset, apps: apps)
-
     end
   end
 
@@ -71,6 +71,7 @@ defmodule AuthWeb.RoleController do
     # IO.inspect(id, label: "id")
     # IO.inspect(conn.assigns.person.id, label: "conn.assigns.person.id")
     role = Role.get_role!(id, conn.assigns.person.id)
+
     if not is_nil(role) do
       render(conn, "show.html", role: role)
     else
@@ -105,10 +106,10 @@ defmodule AuthWeb.RoleController do
 
     if not is_nil(role) do
       {:ok, _role} = Role.delete_role(role)
+
       conn
       |> put_flash(:info, "Role deleted successfully.")
       |> redirect(to: Routes.role_path(conn, :index))
-
     else
       AuthWeb.AuthController.not_found(conn, "role not found.")
     end

@@ -152,7 +152,6 @@ defmodule AuthWeb.RoleControllerTest do
       conn = delete(conn, Routes.role_path(conn, :delete, role))
       assert conn.status == 404
     end
-
   end
 
   defp create_role(_) do

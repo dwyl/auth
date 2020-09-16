@@ -9,5 +9,4 @@ defmodule Auth.Plugs.IsOwner do
     # IO.inspect(options, label: "options")
     assign(conn, :owner, true)
   end
-
 end
