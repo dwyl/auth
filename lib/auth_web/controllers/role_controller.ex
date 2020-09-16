@@ -1,11 +1,15 @@
 defmodule AuthWeb.RoleController do
   use AuthWeb, :controller
-
   alias Auth.Role
+  import Auth.Plugs.IsOwner
+
+  plug :is_owner when action in [:index]
 
   def index(conn, _params) do
-    roles = Role.list_roles()
-    # IO.inspect(conn.assigns.person, label: "conn.assigns.person")
+    # restrict viewing to only roles owned by the person or default roles:
+    apps = Auth.App.list_apps(conn.assigns.person.id)
+    app_ids = Enum.map(apps, fn(a) -> a.id end)
+    roles = Role.list_roles_for_apps(app_ids)
     render(conn, "index.html", roles: roles)
   end
 
@@ -32,15 +36,33 @@ defmodule AuthWeb.RoleController do
   end
 
   def create(conn, %{"role" => role_params}) do
-    case Role.create_role(role_params) do
-      {:ok, role} ->
-        conn
-        |> put_flash(:info, "Role created successfully.")
-        |> redirect(to: Routes.role_path(conn, :show, role))
+    apps = Auth.App.list_apps(conn.assigns.person.id)
+    app_ids = Enum.map(apps, fn(a) -> a.id end)
 
-      {:error, %Ecto.Changeset{} = changeset} ->
+    case Enum.member?(app_ids, Map.get(role_params, "app_id")) do
+      true ->
+        # never allow the request to define the person_id:
+        create_attrs = Map.merge(role_params, %{"person_d" => conn.assigns.person.id})
+        case Role.create_role(create_attrs) do
+          {:ok, role} ->
+            conn
+            |> put_flash(:info, "Role created successfully.")
+            |> redirect(to: Routes.role_path(conn, :show, role))
+
+          {:error, %Ecto.Changeset{} = changeset} ->
+            apps = list_apps(conn.assigns.person.id)
+            render(conn, "new.html", changeset: changeset, apps: apps)
+        end
+
+      false ->
+        # request is attempting to create a role for an app they don't own ...
+        changeset = Auth.Role.changeset(%Role{}, role_params)
         apps = list_apps(conn.assigns.person.id)
-        render(conn, "new.html", changeset: changeset, apps: apps)
+        conn
+        |> put_status(:not_found)
+        |> put_flash(:info, "Please select an app you own.")
+        |> render("new.html", changeset: changeset, apps: apps)
+
     end
   end
 

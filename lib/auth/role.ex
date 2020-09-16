@@ -47,6 +47,15 @@ defmodule Auth.Role do
   end
 
   @doc """
+  get all roles for apps owned + default roles
+  """
+  def list_roles_for_apps(app_ids) do
+    __MODULE__
+    |> where([r], r.app_id in ^app_ids or is_nil(r.app_id)) # and r.status != 6
+    |> Repo.all()
+  end
+
+  @doc """
   Gets a single role.
 
   Raises `Ecto.NoResultsError` if the Role does not exist.

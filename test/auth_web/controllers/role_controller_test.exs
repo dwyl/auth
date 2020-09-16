@@ -75,6 +75,13 @@ defmodule AuthWeb.RoleControllerTest do
 
       assert html_response(conn, 200) =~ "New Role"
     end
+
+    test "attempt to create role for app they don't own.", %{conn: conn} do
+      conn = non_admin_login(conn)
+      conn = post(conn, Routes.role_path(conn, :create), role: @create_attrs)
+
+      assert html_response(conn, 404) =~ "Please select an app you own"
+    end
   end
 
   describe "edit role" do
