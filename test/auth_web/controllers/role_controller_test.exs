@@ -3,7 +3,7 @@ defmodule AuthWeb.RoleControllerTest do
 
   alias Auth.Role
 
-  @create_attrs %{desc: "some desc", name: "some name", app_id: 1}
+  @create_attrs %{desc: "some desc", name: "some name", app_id: "1", person_id: 1}
   @update_attrs %{desc: "some updated desc", name: "some updated name"}
   @invalid_attrs %{desc: nil, name: nil}
 
@@ -15,6 +15,10 @@ defmodule AuthWeb.RoleControllerTest do
   describe "index" do
     test "lists all roles", %{conn: conn} do
       conn = admin_login(conn)
+      # create a new role to exercise the RoleView.app_link/1 fn:
+      attrs = Map.merge(@create_attrs, %{person_id: conn.assigns.person.id})
+      {:ok, _role} = Auth.Role.create_role(attrs)
+
       conn = get(conn, Routes.role_path(conn, :index))
       assert html_response(conn, 200) =~ "Listing Roles"
     end
@@ -30,6 +34,7 @@ defmodule AuthWeb.RoleControllerTest do
   describe "new role" do
     test "renders form", %{conn: conn} do
       conn = admin_login(conn)
+
       conn = get(conn, Routes.role_path(conn, :new))
       assert html_response(conn, 200) =~ "New Role"
     end
@@ -73,6 +78,15 @@ defmodule AuthWeb.RoleControllerTest do
       conn = admin_login(conn)
       conn = post(conn, Routes.role_path(conn, :create), role: @invalid_attrs)
 
+      assert html_response(conn, 404) =~ "New Role"
+    end
+
+    test "renders errors when data is invalid (with app_id)", %{conn: conn} do
+      conn = admin_login(conn)
+      # invalid but with app_id:
+      invalid = Map.merge(@invalid_attrs, %{"app_id" => "1"})
+      conn = post(conn, Routes.role_path(conn, :create), role: invalid)
+
       assert html_response(conn, 200) =~ "New Role"
     end
 
@@ -98,11 +112,15 @@ defmodule AuthWeb.RoleControllerTest do
   describe "update role" do
     setup [:create_role]
 
-    test "redirects when data is valid", %{conn: conn, role: role} do
+    test "redirects when data is valid", %{conn: conn} do
       conn = admin_login(conn)
+      attrs = Map.merge(@create_attrs, %{person_id: conn.assigns.person.id})
+      {:ok, role} = Auth.Role.create_role(attrs)
       conn = put(conn, Routes.role_path(conn, :update, role), role: @update_attrs)
 
       assert redirected_to(conn) == Routes.role_path(conn, :show, role)
+      # IO.inspect(role, label: "role:106")
+      # IO.inspect(conn.assigns.person)
 
       conn = get(conn, Routes.role_path(conn, :show, role))
       assert html_response(conn, 200) =~ "some updated desc"
@@ -125,10 +143,16 @@ defmodule AuthWeb.RoleControllerTest do
 
       assert redirected_to(conn) == Routes.role_path(conn, :index)
 
-      assert_error_sent 404, fn ->
-        get(conn, Routes.role_path(conn, :show, role))
-      end
+      conn = get(conn, Routes.role_path(conn, :show, role))
+      assert conn.status == 404
     end
+
+    test "attempt to deletes role I don't own", %{conn: conn, role: role} do
+      conn = non_admin_login(conn)
+      conn = delete(conn, Routes.role_path(conn, :delete, role))
+      assert conn.status == 404
+    end
+
   end
 
   defp create_role(_) do

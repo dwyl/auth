@@ -71,6 +71,15 @@ defmodule Auth.Role do
   """
   def get_role!(id), do: Repo.get!(__MODULE__, id)
 
+  def get_role!(id, person_id) do
+    # IO.inspect(id, label: "id")
+    # IO.inspect(person_id, label: "person_id")
+    __MODULE__
+    |> where([r], r.id == ^id and r.person_id == ^person_id)
+    |> Repo.one()
+    # |> IO.inspect()
+  end
+
   @doc """
   Creates a role.
 

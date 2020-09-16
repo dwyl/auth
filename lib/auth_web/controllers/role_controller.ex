@@ -1,9 +1,9 @@
 defmodule AuthWeb.RoleController do
   use AuthWeb, :controller
   alias Auth.Role
-  import Auth.Plugs.IsOwner
+  # import Auth.Plugs.IsOwner
 
-  plug :is_owner when action in [:index]
+  # plug :is_owner when action in [:index]
 
   def index(conn, _params) do
     # restrict viewing to only roles owned by the person or default roles:
@@ -37,38 +37,47 @@ defmodule AuthWeb.RoleController do
 
   def create(conn, %{"role" => role_params}) do
     apps = Auth.App.list_apps(conn.assigns.person.id)
-    app_ids = Enum.map(apps, fn(a) -> a.id end)
+    app_ids = Enum.map(apps, fn(a) -> to_string(a.id) end)
 
-    case Enum.member?(app_ids, Map.get(role_params, "app_id")) do
-      true ->
-        # never allow the request to define the person_id:
-        create_attrs = Map.merge(role_params, %{"person_d" => conn.assigns.person.id})
-        case Role.create_role(create_attrs) do
-          {:ok, role} ->
-            conn
-            |> put_flash(:info, "Role created successfully.")
-            |> redirect(to: Routes.role_path(conn, :show, role))
+    # check that the role_params.app_id is owned by the person:
+    # IO.inspect(app_ids, label: "app_ids")
+    # IO.inspect(conn.assigns.person.id, label: "conn.assigns.person.id")
+    # IO.inspect(Map.get(role_params, "app_id"), label: "app_id")
+    if Enum.member?(app_ids, Map.get(role_params, "app_id")) do
+      # never allow the request to define the person_id:
+      create_attrs = Map.merge(role_params, %{"person_id" => conn.assigns.person.id})
+      case Role.create_role(create_attrs) do
+        {:ok, role} ->
+          conn
+          |> put_flash(:info, "Role created successfully.")
+          |> redirect(to: Routes.role_path(conn, :show, role))
 
-          {:error, %Ecto.Changeset{} = changeset} ->
-            apps = list_apps(conn.assigns.person.id)
-            render(conn, "new.html", changeset: changeset, apps: apps)
-        end
+        {:error, %Ecto.Changeset{} = changeset} ->
+          render(conn, "new.html", changeset: changeset, apps: apps)
+      end
 
-      false ->
-        # request is attempting to create a role for an app they don't own ...
-        changeset = Auth.Role.changeset(%Role{}, role_params)
-        apps = list_apps(conn.assigns.person.id)
-        conn
-        |> put_status(:not_found)
-        |> put_flash(:info, "Please select an app you own.")
-        |> render("new.html", changeset: changeset, apps: apps)
+    else
+      # request is attempting to create a role for an app they don't own ...
+      changeset = Auth.Role.changeset(%Role{}, role_params)
+      conn
+      |> put_status(:not_found)
+      |> put_flash(:info, "Please select an app you own.")
+      |> render("new.html", changeset: changeset, apps: apps)
 
     end
   end
 
   def show(conn, %{"id" => id}) do
-    role = Role.get_role!(id)
-    render(conn, "show.html", role: role)
+    # IO.inspect(id, label: "id")
+    # IO.inspect(conn.assigns.person.id, label: "conn.assigns.person.id")
+    role = Role.get_role!(id, conn.assigns.person.id)
+    cond do
+      not is_nil(role) ->
+        render(conn, "show.html", role: role)
+      true ->
+        AuthWeb.AuthController.not_found(conn, "role not found.")
+    end
+
   end
 
   def edit(conn, %{"id" => id}) do
@@ -80,6 +89,7 @@ defmodule AuthWeb.RoleController do
 
   def update(conn, %{"id" => id, "role" => role_params}) do
     role = Role.get_role!(id)
+
 
     case Role.update_role(role, role_params) do
       {:ok, role} ->
@@ -94,12 +104,17 @@ defmodule AuthWeb.RoleController do
   end
 
   def delete(conn, %{"id" => id}) do
-    role = Role.get_role!(id)
-    {:ok, _role} = Role.delete_role(role)
+    role = Role.get_role!(id, conn.assigns.person.id)
+    cond do
+      not is_nil(role) ->
+        {:ok, _role} = Role.delete_role(role)
+        conn
+        |> put_flash(:info, "Role deleted successfully.")
+        |> redirect(to: Routes.role_path(conn, :index))
 
-    conn
-    |> put_flash(:info, "Role deleted successfully.")
-    |> redirect(to: Routes.role_path(conn, :index))
+      true ->
+        AuthWeb.AuthController.not_found(conn, "role not found.")
+    end
   end
 
   @doc """
