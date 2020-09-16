@@ -80,24 +80,32 @@ defmodule AuthWeb.RoleController do
   end
 
   def edit(conn, %{"id" => id}) do
-    role = Role.get_role!(id)
-    changeset = Role.change_role(role)
-    apps = list_apps(conn.assigns.person.id)
-    render(conn, "edit.html", role: role, changeset: changeset, apps: apps)
+    role = Role.get_role!(id, conn.assigns.person.id)
+    if is_nil(role) do
+      AuthWeb.AuthController.not_found(conn, "role not found.")
+    else
+      changeset = Role.change_role(role)
+      apps = list_apps(conn.assigns.person.id)
+      render(conn, "edit.html", role: role, changeset: changeset, apps: apps)
+    end
   end
 
   def update(conn, %{"id" => id, "role" => role_params}) do
-    role = Role.get_role!(id)
+    role = Role.get_role!(id, conn.assigns.person.id)
 
-    case Role.update_role(role, role_params) do
-      {:ok, role} ->
-        conn
-        |> put_flash(:info, "Role updated successfully.")
-        |> redirect(to: Routes.role_path(conn, :show, role))
+    if is_nil(role) do
+      AuthWeb.AuthController.not_found(conn, "role not found.")
+    else
+      case Role.update_role(role, role_params) do
+        {:ok, role} ->
+          conn
+          |> put_flash(:info, "Role updated successfully.")
+          |> redirect(to: Routes.role_path(conn, :show, role))
 
-      {:error, %Ecto.Changeset{} = changeset} ->
-        apps = list_apps(conn.assigns.person.id)
-        render(conn, "edit.html", role: role, changeset: changeset, apps: apps)
+        {:error, %Ecto.Changeset{} = changeset} ->
+          apps = list_apps(conn.assigns.person.id)
+          render(conn, "edit.html", role: role, changeset: changeset, apps: apps)
+      end
     end
   end
 
