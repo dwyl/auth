@@ -72,10 +72,10 @@ defmodule AuthWeb.RoleController do
     # IO.inspect(conn.assigns.person.id, label: "conn.assigns.person.id")
     role = Role.get_role!(id, conn.assigns.person.id)
 
-    if not is_nil(role) do
-      render(conn, "show.html", role: role)
-    else
+    if is_nil(role) do
       AuthWeb.AuthController.not_found(conn, "role not found.")
+    else
+      render(conn, "show.html", role: role)
     end
   end
 
@@ -104,14 +104,14 @@ defmodule AuthWeb.RoleController do
   def delete(conn, %{"id" => id}) do
     role = Role.get_role!(id, conn.assigns.person.id)
 
-    if not is_nil(role) do
+    if is_nil(role) do
+      AuthWeb.AuthController.not_found(conn, "role not found.")
+    else
       {:ok, _role} = Role.delete_role(role)
 
       conn
       |> put_flash(:info, "Role deleted successfully.")
       |> redirect(to: Routes.role_path(conn, :index))
-    else
-      AuthWeb.AuthController.not_found(conn, "role not found.")
     end
   end
 
