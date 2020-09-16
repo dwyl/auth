@@ -107,6 +107,13 @@ defmodule AuthWeb.RoleControllerTest do
 
       assert html_response(conn, 200) =~ "Edit Role"
     end
+
+    test "attempt to edit a role I don't own", %{conn: conn, role: role} do
+      conn = non_admin_login(conn)
+      conn = get(conn, Routes.role_path(conn, :edit, role))
+
+      assert html_response(conn, 404) =~ "role not found"
+    end
   end
 
   describe "update role" do
