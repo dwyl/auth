@@ -142,13 +142,15 @@ defmodule AuthWeb.RoleController do
     # confirm that the granter is either superadmin (conn.assigns.person.id == 1)
     # or has an "admin" role (1 || 2)
     granter_id = conn.assigns.person.id
-    # we need to expand grant priviledges see: https://github.com/dwyl/auth/issues/119
+    apps = Auth.App.list_apps(conn)
+    app_id = map_get(params, "app_id")
 
-    if granter_id == 1 do
+    if person_owns_app?(apps, app_id) do
       role_id = map_get(params, "role_id")
-      person_id = map_get(params, "person_id")
-      Auth.PeopleRoles.insert(granter_id, person_id, role_id)
-      redirect(conn, to: Routes.people_path(conn, :show, person_id))
+      grantee_id = map_get(params, "person_id")
+
+      Auth.PeopleRoles.insert(app_id, grantee_id, granter_id, role_id)
+      redirect(conn, to: Routes.people_path(conn, :show, grantee_id))
     else
       AuthWeb.AuthController.unauthorized(conn)
     end
@@ -165,7 +167,11 @@ defmodule AuthWeb.RoleController do
       pr = Auth.PeopleRoles.get_by_id(people_roles_id)
 
       if conn.method == "GET" do
-        render(conn, "revoke.html", role: pr, people_roles_id: people_roles_id)
+        render(conn, "revoke.html",
+          role: pr,
+          people_roles_id: people_roles_id,
+          apps: Auth.App.list_apps(conn)
+        )
       else
         Auth.PeopleRoles.revoke(conn.assigns.person.id, people_roles_id)
         redirect(conn, to: Routes.people_path(conn, :show, pr.person_id))

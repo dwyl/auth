@@ -136,4 +136,4 @@ Auth.Person.verify_person_by_id(1)
 
 SeedData.create_default_roles()
 # grant superadmin role to app owner:
-Auth.PeopleRoles.insert(1, 1, 1)
+Auth.PeopleRoles.insert(1, 1, 1, 1)

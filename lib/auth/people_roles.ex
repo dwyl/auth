@@ -10,6 +10,7 @@ defmodule Auth.PeopleRoles do
   alias __MODULE__
 
   schema "people_roles" do
+    belongs_to :app, Auth.App
     belongs_to :person, Auth.Person
     belongs_to :role, Auth.Role
     field :granter_id, :integer
@@ -64,14 +65,16 @@ defmodule Auth.PeopleRoles do
   end
 
   @doc """
-  insert/3 grants a role to the given person
-  granter_id is the id of the person (admin) granting the role
+  insert/4 grants a role to the given person
+  app_id for app the person is granted the role for (always scoped to app!)
   grantee_id is the person.id of the person being granted the role
+  granter_id is the id of the person (admin) granting the role
   role_id is the role.id (int, e.g: 4) of th role being granted.
   """
-  def insert(granter_id, grantee_id, role_id) do
+  def insert(app_id, grantee_id, granter_id, role_id) do
     %PeopleRoles{}
     |> cast(%{granter_id: granter_id}, [:granter_id])
+    |> put_assoc(:app, Auth.App.get_app!(app_id))
     |> put_assoc(:person, Auth.Person.get_person_by_id(grantee_id))
     |> put_assoc(:role, Auth.Role.get_role!(role_id))
     |> Repo.insert()

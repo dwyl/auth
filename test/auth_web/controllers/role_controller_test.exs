@@ -186,20 +186,33 @@ defmodule AuthWeb.RoleControllerTest do
     %{role: role}
   end
 
-  test "POST /roles/grant without admin should 401", %{conn: conn} do
-    alex = %{email: "alex_grant_role_fail@gmail.com", auth_provider: "email"}
-    grantee = Auth.Person.create_person(alex)
-    conn = assign(conn, :person, grantee)
-    conn = AuthWeb.RoleController.grant(conn, %{"role_id" => 5, "person_id" => grantee.id})
+  test "Attempt to POST /roles/grant (non-owner of app) should 401", %{conn: conn} do
+    grantee = non_admin_person()
+    # login as *different* non-admin person
+    conn = non_admin_login(conn)
+    #  attempt to grant a role for an app they don't own (should fail):
+    conn =
+      AuthWeb.RoleController.grant(
+        conn,
+        %{"role_id" => 5, "person_id" => grantee.id, "app_id" => "1"}
+      )
+
     assert conn.status == 401
   end
 
   test "POST /roles/grant should create people_roles entry", %{conn: conn} do
-    alex = %{email: "alex_grant_success@gmail.com", auth_provider: "email"}
-    grantee = Auth.Person.create_person(alex)
-
+    grantee = non_admin_person()
     conn = admin_login(conn)
-    conn = get(conn, Routes.role_path(conn, :grant, %{"role_id" => 5, "person_id" => grantee.id}))
+
+    conn =
+      get(
+        conn,
+        Routes.role_path(conn, :grant, %{
+          "role_id" => 5,
+          "person_id" => grantee.id,
+          "app_id" => "1"
+        })
+      )
 
     # the grant/2 controller handler redirects back to /person/:id
     assert html_response(conn, 302) =~ "redirected"

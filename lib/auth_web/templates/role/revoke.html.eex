@@ -5,7 +5,11 @@
   from <strong><%= @role.person.givenName %></strong>
   ?</p>
   
-  <%= form_for :revoke, Routes.role_path(AuthWeb.Endpoint, :revoke, @people_roles_id), fn _f -> %>
+  <%= form_for :revoke, Routes.role_path(AuthWeb.Endpoint, :revoke, @people_roles_id), fn f -> %>
+    <%= label f, :app_id %>
+    <%= select f, :app_id, Enum.map(@apps, &{&1.name, &1.id}), 
+      class: "w-100 f3 pa2 mt2 mb2 bg-white b--black-20"%>
+    <%= error_tag f, :app_id %>
     <%= submit "Revoke", class: "pointer bn bg-red white f2 pa2 mt1 shadow-hover bg-animate" %>
   <% end %>
 
