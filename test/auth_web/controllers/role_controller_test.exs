@@ -123,7 +123,8 @@ defmodule AuthWeb.RoleControllerTest do
       conn = admin_login(conn)
       attrs = Map.merge(@create_attrs, %{person_id: conn.assigns.person.id})
       {:ok, role} = Auth.Role.create_role(attrs)
-      conn = put(conn, Routes.role_path(conn, :update, role), role: @update_attrs)
+      update_attrs = Map.merge(@update_attrs, %{app_id: 1, role_id: role.id})
+      conn = put(conn, Routes.role_path(conn, :update, role), role: update_attrs)
 
       assert redirected_to(conn) == Routes.role_path(conn, :show, role)
       # IO.inspect(role, label: "role:106")
@@ -135,7 +136,8 @@ defmodule AuthWeb.RoleControllerTest do
 
     test "renders errors when data is invalid", %{conn: conn, role: role} do
       conn = admin_login(conn)
-      conn = put(conn, Routes.role_path(conn, :update, role), role: @invalid_attrs)
+      invalid_app_id = Map.merge(@invalid_attrs, %{"app_id" => "1"})
+      conn = put(conn, Routes.role_path(conn, :update, role), role: invalid_app_id)
 
       assert html_response(conn, 200) =~ "Edit Role"
     end
@@ -145,6 +147,17 @@ defmodule AuthWeb.RoleControllerTest do
       conn = put(conn, Routes.role_path(conn, :update, role), role: @update_attrs)
 
       assert html_response(conn, 404) =~ "role not found"
+    end
+
+    test "cannot update role I own to App I don't own!", %{conn: conn} do
+      conn = non_admin_login(conn)
+      attrs = Map.merge(@create_attrs, %{person_id: conn.assigns.person.id})
+      {:ok, role} = Auth.Role.create_role(attrs)
+      # attempt to update app_id to app owned by admin:
+      update_attrs = Map.merge(role, %{"app_id" => "1", })
+      conn = put(conn, Routes.role_path(conn, :update, role), role: update_attrs)
+
+      assert html_response(conn, 404) =~ "App not found"
     end
   end
 

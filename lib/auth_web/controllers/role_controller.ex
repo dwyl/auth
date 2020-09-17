@@ -37,13 +37,8 @@ defmodule AuthWeb.RoleController do
 
   def create(conn, %{"role" => role_params}) do
     apps = Auth.App.list_apps(conn.assigns.person.id)
-    app_ids = Enum.map(apps, fn a -> to_string(a.id) end)
-
     # check that the role_params.app_id is owned by the person:
-    # IO.inspect(app_ids, label: "app_ids")
-    # IO.inspect(conn.assigns.person.id, label: "conn.assigns.person.id")
-    # IO.inspect(Map.get(role_params, "app_id"), label: "app_id")
-    if Enum.member?(app_ids, Map.get(role_params, "app_id")) do
+    if person_owns_app?(apps, Map.get(role_params, "app_id")) do
       # never allow the request to define the person_id:
       create_attrs = Map.merge(role_params, %{"person_id" => conn.assigns.person.id})
 
@@ -68,8 +63,6 @@ defmodule AuthWeb.RoleController do
   end
 
   def show(conn, %{"id" => id}) do
-    # IO.inspect(id, label: "id")
-    # IO.inspect(conn.assigns.person.id, label: "conn.assigns.person.id")
     role = Role.get_role!(id, conn.assigns.person.id)
 
     if is_nil(role) do
@@ -81,6 +74,7 @@ defmodule AuthWeb.RoleController do
 
   def edit(conn, %{"id" => id}) do
     role = Role.get_role!(id, conn.assigns.person.id)
+
     if is_nil(role) do
       AuthWeb.AuthController.not_found(conn, "role not found.")
     else
@@ -92,21 +86,38 @@ defmodule AuthWeb.RoleController do
 
   def update(conn, %{"id" => id, "role" => role_params}) do
     role = Role.get_role!(id, conn.assigns.person.id)
-
+    apps = Auth.App.list_apps(conn.assigns.person.id)
+    # cannot update a role that doesn't exist (or they don't own):
     if is_nil(role) do
       AuthWeb.AuthController.not_found(conn, "role not found.")
     else
-      case Role.update_role(role, role_params) do
-        {:ok, role} ->
-          conn
-          |> put_flash(:info, "Role updated successfully.")
-          |> redirect(to: Routes.role_path(conn, :show, role))
+      # confirm that the person owns the app they are attempting to attach a role to:
+      if person_owns_app?(apps, map_get(role_params, "app_id")) do
+        case Role.update_role(role, role_params) do
+          {:ok, role} ->
+            conn
+            |> put_flash(:info, "Role updated successfully.")
+            |> redirect(to: Routes.role_path(conn, :show, role))
 
-        {:error, %Ecto.Changeset{} = changeset} ->
-          apps = list_apps(conn.assigns.person.id)
-          render(conn, "edit.html", role: role, changeset: changeset, apps: apps)
+          {:error, %Ecto.Changeset{} = changeset} ->
+            apps = list_apps(conn.assigns.person.id)
+            render(conn, "edit.html", role: role, changeset: changeset, apps: apps)
+        end
+      else
+        AuthWeb.AuthController.not_found(conn, "App not found.")
       end
     end
+  end
+
+  # https://elixirforum.com/t/map-key-is-a-atom-or-string/13285/2
+  defp map_get(map, string_key) do
+    (Map.get(map, string_key) || Map.get(map, String.to_atom(string_key), 0))
+    |> to_string()
+  end
+
+  defp person_owns_app?(apps, app_id) do
+    app_ids = Enum.map(apps, fn a -> to_string(a.id) end)
+    Enum.member?(app_ids, app_id)
   end
 
   def delete(conn, %{"id" => id}) do
@@ -133,6 +144,7 @@ defmodule AuthWeb.RoleController do
     # confirm that the granter is either superadmin (conn.assigns.person.id == 1)
     # or has an "admin" role (1 || 2)
     granter_id = conn.assigns.person.id
+
 
     if granter_id == 1 do
       role_id = Map.get(params, "role_id")
