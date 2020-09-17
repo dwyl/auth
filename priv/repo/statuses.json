@@ -1,0 +1,57 @@
+[
+  {
+    "text": "verified", 
+    "id": "1",
+    "desc": "People are verified once they confirm their email address"
+  },
+  {
+    "text": "uncategorized", 
+    "id": "2",
+    "desc": "All items are uncategorized when they are first created. (Yes, US spelling)"
+  },
+  {
+    "text": "active", 
+    "id": "3",
+    "desc": "An App, Item or Person can be active; this is the default state for an App"
+  },
+  {
+    "text": "done", 
+    "id": "4",
+    "desc": "Items marked as done are complete"
+  },
+  {
+    "text": "flagged", 
+    "id": "5",
+    "desc": "A flagged App, Item or Person requires admin attention"
+  },
+  {
+    "text": "deleted", 
+    "id": "6",
+    "desc": "Soft-deleted items that no longer appear in UI but are kept for audit trail purposes"
+  },
+  {
+    "text": "pending", 
+    "id": "7",
+    "desc": "When an email or item is ready to be started/sent is still pending"
+  },
+  {
+    "text": "sent", 
+    "id": "8",
+    "desc": "An email that has been sent but not yet opened"
+  },
+  {
+    "text": "opened", 
+    "id": "9",
+    "desc": "When an email is opened by the recipient"
+  },
+  {
+    "text": "bounce_transient", 
+    "id": "10",
+    "desc": "Temporary email bounce e.g. because inbox is full"
+  },
+  {
+    "text": "bounce_permanent", 
+    "id": "11",
+    "desc": "Permanent email bounce e.g. when inbox doesn't exist"
+  }
+]

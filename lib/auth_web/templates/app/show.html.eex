@@ -1,0 +1,53 @@
+<div class="f3 w-70 center">
+  <h1 class="tc"><%= @app.name %></h1>
+  <p class="tc w-100"><%= @app.desc %></p>
+
+  <p>
+    <strong>URL:</strong>
+    <span class="db ba b--black-80 pa2 bg-light-gray w-70 mt2">
+      <%= @app.url %>
+    </span>
+  </p>
+
+  <%= for apikey <- @app.apikeys do %>
+    <%= if apikey.status != 6 do %>
+    <p><strong>API KEY:</strong>
+      <div style="font-size: 1.2em;
+      overflow-wrap: break-word; font-family: monospace;
+      border: 1px solid black; padding: 10px; background-color: #EBEDEF;">
+      <%= apikey.client_id %>/<%= apikey.client_secret %>
+      </div>
+    </p>
+
+    <p> Export it as an environment variable:
+      <div style="font-size: 1.2em;
+      overflow-wrap: break-word; font-family: monospace;
+      border: 1px solid black; padding: 10px; background-color: #EBEDEF;">
+      export AUTH_API_KEY=<%= apikey.client_id %>/<%= apikey.client_secret %>
+      </div>
+    </p>
+    <% end %>
+  <% end %>
+
+  <span>
+    <%= link "< All Apps", to: Routes.app_path(@conn, :index),
+    class: "fl pointer br2 ba b--dark-blue bg-blue white pv2 ph3 ml1 mv1 f4
+    shadow-hover bg-animate hover-bg-dark-blue border-box no-underline"
+    %>
+  </span>
+
+  <span>
+    <%= link "Edit", to: Routes.app_path(@conn, :edit, @app),
+    class: "fr pointer br2 ba b--dark-green bg-green white pv2 ph3 ml1 mv1 f4
+    shadow-hover bg-animate hover-bg-dark-green border-box no-underline"
+    %>
+  </span>
+
+  <span>
+    <%= link "Reset API Key", to: Routes.app_path(@conn, :resetapikey, @app),
+    class: "fl ml5 pointer br2 ba b--orange bg-gold white pv2 ph3 ml1 mv1 f4
+    shadow-hover bg-animate hover-bg-orange border-box no-underline"
+    %>
+  </span>
+
+</div>

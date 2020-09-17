@@ -5,12 +5,21 @@
     class="center db br2"/>
   <p class="f3"> You are <strong>signed in</strong>
     with your <strong><%= String.capitalize(@conn.assigns.person.auth_provider) %> account</strong>.
-  <p/>
+  </p>
 
   <br />
-  <a href="/settings/apikeys"
-  class="pointer ba border-box dwyl-bg-mint white pa3 ml1 mv1 f3
-  shadow-hover bg-animate hover-dwyl-teal-darkest no-underline">
-  Manage API Keys
-  </a>
+  <%= if length(@apps) == 0 do %>
+    <span class="w-20 mt4 center">
+      <%= link "New App", to: Routes.app_path(@conn, :new),
+      class: "pointer br2 ba b--dark-green bg-green white pa3 ml1 mv1 f3
+      shadow-hover bg-animate hover-bg-dark-green border-box no-underline" %>
+    </span>
+
+  <% else %>
+    <a href="/apps"
+      class="pointer ba border-box dwyl-bg-mint white pa3 ml1 mv1 f3
+      shadow-hover bg-animate hover-dwyl-teal-darkest no-underline">
+      Manage Apps
+    </a>
+  <% end %>
 </section>

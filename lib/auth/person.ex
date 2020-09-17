@@ -1,6 +1,10 @@
 defmodule Auth.Person do
+  @moduledoc """
+  Defines Person schema and CRUD functions
+  """
   use Ecto.Schema
   import Ecto.Changeset
+  import Ecto.Query
   alias Auth.Repo
   # https://stackoverflow.com/a/47501059/1148249
   alias __MODULE__
@@ -20,6 +24,10 @@ defmodule Auth.Person do
     field :status, :id
     field :tag, :id
     field :key_id, :integer
+    field :app_id, :integer
+    # many_to_many :roles, Auth.Role, join_through: "people_roles"
+    # has_many :roles, through: [:people_roles, :role]
+    many_to_many :roles, Auth.Role, join_through: Auth.PeopleRoles
 
     has_many :statuses, Auth.Status
     # has_many :sessions, Auth.Session, on_delete: :delete_all
@@ -30,6 +38,9 @@ defmodule Auth.Person do
   Default attributes validation for Person
   """
   def changeset(person, attrs) do
+    # IO.inspect(person, label: "changeset > person")
+    # IO.inspect(attrs, label: "changeset > attrs")
+    # IO.inspect(roles, label: "changeset > roles")
     person
     |> cast(attrs, [
       :id,
@@ -44,7 +55,8 @@ defmodule Auth.Person do
       :picture,
       :username,
       :auth_provider,
-      :status
+      :status,
+      :app_id
     ])
     |> validate_required([:email])
     |> put_email_hash()
@@ -56,6 +68,10 @@ defmodule Auth.Person do
       %Person{}
       |> changeset(person)
       |> put_email_status_verified()
+      # assign default role of "subscriber":
+      |> put_assoc(:roles, [Auth.Role.get_role!(6)])
+
+    # other roles can be assigned in the UI
 
     case get_person_by_email(person.changes.email) do
       nil ->
@@ -111,7 +127,7 @@ defmodule Auth.Person do
   end
 
   def create_github_person(profile) do
-    transform_github_profile_data_to_person(profile) |> upsert_person()
+    upsert_person(transform_github_profile_data_to_person(profile))
   end
 
   @doc """
@@ -154,8 +170,8 @@ defmodule Auth.Person do
   end
 
   def create_google_person(profile) do
-    transform_google_profile_data_to_person(profile)
-    |> upsert_person()
+    person = upsert_person(transform_google_profile_data_to_person(profile))
+    Map.replace!(person, :roles, RBAC.transform_role_list_to_string(person.roles))
   end
 
   # @doc """
@@ -174,7 +190,7 @@ defmodule Auth.Person do
   end
 
   def get_status_verified do
-    status = Auth.Status.upsert_status("verified")
+    status = Auth.Status.upsert_status(%{"text" => "verified"})
     status.id
   end
 
@@ -190,12 +206,14 @@ defmodule Auth.Person do
 
   def verify_person_by_id(id) do
     person = get_person_by_id(id)
-    %{email: person.email, status: get_status_verified()} |> upsert_person()
+    upsert_person(%{email: person.email, status: get_status_verified()})
   end
 
   def get_person_by_id(id) do
     __MODULE__
     |> Repo.get_by(id: id)
+    |> Repo.preload(:roles)
+    |> Repo.preload(:statuses)
   end
 
   defp put_pass_hash(changeset) do
@@ -211,10 +229,18 @@ defmodule Auth.Person do
   @doc """
   `get_person_by_email/1` returns the person based on email address.
   """
-  def get_person_by_email(email) do
+  def get_person_by_email(email) when not is_nil(email) do
     __MODULE__
     |> Repo.get_by(email_hash: email)
+    |> Repo.preload([:statuses, :roles])
   end
+
+  # def get_person_by_email(email) do
+  #   IO.inspect(email, label: "email")
+  #   __MODULE__
+  #   |> Repo.get_by(email_hash: email)
+  #   |> Repo.preload([:statuses, :roles])
+  # end
 
   @doc """
   `upsert_person/1` inserts or updates a person record.
@@ -227,12 +253,9 @@ defmodule Auth.Person do
       # existing person
       ep ->
         merged = Map.merge(AuthPlug.Helpers.strip_struct_metadata(ep), person)
-
-        {:ok, person} =
-          changeset(%Person{id: ep.id}, merged)
-          |> Repo.update()
-
-        person
+        {:ok, person} = Repo.update(changeset(%Person{id: ep.id}, merged))
+        # ensure that the preloads are returned:
+        get_person_by_email(person.email)
     end
   end
 
@@ -247,5 +270,42 @@ defmodule Auth.Person do
       ArgumentError ->
         0
     end
+  end
+
+  @doc """
+  `list_people/0` lists all people in the system.
+  Used for displaying the table of authenticated people.
+  """
+  def list_people do
+    Repo.all(from(pr in __MODULE__, preload: [:roles, :statuses]))
+    # keeping this query commented here for now in case I decide to use it
+    # instead of having to call PeopleView.status_string/2
+    # query = """
+    # SELECT DISTINCT ON (s.status_id, s.person_id) s.id, s.message_id,
+    # s.updated_at, s.template, st.text as status, s.person_id
+    # FROM sent s
+    # JOIN status as st on s.status_id = st.id
+    # WHERE s.message_id IS NOT NULL
+    # """
+    # {:ok, result} = Repo.query(query)
+
+    # # create List of Maps from the result.rows:
+    # Enum.map(result.rows, fn([id, mid, iat, t, s, pid]) ->
+    #   # e = Fields.AES.decrypt(e)
+    #   # e = case e !== :error and e =~ "@" do
+    #   #   true -> e |> String.split("@") |> List.first
+    #   #   false -> e
+    #   # end
+    #   %{
+    #     id: id,
+    #     message_id: mid,
+    #     updated_at: NaiveDateTime.truncate(iat, :second),
+    #     template: t,
+    #     status: s,
+    #     person_id: pid,
+    #     email: ""
+    #   }
+    # end)
+    # |> Enum.sort(&(&1.id > &2.id))
   end
 end

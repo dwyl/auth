@@ -4,6 +4,7 @@ defmodule Auth.Repo.Migrations.CreateStatus do
   def change do
     create table(:status) do
       add :text, :string
+      add :desc, :string
 
       timestamps()
     end

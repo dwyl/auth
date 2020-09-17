@@ -1,32 +1,57 @@
 defmodule Auth.ApikeyTest do
-  # use Auth.DataCase
-  use AuthWeb.ConnCase
-  # alias Auth.Apikey
-  @email System.get_env("ADMIN_EMAIL")
+  use Auth.DataCase
+  use ExUnitProperties
 
-  test "list_apikeys_for_person/1 returns all apikeys person" do
-    person = Auth.Person.get_person_by_email(@email)
+  describe "Create an AUTH_API_KEY for a given person_id" do
+    test "encrypt_encode/1 returns a base58 we can decrypt" do
+      person_id = 1
+      key = Auth.Apikey.encrypt_encode(person_id)
 
-    keys = Auth.Apikey.list_apikeys_for_person(person.id)
-    assert length(keys) == 1
+      decrypted =
+        key
+        |> Base58.decode()
+        |> Fields.AES.decrypt()
+        |> String.to_integer()
 
-    # Insert Two API keys:
-    params = %{
-      # "description" => "test key",
-      "name" => "My Amazing Key",
-      "url" => "http://localhost:400",
-      "person_id" => person.id,
-      "client_secret" => AuthWeb.ApikeyController.encrypt_encode(person.id)
-    }
+      assert decrypted == person_id
+    end
 
-    Auth.Apikey.create_apikey(params)
+    test "decode_decrypt/1 reverses the operation of encrypt_encode/1" do
+      app_id = 4_869_234_521
+      key = Auth.Apikey.encrypt_encode(app_id)
+      id = Auth.Apikey.decode_decrypt(key)
+      assert app_id == id
+    end
 
-    Map.merge(params, %{
-      "client_secret" => AuthWeb.ApikeyController.encrypt_encode(person.id)
-    })
-    |> Auth.Apikey.create_apikey()
+    test "create_api_key/1 creates an AUTH_API_KEY" do
+      app_id = 123_456_789
+      key = Auth.Apikey.create_api_key(app_id)
+      assert key =~ "/"
+      parts = String.split(key, "/")
+      assert Auth.Apikey.decode_decrypt(List.first(parts)) == app_id
+    end
 
-    keys = Auth.Apikey.list_apikeys_for_person(person.id)
-    assert length(keys) == 3
+    test "decrypt_api_key/1 decrypts an AUTH_API_KEY" do
+      app_id = 1234
+      key = Auth.Apikey.create_api_key(app_id)
+      decrypted = Auth.Apikey.decrypt_api_key(key)
+      assert decrypted == app_id
+    end
+
+    test "decode_decrypt/1 with invalid client_id" do
+      valid_key = Auth.Apikey.encrypt_encode(1)
+      app_id = Auth.Apikey.decode_decrypt(valid_key)
+      assert app_id == 1
+
+      invalid_key = String.slice(valid_key, 0..-2)
+      error = Auth.Apikey.decode_decrypt(invalid_key)
+      assert error == 0
+    end
+
+    property "Check a batch of int values can be decoded decode_decrypt/1" do
+      check all(int <- integer()) do
+        assert Auth.Apikey.decode_decrypt(Auth.Apikey.encrypt_encode(int)) == int
+      end
+    end
   end
 end
