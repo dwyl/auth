@@ -42,8 +42,14 @@ defmodule Auth.Role do
   def list_roles_for_app(app_id) do
     __MODULE__
     # and a.status != 6)
+    # select roles for app_id and default roles (without app_id):
     |> where([r], r.app_id == ^app_id or is_nil(r.app_id))
     |> Repo.all()
+  end
+
+  def list_role_ids_for_app(app_id) do
+    roles = list_roles_for_app(app_id)
+    Enum.map(roles, fn r -> to_string(r.id) end)
   end
 
   @doc """

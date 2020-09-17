@@ -112,6 +112,7 @@ defmodule AuthWeb.RoleController do
     )
   end
 
+  # confirm that the person owns the app they want add a role for:
   defp person_owns_app?(apps, app_id) do
     app_ids = Enum.map(apps, fn a -> to_string(a.id) end)
     Enum.member?(app_ids, app_id)
@@ -143,17 +144,23 @@ defmodule AuthWeb.RoleController do
     # or has an "admin" role (1 || 2)
     granter_id = conn.assigns.person.id
     apps = Auth.App.list_apps(conn)
+    # app_ids_list = Enum.map(apps, fn a -> a.id end)
+    # role list includes default_roles 1-8 and any custom roles
+    role_id = map_get(params, "role_id")
     app_id = map_get(params, "app_id")
 
-    if person_owns_app?(apps, app_id) do
-      role_id = map_get(params, "role_id")
+    if person_owns_app?(apps, app_id) and app_owns_role?(app_id, role_id) do
       grantee_id = map_get(params, "person_id")
-
       Auth.PeopleRoles.insert(app_id, grantee_id, granter_id, role_id)
       redirect(conn, to: Routes.people_path(conn, :show, grantee_id))
     else
       AuthWeb.AuthController.unauthorized(conn)
     end
+  end
+
+  defp app_owns_role?(app_id, role_id) do
+    role_list_ids = Auth.Role.list_role_ids_for_app(app_id)
+    Enum.member?(role_list_ids, role_id)
   end
 
   @doc """
