@@ -186,6 +186,35 @@ defmodule AuthWeb.RoleControllerTest do
     %{role: role}
   end
 
+  test "non-admin person can grant default role on app they own", %{conn: conn} do
+    # login as non-admin person
+    conn = non_admin_login(conn)
+    # create app:
+    {:ok, app} = Auth.App.create_app(%{
+      "name" => "My Test App",
+      "desc" => "Demo App",
+      "url" => "localhost:4000",
+      "person_id" => conn.assigns.person.id,
+      "status" => 3
+    })
+    # create role for app:
+    attrs = Map.merge(@create_attrs,
+      %{person_id: conn.assigns.person.id, app_id: app.id})
+    {:ok, role} = Auth.Role.create_role(attrs)
+
+    # create *different* non-admin person:
+    grantee = non_admin_person()
+
+    #  attempt to grant a role for an app they don't own (should fail):
+    conn =
+      AuthWeb.RoleController.grant(conn,
+        %{"role_id" => role.id, "person_id" => grantee.id, "app_id" => app.id}
+      )
+    # confirm redirected to the grantee's person page:
+    assert html_response(conn, 302) =~ "people/#{grantee.id}"
+
+  end
+
   test "Attempt to POST /roles/grant (non-owner of app) should 401", %{conn: conn} do
     grantee = non_admin_person()
     # login as *different* non-admin person
