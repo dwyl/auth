@@ -222,7 +222,7 @@ defmodule AuthWeb.RoleControllerTest do
     #  attempt to grant a role for an app they don't own (should fail):
     conn =
       AuthWeb.RoleController.grant(
-        conn,
+        conn, %{ "grant"}
         %{"role_id" => 5, "person_id" => grantee.id, "app_id" => "1"}
       )
 

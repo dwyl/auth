@@ -56,16 +56,25 @@
 
 <h1 class="tc mt3">Grant a New Role</h1>
 <!-- Grant New Roles -->
-<%= form_tag("/roles/grant/", method: "get", class: "w-30 tc center mt2") do %>
-  <select name="role_id" id="1" class="center input-reset ba b--black-20 pa2 mb2 db w-15">
-    <option class="tc" value="">▼ Please Select a Role ▼</option>
-  <%= for r <- @all_roles do %>
-    <option value="<%= r.id %>"><%= r.name %></option>
+<div class="w-30 tc center mt2">
+  <%= form_for @conn, Routes.role_path(AuthWeb.Endpoint, :grant), fn f -> %>
+    <input name="person_id" type="hidden" value="<%= @person.id %>">
+   
+    <%= label f, :app_id, class: "f3"  %>
+    <%= select f, :app_id, Enum.map(@apps, &{&1.name, &1.id}), 
+      class: "w-100 f3 pa2 mt2 mb2 bg-white b--black-20"%>
+    <%= error_tag f, :app_id %>
+
+    <%= label f, :role_id, class: "f3" %>
+    <%= select f, :role_id, Enum.map(@all_roles, &{&1.name, &1.id}), 
+      class: "w-100 f3 pa2 mt2 mb2 bg-white b--black-20"%>
+    <%= error_tag f, :role_id %>
+
+    <%= submit "Grant Role", 
+    class: "tc center pointer bn bg-green white f2 pa2 mt1 shadow-hover bg-animate pa3 br1" %>
   <% end %>
-  </select>
-  <input name="person_id" type="hidden" value="<%= @person.id %>">
-  <%= submit "Grant Role", class: "pointer bn bg-green white f2 pa2 mt1 shadow-hover bg-animate pa3 br1" %>
-<% end %>
+</div>
+
 
 <style>
   .verified { background-color: #91ff91;}

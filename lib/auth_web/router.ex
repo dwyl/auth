@@ -40,6 +40,7 @@ defmodule AuthWeb.Router do
     get "/profile", AuthController, :admin
 
     get "/roles/grant", RoleController, :grant
+    post "/roles/grant", RoleController, :grant
     get "/roles/revoke/:people_roles_id", RoleController, :revoke
     post "/roles/revoke/:people_roles_id", RoleController, :revoke
     resources "/roles", RoleController

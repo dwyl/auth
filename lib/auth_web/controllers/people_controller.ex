@@ -13,9 +13,9 @@ defmodule AuthWeb.PeopleController do
       render(conn, :index,
         people: Auth.Person.list_people(),
         roles: Auth.Role.list_roles(),
-        statuses: Auth.Status.list_statuses()
+        statuses: Auth.Status.list_statuses(),
+        apps: Auth.App.list_apps(conn)
       )
-
       # Note: this can easily be refactored to save on DB queries. #HelpWanted
     else
       AuthWeb.AuthController.not_found(conn, "Only admins can see people ... for now!")
@@ -34,7 +34,8 @@ defmodule AuthWeb.PeopleController do
         person: person,
         roles: Auth.PeopleRoles.get_roles_for_person(person.id),
         statuses: Auth.Status.list_statuses(),
-        all_roles: Auth.Role.list_roles()
+        all_roles: Auth.Role.list_roles(),
+        apps: Auth.App.list_apps(conn)
       )
 
       # Note: this can easily be refactored to save on DB queries. #HelpWanted
