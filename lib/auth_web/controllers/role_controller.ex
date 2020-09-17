@@ -7,7 +7,7 @@ defmodule AuthWeb.RoleController do
 
   def index(conn, _params) do
     # restrict viewing to only roles owned by the person or default roles:
-    apps = Auth.App.list_apps(conn.assigns.person.id)
+    apps = list_apps(conn.assigns.person.id)
     app_ids = Enum.map(apps, fn a -> a.id end)
     roles = Role.list_roles_for_apps(app_ids)
     render(conn, "index.html", roles: roles)
@@ -36,7 +36,7 @@ defmodule AuthWeb.RoleController do
   end
 
   def create(conn, %{"role" => role_params}) do
-    apps = Auth.App.list_apps(conn.assigns.person.id)
+    apps = list_apps(conn.assigns.person.id)
     # check that the role_params.app_id is owned by the person:
     if person_owns_app?(apps, Map.get(role_params, "app_id")) do
       # never allow the request to define the person_id:
@@ -86,7 +86,7 @@ defmodule AuthWeb.RoleController do
 
   def update(conn, %{"id" => id, "role" => role_params}) do
     role = Role.get_role!(id, conn.assigns.person.id)
-    apps = Auth.App.list_apps(conn.assigns.person.id)
+    apps = list_apps(conn.assigns.person.id)
     # cannot update a role that doesn't exist (or they don't own):
     if is_nil(role) do
       AuthWeb.AuthController.not_found(conn, "role not found.")
