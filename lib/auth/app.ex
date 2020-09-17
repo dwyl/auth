@@ -42,7 +42,7 @@ defmodule Auth.App do
   end
 
   # Returning all apps when person_id == 1 (superadmin) means
-  # the superadmin can always see/manage all apps as necessary.
+  #  the superadmin can always see/manage all apps as necessary.
   # Later we could refactor this function to use RBAC.has_role_any/2.
   def list_apps(conn) when is_map(conn) do
     case conn.assigns.person.id == 1 do
@@ -56,7 +56,6 @@ defmodule Auth.App do
     |> where([a], a.status != 6 and a.person_id == ^person_id)
     |> Repo.all()
   end
-
 
   @doc """
   Gets a single app.
