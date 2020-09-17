@@ -154,7 +154,7 @@ defmodule AuthWeb.RoleControllerTest do
       attrs = Map.merge(@create_attrs, %{person_id: conn.assigns.person.id})
       {:ok, role} = Auth.Role.create_role(attrs)
       # attempt to update app_id to app owned by admin:
-      update_attrs = Map.merge(role, %{"app_id" => "1", })
+      update_attrs = Map.merge(role, %{app_id: 1})
       conn = put(conn, Routes.role_path(conn, :update, role), role: update_attrs)
 
       assert html_response(conn, 404) =~ "App not found"

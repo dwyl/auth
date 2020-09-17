@@ -112,9 +112,9 @@ defmodule AuthWeb.RoleController do
   # https://elixirforum.com/t/map-key-is-a-atom-or-string/13285/2
   # our use-case for this is specific keys in controller params
   # mix gen creates tests with atom keys whereas controller expect string keys!
-  defp map_get(map, string_key) do
-    (Map.get(map, string_key) || Map.get(map, String.to_atom(string_key), 0))
-    |> to_string()
+  defp map_get(map, string_key, default \\ 0) do
+    to_string(Map.get(map, string_key) ||
+      Map.get(map, String.to_atom(string_key), default))
   end
 
   defp person_owns_app?(apps, app_id) do
@@ -146,7 +146,6 @@ defmodule AuthWeb.RoleController do
     # confirm that the granter is either superadmin (conn.assigns.person.id == 1)
     # or has an "admin" role (1 || 2)
     granter_id = conn.assigns.person.id
-
 
     if granter_id == 1 do
       role_id = map_get(params, "role_id")
