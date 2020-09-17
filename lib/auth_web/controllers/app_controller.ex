@@ -3,15 +3,7 @@ defmodule AuthWeb.AppController do
   alias Auth.App
 
   def index(conn, _params) do
-    apps =
-      if conn.assigns.person.id == 1 do
-        # IO.inspect(conn.assigns.person, label: "conn.assigns.person")
-        App.list_apps()
-      else
-        App.list_apps(conn.assigns.person.id)
-      end
-
-    render(conn, "index.html", apps: apps)
+    render(conn, "index.html", apps: Auth.App.list_apps(conn))
   end
 
   def new(conn, _params) do
