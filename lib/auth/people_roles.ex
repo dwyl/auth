@@ -59,7 +59,7 @@ defmodule Auth.PeopleRoles do
     Repo.all(
       from(pr in __MODULE__,
         where: pr.person_id == ^person_id,
-        preload: [:role]
+        preload: [:role, :app]
       )
     )
   end

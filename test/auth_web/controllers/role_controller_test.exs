@@ -210,7 +210,7 @@ defmodule AuthWeb.RoleControllerTest do
       AuthWeb.RoleController.grant(conn,
         %{"role_id" => role.id, "person_id" => grantee.id, "app_id" => app.id}
       )
-    # confirm redirected to the grantee's person page:
+    # confirm redirected to the grantee's person
     assert html_response(conn, 302) =~ "people/#{grantee.id}"
 
   end
@@ -220,12 +220,12 @@ defmodule AuthWeb.RoleControllerTest do
     # login as *different* non-admin person
     conn = non_admin_login(conn)
     #  attempt to grant a role for an app they don't own (should fail):
-    conn =
-      AuthWeb.RoleController.grant(
-        conn, %{ "grant"}
-        %{"role_id" => 5, "person_id" => grantee.id, "app_id" => "1"}
-      )
-
+    conn = post(conn, Routes.role_path(conn, :grant, %{
+        "role_id" => 5,
+        "person_id" => grantee.id,
+        "app_id" => "1"
+      })
+    )
     assert conn.status == 401
   end
 

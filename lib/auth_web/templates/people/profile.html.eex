@@ -18,6 +18,7 @@
     <thead>
       <tr class="tc">
         <th>ID</th>
+        <th>App ID</th>
         <th>Role</th>
         <th>Granted</th>
         <th>Granted by</th>
@@ -28,6 +29,7 @@
   <%= for r <- @roles do %>
       <tr class="row pt2 f4 datarow">
         <td><%= r.id %></td>
+        <td><%= r.app_id %></td>
         <td><%= r.role.name %></td>
         <td><%= r.inserted_at %></td>  
         <td>
