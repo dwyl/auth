@@ -96,6 +96,19 @@ defmodule AuthWeb.RoleControllerTest do
 
       assert html_response(conn, 404) =~ "Please select an app you own"
     end
+
+    test "cannot create new role with name of existing role", %{conn: conn} do
+      # see: https://github.com/dwyl/auth/issues/118
+      conn = admin_login(conn)
+      existing_role = %{
+        name: "superadmin",
+        desc: "this will fail because we don't allow duplicate roles",
+        person_id: 1,
+        app_id: 1
+      }
+      conn = post(conn, Routes.role_path(conn, :create), role: existing_role)
+      assert html_response(conn, 200) =~ "Sorry, role name cannot be superadmin"
+    end
   end
 
   describe "edit role" do
@@ -121,7 +134,8 @@ defmodule AuthWeb.RoleControllerTest do
 
     test "redirects when data is valid", %{conn: conn} do
       conn = admin_login(conn)
-      attrs = Map.merge(@create_attrs, %{person_id: conn.assigns.person.id})
+      attrs = Map.merge(@create_attrs,
+        %{person_id: conn.assigns.person.id, name: "myrole138"})
       {:ok, role} = Auth.Role.create_role(attrs)
       update_attrs = Map.merge(@update_attrs, %{app_id: 1, role_id: role.id})
       conn = put(conn, Routes.role_path(conn, :update, role), role: update_attrs)
@@ -151,7 +165,11 @@ defmodule AuthWeb.RoleControllerTest do
 
     test "cannot update role I own to App I don't own!", %{conn: conn} do
       conn = non_admin_login(conn)
-      attrs = Map.merge(@create_attrs, %{person_id: conn.assigns.person.id})
+      attrs = %{
+        name: "myrole169",
+        desc: "this fails",
+        person_id: conn.assigns.person.id
+      }
       {:ok, role} = Auth.Role.create_role(attrs)
       # attempt to update app_id to app owned by admin:
       update_attrs = Map.merge(role, %{app_id: 1})

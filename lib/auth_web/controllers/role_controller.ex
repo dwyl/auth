@@ -1,6 +1,7 @@
 defmodule AuthWeb.RoleController do
   use AuthWeb, :controller
   alias Auth.Role
+  require Logger
   # import Auth.Plugs.IsOwner
 
   # plug :is_owner when action in [:index]
@@ -31,7 +32,7 @@ defmodule AuthWeb.RoleController do
   def create(conn, %{"role" => role_params}) do
     apps = Auth.App.list_apps(conn)
     # check that the role_params.app_id is owned by the person:
-    if person_owns_app?(apps, Map.get(role_params, "app_id")) do
+    if person_owns_app?(apps, map_get(role_params, "app_id")) do
       # never allow the request to define the person_id:
       create_attrs = Map.merge(role_params, %{"person_id" => conn.assigns.person.id})
 
@@ -155,6 +156,7 @@ defmodule AuthWeb.RoleController do
       Auth.PeopleRoles.insert(app_id, grantee_id, granter_id, role_id)
       redirect(conn, to: Routes.people_path(conn, :show, grantee_id))
     else
+      Logger.error("person.id #{granter_id} attempted to grant role.id #{role_id}")
       AuthWeb.AuthController.unauthorized(conn)
     end
   end
