@@ -100,12 +100,14 @@ defmodule AuthWeb.RoleControllerTest do
     test "cannot create new role with name of existing role", %{conn: conn} do
       # see: https://github.com/dwyl/auth/issues/118
       conn = admin_login(conn)
+
       existing_role = %{
         name: "superadmin",
         desc: "this will fail because we don't allow duplicate roles",
         person_id: 1,
         app_id: 1
       }
+
       conn = post(conn, Routes.role_path(conn, :create), role: existing_role)
       assert html_response(conn, 200) =~ "Sorry, role name cannot be superadmin"
     end
@@ -134,8 +136,13 @@ defmodule AuthWeb.RoleControllerTest do
 
     test "redirects when data is valid", %{conn: conn} do
       conn = admin_login(conn)
-      attrs = Map.merge(@create_attrs,
-        %{person_id: conn.assigns.person.id, name: "myrole138"})
+
+      attrs =
+        Map.merge(
+          @create_attrs,
+          %{person_id: conn.assigns.person.id, name: "myrole138"}
+        )
+
       {:ok, role} = Auth.Role.create_role(attrs)
       update_attrs = Map.merge(@update_attrs, %{app_id: 1, role_id: role.id})
       conn = put(conn, Routes.role_path(conn, :update, role), role: update_attrs)
@@ -165,11 +172,13 @@ defmodule AuthWeb.RoleControllerTest do
 
     test "cannot update role I own to App I don't own!", %{conn: conn} do
       conn = non_admin_login(conn)
+
       attrs = %{
         name: "myrole169",
         desc: "this fails",
         person_id: conn.assigns.person.id
       }
+
       {:ok, role} = Auth.Role.create_role(attrs)
       # attempt to update app_id to app owned by admin:
       update_attrs = Map.merge(role, %{app_id: 1})
@@ -208,16 +217,22 @@ defmodule AuthWeb.RoleControllerTest do
     # login as non-admin person
     conn = non_admin_login(conn)
     # create app:
-    {:ok, app} = Auth.App.create_app(%{
-      "name" => "My Test App",
-      "desc" => "Demo App",
-      "url" => "localhost:4000",
-      "person_id" => conn.assigns.person.id,
-      "status" => 3
-    })
+    {:ok, app} =
+      Auth.App.create_app(%{
+        "name" => "My Test App",
+        "desc" => "Demo App",
+        "url" => "localhost:4000",
+        "person_id" => conn.assigns.person.id,
+        "status" => 3
+      })
+
     # create role for app:
-    attrs = Map.merge(@create_attrs,
-      %{person_id: conn.assigns.person.id, app_id: app.id})
+    attrs =
+      Map.merge(
+        @create_attrs,
+        %{person_id: conn.assigns.person.id, app_id: app.id}
+      )
+
     {:ok, role} = Auth.Role.create_role(attrs)
 
     # create *different* non-admin person:
@@ -225,12 +240,13 @@ defmodule AuthWeb.RoleControllerTest do
 
     #  attempt to grant a role for an app they don't own (should fail):
     conn =
-      AuthWeb.RoleController.grant(conn,
+      AuthWeb.RoleController.grant(
+        conn,
         %{"role_id" => role.id, "person_id" => grantee.id, "app_id" => app.id}
       )
+
     # confirm redirected to the grantee's person
     assert html_response(conn, 302) =~ "people/#{grantee.id}"
-
   end
 
   test "Attempt to POST /roles/grant (non-owner of app) should 401", %{conn: conn} do
@@ -238,12 +254,16 @@ defmodule AuthWeb.RoleControllerTest do
     # login as *different* non-admin person
     conn = non_admin_login(conn)
     #  attempt to grant a role for an app they don't own (should fail):
-    conn = post(conn, Routes.role_path(conn, :grant, %{
-        "role_id" => 5,
-        "person_id" => grantee.id,
-        "app_id" => "1"
-      })
-    )
+    conn =
+      post(
+        conn,
+        Routes.role_path(conn, :grant, %{
+          "role_id" => 5,
+          "person_id" => grantee.id,
+          "app_id" => "1"
+        })
+      )
+
     assert conn.status == 401
   end
 

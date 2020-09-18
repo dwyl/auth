@@ -129,7 +129,7 @@ defmodule Auth.Person do
   def create_github_person(profile) do
     person = upsert_person(transform_github_profile_data_to_person(profile))
 
-    IO.inspect(person, label: "person:132")
+    # IO.inspect(person, label: "person:132")
     person
   end
 

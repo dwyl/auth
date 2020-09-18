@@ -113,7 +113,7 @@ defmodule AuthWeb.RoleController do
     )
   end
 
-  # confirm that the person owns the app they want add a role for:
+  #  confirm that the person owns the app they want add a role for:
   defp person_owns_app?(apps, app_id) do
     app_ids = Enum.map(apps, fn a -> to_string(a.id) end)
     Enum.member?(app_ids, app_id)
@@ -141,7 +141,7 @@ defmodule AuthWeb.RoleController do
   role_id a valid role.id
   """
   def grant(conn, params) do
-    IO.inspect(params, label: "grant/2 params:143")
+    # IO.inspect(params, label: "grant/2 params:143")
     # confirm that the granter is either superadmin (conn.assigns.person.id == 1)
     # or has an "admin" role (1 || 2)
     granter_id = conn.assigns.person.id

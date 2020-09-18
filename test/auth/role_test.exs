@@ -63,8 +63,12 @@ defmodule Auth.RoleTest do
     end
 
     test "upsert_role/1 inserts or updates a role" do
-      valid_role = Map.merge(@valid_attrs,
-        %{name: "newrole", person_id: 1, app_id: 1})
+      valid_role =
+        Map.merge(
+          @valid_attrs,
+          %{name: "newrole", person_id: 1, app_id: 1}
+        )
+
       # role without :id -> create_role
       assert {:ok, %Role{} = role} = Role.upsert_role(valid_role)
       assert role.desc == "some desc"

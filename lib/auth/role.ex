@@ -32,14 +32,16 @@ defmodule Auth.Role do
   defp validate_role_name(changeset, attrs) do
     app_id = Map.get(attrs, :app_id, 1)
     existing_role_names = existing_role_names_list(app_id)
-    validate_change changeset, :name, fn :name, name  ->
+
+    validate_change(changeset, :name, fn :name, name ->
       if Enum.member?(existing_role_names, name) do
         [name: "Sorry, role name cannot be #{name} as it already exists"]
       else
         []
       end
-    end
+    end)
   end
+
   # Note: this does not prevent different apps from having roles
   # with the same name e.g. "kitten lover" could be in every app
 
@@ -48,7 +50,6 @@ defmodule Auth.Role do
     # get roles for "system" app (app.id=1)
     Enum.map(list_roles_for_app(app_id), fn r -> r.name end)
   end
-
 
   @doc """
   Returns the list of roles.
