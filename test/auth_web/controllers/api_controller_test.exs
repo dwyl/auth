@@ -106,4 +106,44 @@ defmodule AuthWeb.ApiControllerTest do
       assert should_be_empty == []
     end
   end
+
+  describe "GET /personroles/:person_id/:client_id" do
+    setup [:create_app]
+
+    test "returns 401 if client_id is invalid", %{conn: conn} do
+      conn =
+        conn
+        |> put_req_header("accept", "application/json")
+        |> get("/personroles/1/invalid")
+
+      assert html_response(conn, 401) =~ "invalid"
+    end
+
+    test "returns (JSON) list of roles", %{conn: conn, app: app} do
+      conn = admin_login(conn)
+      # creat role for app:
+      attrs = %{desc: "test role", name: "testrole110", app_id: "1", person_id: 1}
+      {:ok, role} = Auth.Role.create_role(attrs)
+
+      # grant the *new* role to the new person:
+      grantee = non_admin_person()
+      granter_id = 1
+      Auth.PeopleRoles.insert(app.id, grantee.id, granter_id, role.id)
+
+      # grant existing (default) "creator" role to new person:
+      Auth.PeopleRoles.insert(app.id, grantee.id, granter_id, 4)
+
+      # roles = Auth.Role.list_roles_for_app(app.id)
+      key = List.first(app.apikeys)
+      # IO.inspect(app, label: "app")
+      conn = conn
+        |> put_req_header("accept", "application/json")
+        |> get("/personroles/#{grantee.id}/#{key.client_id}")
+
+      assert conn.status == 200
+      {:ok, json} = Jason.decode(conn.resp_body)
+      # IO.inspect(json)
+      assert length(json) == 2
+    end
+  end
 end

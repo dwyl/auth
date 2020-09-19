@@ -60,5 +60,6 @@ defmodule AuthWeb.Router do
     pipe_through :api
 
     get "/approles/:client_id", ApiController, :approles
+    get "/personroles/:person_id/:client_id", ApiController, :personroles
   end
 end

@@ -65,6 +65,22 @@ defmodule Auth.PeopleRoles do
   end
 
   @doc """
+  get_roles_for_person_for_app/2 returns the list of roles
+  for a given person.id for the specific app.
+  """
+  def get_roles_for_person_for_app(app_id, person_id) do
+    Repo.all(
+      from(pr in __MODULE__,
+        where: pr.person_id == ^person_id
+        and pr.app_id == ^app_id
+        and is_nil(pr.revoked),
+        preload: [:role]
+      )
+    )
+  end
+
+
+  @doc """
   insert/4 grants a role to the given person
   app_id for app the person is granted the role for (always scoped to app!)
   grantee_id is the person.id of the person being granted the role
