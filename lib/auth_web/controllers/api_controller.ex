@@ -24,7 +24,7 @@ defmodule AuthWeb.ApiController do
   @doc """
   `personroles/2` Returns the (JSON) List of Roles for a given person (and App)
   e.g: /personroles/:person_id/:client_id
-  Sample output: https://github.com/dwyl/auth/issues/121
+  Sample output: https://github.com/dwyl/auth/issues/121#issuecomment-695360870
   """
   def personroles(conn, %{"person_id" => person_id, "client_id" => client_id}) do
     app_id = Auth.Apikey.decode_decrypt(client_id)

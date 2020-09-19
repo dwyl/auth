@@ -79,7 +79,6 @@ defmodule Auth.PeopleRoles do
     )
   end
 
-
   @doc """
   insert/4 grants a role to the given person
   app_id for app the person is granted the role for (always scoped to app!)
