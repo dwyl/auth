@@ -1,7 +1,6 @@
 defmodule AuthWeb.AppControllerTest do
   use AuthWeb.ConnCase
   alias Auth.App
-  alias Auth.Role
 
   @create_attrs %{
     desc: "some description",
