@@ -6,7 +6,7 @@ defmodule AuthWeb.ApiController do
 
   @doc """
   `approles/2` Return the (JSON) List of Roles for a given App based on apikey.client_id
-
+  Sample output: https://github.com/dwyl/auth/issues/120#issuecomment-695354317
   """
   def approles(conn, %{"client_id" => client_id}) do
     app_id = Auth.Apikey.decode_decrypt(client_id)
