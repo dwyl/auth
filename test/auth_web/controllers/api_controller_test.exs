@@ -22,7 +22,6 @@ defmodule AuthWeb.ApiControllerTest do
     %{app: app}
   end
 
-
   describe "GET /approles/:client_id" do
     setup [:create_app]
 
