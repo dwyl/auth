@@ -4,7 +4,7 @@ defmodule Auth.Mixfile do
   def project do
     [
       app: :auth,
-      version: "1.2.4",
+      version: "1.3.0",
       elixir: "~> 1.10",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
@@ -70,7 +70,7 @@ defmodule Auth.Mixfile do
       {:B58, "~> 1.0", hex: :b58},
 
       # Check test coverage
-      {:excoveralls, "~> 0.12.3", only: :test}, 
+      {:excoveralls, "~> 0.12.3", only: :test},
 
       #  Property based tests: github.com/dwyl/learn-property-based-testing
       {:stream_data, "~> 0.4.3", only: :test},
