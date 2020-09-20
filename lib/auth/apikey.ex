@@ -1,4 +1,7 @@
 defmodule Auth.Apikey do
+  @moduledoc """
+  Defines apikeys schema and CRUD functions
+  """
   use Ecto.Schema
   import Ecto.Query, warn: false
   import Ecto.Changeset
@@ -9,57 +12,79 @@ defmodule Auth.Apikey do
   schema "apikeys" do
     field :client_secret, :binary
     field :client_id, :binary
-    field :description, :string
-    field :name, :string
-    field :url, :binary
     field :person_id, :id
     field :status, :id
+    belongs_to :app, Auth.App
 
     timestamps()
   end
 
-  @doc false
+  @doc """
+  `encrypt_encode/1` does exactly what it's name suggests,
+  AES Encrypts a string of plaintext and then Base58 encodes it.
+  We encode it using Base58 so it's human-friendly (readable).
+  """
+  def encrypt_encode(plaintext) do
+    plaintext |> Fields.AES.encrypt() |> Base58.encode()
+  end
+
+  @doc """
+  `create_api_key/1` uses the `encrypt_encode/1` to create an API Key
+  that is just two strings joined with a forwardslash ("/").
+  This allows us to use a *single* environment variable.
+  """
+  def create_api_key(id) do
+    encrypt_encode(id) <> "/" <> encrypt_encode(id)
+  end
+
+  @doc """
+  `decode_decrypt/1` accepts a `key` and attempts to Base58.decode
+  followed by AES.decrypt it. If decode or decrypt fails, return 0 (zero).
+  """
+  def decode_decrypt(key) do
+    try do
+      key |> Base58.decode() |> Fields.AES.decrypt() |> String.to_integer()
+    rescue
+      ArgumentError ->
+        0
+
+      ArithmeticError ->
+        0
+    end
+  end
+
+  def decrypt_api_key(key) do
+    key |> String.split("/") |> List.first() |> decode_decrypt()
+  end
+
   def changeset(apikey, attrs) do
     apikey
-    |> cast(attrs, [:client_id, :client_secret, :name, :description, :url, :person_id])
-    |> validate_required([:client_secret])
+    |> cast(attrs, [:client_id, :client_secret, :status, :person_id])
+    |> put_assoc(:app, Map.get(attrs, "app"))
   end
 
-  def change_apikey(%Apikey{} = apikey) do
-    Apikey.changeset(apikey, %{})
-  end
+  def create_apikey(app) do
+    attrs = %{
+      "client_secret" => encrypt_encode(app.id),
+      "client_id" => encrypt_encode(app.id),
+      "person_id" => app.person_id,
+      "status" => 3,
+      "app" => app
+    }
 
-  def create_apikey(attrs \\ %{}) do
     %Apikey{}
     |> Apikey.changeset(attrs)
     |> Repo.insert()
   end
 
-  def list_apikeys_for_person(person_id) do
-    query =
-      from(
-        a in __MODULE__,
-        where: a.person_id == ^person_id
-      )
-
-    Repo.all(query)
+  def get_apikey_by_app_id(app_id) do
+    from(
+      a in __MODULE__,
+      where: a.app_id == ^app_id
+    )
+    |> Repo.one()
+    |> Repo.preload(:app)
   end
-
-  @doc """
-  Gets a single apikey.
-
-  Raises `Ecto.NoResultsError` if the Apikey does not exist.
-
-  ## Examples
-
-      iex> get_apikey!(123)
-      %Apikey{}
-
-      iex> get_apikey!(456)
-      ** (Ecto.NoResultsError)
-
-  """
-  def get_apikey!(id), do: Repo.get!(__MODULE__, id)
 
   @doc """
   Updates a apikey.
@@ -77,21 +102,5 @@ defmodule Auth.Apikey do
     apikey
     |> changeset(attrs)
     |> Repo.update()
-  end
-
-  @doc """
-  Deletes a apikey.
-
-  ## Examples
-
-      iex> delete_apikey(apikey)
-      {:ok, %Apikey{}}
-
-      iex> delete_apikey(apikey)
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def delete_apikey(%Apikey{} = apikey) do
-    Repo.delete(apikey)
   end
 end

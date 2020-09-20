@@ -5,7 +5,7 @@ defmodule Auth.Mixfile do
     [
       app: :auth,
       version: "1.3.0",
-      elixir: "~> 1.10",
+      elixir: "~> 1.10.4",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       test_coverage: [tool: ExCoveralls],
@@ -47,7 +47,7 @@ defmodule Auth.Mixfile do
       # Phoenix core:
       {:phoenix, "~> 1.5.3"},
       {:phoenix_pubsub, "~> 2.0"},
-      {:phoenix_ecto, "~> 4.1.0"},
+      {:phoenix_ecto, "~> 4.2.0"},
       {:ecto_sql, "~> 3.4.5"},
       {:postgrex, ">= 0.0.0"},
       {:phoenix_html, "~> 2.14.2"},
@@ -58,16 +58,21 @@ defmodule Auth.Mixfile do
 
       # Auth:
       # https://github.com/dwyl/elixir-auth-github
-      {:elixir_auth_github, "~> 1.3.0"},
+      {:elixir_auth_github, "~> 1.4.0"},
       # https://github.com/dwyl/elixir-auth-google
       {:elixir_auth_google, "~> 1.3.0"},
       # https://github.com/dwyl/auth_plug
-      {:auth_plug, "1.2.0"},
+      {:auth_plug, "1.2.1"},
+      # https://github.com/dwyl/rbac
+      {:rbac, "~> 0.5.0"},
 
       # Field Validation and Encryption: github.com/dwyl/fields
-      {:fields, "~> 2.6.0"},
+      {:fields, "~> 2.7.1"},
       # Base58 Encodeing: https://github.com/dwyl/base58
       {:B58, "~> 1.0", hex: :b58},
+
+      # Ping to Wake Heroku Instance: https://github.com/dwyl/ping
+      {:ping, "~> 1.0.1"},
 
       # Check test coverage
       {:excoveralls, "~> 0.12.3", only: :test},

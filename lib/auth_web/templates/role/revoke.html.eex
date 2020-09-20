@@ -1,0 +1,59 @@
+<section class="mt4 w-100 center ph3 tc">
+  <p class="f3">Are your <em>sure</em> you want 
+  to <strong>revoke</strong> the 
+  <strong><%= @role.role.name %></strong> role
+  from <strong><%= @role.person.givenName %></strong>
+  ?</p>
+  
+  <%= form_for :revoke, Routes.role_path(AuthWeb.Endpoint, :revoke, @people_roles_id), fn _f -> %>
+    <%= submit "Revoke", class: "pointer bn bg-red white f2 pa2 mt1 shadow-hover bg-animate" %>
+  <% end %>
+
+</section>
+
+<!--
+%Auth.PeopleRoles{
+  __meta__: #Ecto.Schema.Metadata<:loaded, "people_roles">,
+  granter_id: nil,
+  id: 2,
+  inserted_at: ~N[2020-08-23 22:24:58],
+  person: %Auth.Person{
+    __meta__: #Ecto.Schema.Metadata<:loaded, "people">,
+    auth_provider: "google",
+    email: "ignaseo@gmail.com",
+    email_hash: <<137, 251, 104, 244, 253, 112, 246, 254, 47, 207, 57, 67, 94,
+      144, 221, 220, 75, 88, 44, 77, 166, 49, 18, 95, 67, 191, 76, 253, 117, 48,
+      78, 26>>,
+    familyName: "Correia",
+    givenName: "Nelson",
+    id: 2,
+    inserted_at: ~N[2020-08-23 22:24:58],
+    key_id: nil,
+    locale: "en-GB",
+    password: nil,
+    password_hash: nil,
+    picture: "https://lh3.googleusercontent.com/a-/AOh14Gjd8AwOhTfQkPgJIdKcS6uzlHMEgPRbFQYrCAGtIg",
+    roles: #Ecto.Association.NotLoaded<association :roles is not loaded>,
+    status: 1,
+    statuses: #Ecto.Association.NotLoaded<association :statuses is not loaded>,
+    tag: nil,
+    updated_at: ~N[2020-08-23 22:24:58],
+    username: nil,
+    username_hash: nil
+  },
+  person_id: 2,
+  revoked: nil,
+  revoker_id: nil,
+  role: %Auth.Role{
+    __meta__: #Ecto.Schema.Metadata<:loaded, "roles">,
+    desc: "Subscribes for updates e.g. newsletter or content from a specific person. Cannot comment until verified.",
+    id: 6,
+    inserted_at: ~N[2020-08-23 17:49:46],
+    name: "subscriber",
+    person_id: 1,
+    updated_at: ~N[2020-08-23 17:49:46]
+  },
+  role_id: 6,
+  updated_at: ~N[2020-08-23 22:24:58]
+}
+-->

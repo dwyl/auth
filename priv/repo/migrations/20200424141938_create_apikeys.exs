@@ -5,9 +5,10 @@ defmodule Auth.Repo.Migrations.CreateApikeys do
     create table(:apikeys) do
       add :client_id, :binary
       add :client_secret, :binary
-      add :name, :string
-      add :description, :text
-      add :url, :binary
+      # add :name, :string
+      # add :description, :text
+      # add :url, :binary
+      add :app_id, references(:apps, on_delete: :nothing)
       add :person_id, references(:people, on_delete: :nothing)
       add :status, references(:status, on_delete: :nothing)
 

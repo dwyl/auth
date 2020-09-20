@@ -1,0 +1,26 @@
+<%= form_for @changeset, @action, fn f -> %>
+  <%= if @changeset.action do %>
+    <div class="alert alert-danger">
+      <p>Oops, something went wrong! Please check the errors below.</p>
+    </div>
+  <% end %>
+
+  <%= label f, :name %>
+  <%= text_input f, :name, class: "db w-100 mt2 pa2 mb2 ba b--dark-grey" %>
+  <%= error_tag f, :name %>
+
+  <%= label f, :desc %>
+  <%= text_input f, :desc, class: "db w-100 mt2 pa2 mb2 ba b--dark-grey" %>
+  <%= error_tag f, :desc %>
+
+  <%= label f, :app_id %>
+  <%= select f, :app_id, Enum.map(@apps, &{&1.name, &1.id}), 
+  class: "w-100 f3 pa2 mt2 mb2 bg-white b--black-20"%>
+  <%= error_tag f, :app_id %>
+
+  <div>
+    <%= submit "Save", 
+    class: "fr pointer br2 ba b--dark-green bg-green white pv2 ph3 ml1 mv1 f4
+    shadow-hover bg-animate hover-bg-dark-green border-box no-underline" %>
+  </div>
+<% end %>

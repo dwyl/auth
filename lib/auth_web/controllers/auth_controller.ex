@@ -1,11 +1,14 @@
 defmodule AuthWeb.AuthController do
+  @moduledoc """
+  Defines AuthController and all functions for authenticaiton
+  """
   use AuthWeb, :controller
+  alias Auth.App
   alias Auth.Person
 
   # https://github.com/dwyl/auth/issues/46
   def admin(conn, _params) do
-    conn
-    |> render(:welcome)
+    render(conn, :welcome, apps: App.list_apps(conn.assigns.person.id))
   end
 
   defp get_user_agent_string(conn) do
@@ -40,13 +43,6 @@ defmodule AuthWeb.AuthController do
       else
         nil
       end
-
-    # TODO: add friendly error message when email address is invalid
-    # errors = if not is_nil(email) and not Fields.Validate.email(email) do
-    #   [email: "email address is invalid"]
-    # else
-    #   []
-    # end
 
     state =
       if not is_nil(params_person) and
@@ -115,11 +111,23 @@ defmodule AuthWeb.AuthController do
   """
   def github_handler(conn, %{"code" => code, "state" => state}) do
     {:ok, profile} = ElixirAuthGithub.github_auth(code)
+    app_id = get_app_id(state)
+
     # save profile to people:
-    person = Person.create_github_person(profile)
+    person = Person.create_github_person(Map.merge(profile, %{app_id: app_id}))
 
     # render or redirect:
     handler(conn, person, state)
+  end
+
+  def get_app_id(state) do
+    client_id = get_client_secret_from_state(state)
+    app_id = Auth.Apikey.decode_decrypt(client_id)
+
+    case app_id == 0 do
+      true -> 1
+      false -> app_id
+    end
   end
 
   @doc """
@@ -129,7 +137,8 @@ defmodule AuthWeb.AuthController do
     {:ok, token} = ElixirAuthGoogle.get_token(code, conn)
     {:ok, profile} = ElixirAuthGoogle.get_user_profile(token.access_token)
     # save profile to people:
-    person = Person.create_google_person(profile)
+    app_id = get_app_id(state)
+    person = Person.create_google_person(Map.merge(profile, %{app_id: app_id}))
 
     # render or redirect:
     handler(conn, person, state)
@@ -173,13 +182,15 @@ defmodule AuthWeb.AuthController do
 
       # display welcome page on Auth site:
       false ->
+        # Grant app_admin role to person who authenticated directly on auth app
+        # Auth.PeopleRoles.insert(1, person.id, 8)
         conn
         |> AuthPlug.create_jwt_session(person)
-        |> render(:welcome, person: person)
+        |> render(:welcome, person: person, apps: App.list_apps(person.id))
     end
   end
 
-  # TODO: create a human-friendy response
+  # create a human-friendy response?
   def unauthorized(conn) do
     conn
     |> put_resp_content_type("text/html")
@@ -187,7 +198,7 @@ defmodule AuthWeb.AuthController do
     |> halt()
   end
 
-  # TODO: refactor this to render a template with a nice layout.
+  # refactor this to render a template with a nice layout? #HelpWanted
   def not_found(conn, message) do
     conn
     |> put_resp_content_type("text/html")
@@ -294,7 +305,7 @@ defmodule AuthWeb.AuthController do
       changeset: Auth.Person.password_new_changeset(%{email: email}),
       # so we can redirect after creatig a password
       state: state,
-      email: AuthWeb.ApikeyController.encrypt_encode(email)
+      email: Auth.Apikey.encrypt_encode(email)
     )
   end
 
@@ -309,7 +320,7 @@ defmodule AuthWeb.AuthController do
   def make_verify_link(conn, person, state) do
     AuthPlug.Helpers.get_baseurl_from_conn(conn) <>
       "/auth/verify?id=" <>
-      AuthWeb.ApikeyController.encrypt_encode(person.id) <>
+      Auth.Apikey.encrypt_encode(person.id) <>
       "&referer=" <> state
   end
 
@@ -319,7 +330,7 @@ defmodule AuthWeb.AuthController do
   #   |> render("password_create.html",
   #     changeset: Auth.Person.password_new_changeset(%{email: params["email"]}),
   #     state: params["state"], # so we can redirect after creatig a password
-  #     email: AuthWeb.ApikeyController.encrypt_encode(params["email"])
+  #     email: AuthWeb.Apikey.encrypt_encode(params["email"])
   #   )
   # end
 
@@ -337,6 +348,8 @@ defmodule AuthWeb.AuthController do
 
     if changeset.valid? do
       person = Auth.Person.upsert_person(%{email: email, password: p["password"]})
+      # replace %Auth.Role{} struct with string  github.com/dwyl/rbac/issues/4
+      person = Map.replace!(person, :roles, RBAC.transform_role_list_to_string(person.roles))
       redirect_or_render(conn, person, p["state"])
     else
       conn
@@ -370,8 +383,6 @@ defmodule AuthWeb.AuthController do
         That password is incorrect.
         """
 
-        # log password incorrect
-
         user_agent = get_user_agent(conn)
         ip_address = get_ip_address(conn)
 
@@ -389,9 +400,14 @@ defmodule AuthWeb.AuthController do
   end
 
   def verify_email(conn, params) do
-    id = AuthWeb.ApikeyController.decode_decrypt(params["id"])
+    id = Auth.Apikey.decode_decrypt(params["id"])
     person = Auth.Person.verify_person_by_id(id)
     redirect_or_render(conn, person, params["referer"])
+  end
+
+  def get_client_id_from_state(state) do
+    query = URI.decode_query(List.last(String.split(state, "?")))
+    Map.get(query, "auth_client_id")
   end
 
   @doc """
@@ -401,8 +417,7 @@ defmodule AuthWeb.AuthController do
   All other failure conditions return a 0 (zero) which results in a 401.
   """
   def get_client_secret_from_state(state) do
-    query = URI.decode_query(List.last(String.split(state, "?")))
-    client_id = Map.get(query, "auth_client_id")
+    client_id = get_client_id_from_state(state)
 
     case not is_nil(client_id) do
       # Lookup client_id in apikeys table
@@ -416,19 +431,24 @@ defmodule AuthWeb.AuthController do
   end
 
   def get_client_secret(client_id, state) do
-    person_id = AuthWeb.ApikeyController.decode_decrypt(client_id)
-
-    # decode_decrypt fails with state 0
-    if person_id == 0 do
+    app_id = Auth.Apikey.decode_decrypt(client_id)
+    # decode_decrypt fails with 0:
+    if app_id == 0 do
       0
     else
-      apikeys = Auth.Apikey.list_apikeys_for_person(person_id)
+      apikey = Auth.Apikey.get_apikey_by_app_id(app_id)
 
-      Enum.filter(apikeys, fn k ->
-        k.client_id == client_id and state =~ k.url
-      end)
-      |> List.first()
-      |> Map.get(:client_secret)
+      cond do
+        apikey.app.person_id == 1 ->
+          apikey.client_secret
+
+        # all other keys require matching the app url and status to not be "deleted":
+        apikey.client_id == client_id && state =~ apikey.app.url && apikey.status != 6 ->
+          apikey.client_secret
+
+        true ->
+          0
+      end
     end
   end
 
@@ -439,7 +459,9 @@ defmodule AuthWeb.AuthController do
       id: person.id,
       picture: person.picture,
       status: person.status,
-      email: person.email
+      email: person.email,
+      roles: RBAC.transform_role_list_to_string(person.roles),
+      app_id: person.app_id
     }
 
     jwt = AuthPlug.Token.generate_jwt!(data, client_secret)

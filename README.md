@@ -15,6 +15,7 @@ you can setup in ***5 minutes***.
 <!-- uncomment when service is working ...
 [![Inline docs](http://inch-ci.org/github/dwyl/auth.svg?branch=master&style=flat-square)](http://inch-ci.org/github/dwyl/auth)
 -->
+![wake-sleeping-heroku-app](https://dwylauth.herokuapp.com/ping)
 
 </div>
 
@@ -173,7 +174,6 @@ And for sending emails you will need the
 `SECRET_KEY_BASE` and `EMAIL_APP_URL` defined.
 
 
-
 ### 4. Create and migrate your database:
 
 > Ensure that PostgreSQL is running
@@ -190,7 +190,7 @@ mix ecto.setup
 mix phoenix.server
 ```
 
-> It may take a couple of minutes to compile the app the first time. ⏳
+> It may take a minute to compile the app the first time. ⏳
 
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 

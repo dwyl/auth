@@ -1,0 +1,62 @@
+<h1 class="tc mb4">Apps</h1>
+
+  <table class="w-100 f3">
+    <thead>
+      <tr class="f3">
+        <th>id</th>
+         <th>Owner</th>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Url</th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for app <- @apps do %>
+    <tr>
+      <td><a href="/apps/<%= app.id %>" class="no-underline blue"><%= app.id %></a></td>
+      <td><a href="/people/<%= app.person_id %>" class="no-underline blue"><%= app.person_id %></a></td>
+      <td><%= app.name %></td>
+      <td><%= app.desc %></td>
+      <td><%= app.url %></td>
+      <td>
+          <span><%= link "View", to: Routes.app_path(@conn, :show, app),
+          class: "pointer br2 ba b--dark-blue bg-blue white pa3 ml1 mv1 f4
+                  bg-animate hover-bg-dark-blue border-box no-underline"
+           %>
+         </span>
+          <span><%= link "Edit", to: Routes.app_path(@conn, :edit, app),
+          class: "pointer br2 ba b--orange bg-gold white pa3 ml1 mv1 f4
+                  bg-animate hover-bg-orange border-box no-underline"
+          %></span>
+          <span>
+          <%= link "Delete", to: Routes.app_path(@conn, :delete, app),
+          method: :delete,
+          class: "pointer br2 ba b--dark-red bg-red white pa3 ml1 mv1 f4
+                  bg-animate hover-bg-dark-red border-box no-underline",
+          data:
+           [confirm: "Are you sure you want to delete this App?
+          (This cannot be undone!)"] %>
+          </span>
+        </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+  <span class="fr w-20 mt4 center">
+    <%= link "New App", to: Routes.app_path(@conn, :new),
+    class: "pointer br2 ba b--dark-green bg-green white pa3 ml1 mv1 f3
+    shadow-hover bg-animate hover-bg-dark-green border-box no-underline" %>
+  </span>
+
+
+  <style> /* stackoverflow.com/questions/9789723/css-text-overflow-table-cell */
+  td {
+      max-width: 400px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      text-align: center;
+      padding: 10px;
+  }
+  </style>

@@ -2,6 +2,13 @@ defmodule AuthWeb.AuthControllerTest do
   use AuthWeb.ConnCase
   # @email System.get_env("ADMIN_EMAIL")
 
+  @app_data %{
+    "name" => "example key",
+    "url" => "https://www.example.com",
+    "person_id" => 1,
+    "status" => 3
+  }
+
   test "GET /", %{conn: conn} do
     conn = get(conn, "/")
     assert html_response(conn, 200) =~ "Sign in"
@@ -22,8 +29,10 @@ defmodule AuthWeb.AuthControllerTest do
     }
 
     person = Auth.Person.create_person(data)
-    conn = AuthPlug.create_jwt_session(conn, Map.merge(data, %{id: person.id}))
-    |> get("/profile", %{})
+
+    conn =
+      AuthPlug.create_jwt_session(conn, Map.merge(data, %{id: person.id}))
+      |> get("/profile", %{})
 
     assert html_response(conn, 200) =~ "Google account"
   end
@@ -48,6 +57,49 @@ defmodule AuthWeb.AuthControllerTest do
 
     assert conn.resp_body =~ "state=http://localhost/admin"
   end
+
+  test "get_client_secret(client_id, state) gets the secret for the given client_id" do
+    {:ok, app} = Auth.App.create_app(@app_data)
+    key = List.first(app.apikeys)
+    state = "https://www.example.com/profile?auth_client_id=#{key.client_id}"
+    secret = AuthWeb.AuthController.get_client_secret(key.client_id, state)
+    assert secret == key.client_secret
+  end
+
+  test "get_client_secret/2 for non_admin key" do
+    person = non_admin_person()
+    app_data = Map.merge(@app_data, %{"person_id" => person.id})
+    {:ok, app} = Auth.App.create_app(app_data)
+    key = List.first(app.apikeys)
+    state = "#{app.url}/profile?auth_client_id=#{key.client_id}"
+    secret = AuthWeb.AuthController.get_client_secret(key.client_id, state)
+    assert secret == key.client_secret
+  end
+
+  test "get_client_secret(client_id, state) for 'deleted' apikey (non-admin)" do
+    person = non_admin_person()
+    {:ok, app} = Auth.App.create_app(Map.merge(@app_data, %{"person_id" => person.id}))
+    key = List.first(app.apikeys)
+    Auth.Apikey.update_apikey(Map.delete(key, :app), %{status: 6})
+    state = "#{app.url}/profile?auth_client_id=#{key.client_id}"
+    # Note: not sure what to assert here ... ¯\_(ツ)_/¯
+    # The API Key is "deleted" so it won't be found in the lookup
+    try do
+      AuthWeb.AuthController.get_client_secret(key.client_id, state)
+    rescue
+      e in BadMapError -> assert e == %BadMapError{term: nil}
+    end
+  end
+
+  # test "redirect_or_render assigns app_admin role if direct auth", %{conn: conn} do
+  #   conn = non_admin_login(conn)
+  #   IO.inspect(conn, label: "conn:96")
+  #   person = conn.assigns.person
+  #   IO.inspect(person, label: "person:98")
+
+  #   AuthWeb.AuthController.redirect_or_render(conn, person, "")
+  #   IO.inspect(conn, label: "conn:100")
+  # end
 
   test "github_handler/2 github auth callback", %{conn: conn} do
     baseurl = AuthPlug.Helpers.get_baseurl_from_conn(conn)
@@ -82,10 +134,8 @@ defmodule AuthWeb.AuthControllerTest do
   test "google_handler/2 show welcome page", %{conn: conn} do
     # Google Auth Mock makes the state https://www.example.com
     # so we need to create a new API_KEY with that url:
-    {:ok, key} =
-      %{"name" => "example key", "url" => "https://www.example.com"}
-      |> AuthWeb.ApikeyController.make_apikey(1)
-      |> Auth.Apikey.create_apikey()
+    {:ok, app} = Auth.App.create_app(@app_data)
+    key = List.first(app.apikeys)
 
     conn =
       get(conn, "/auth/google/callback", %{
@@ -107,10 +157,11 @@ defmodule AuthWeb.AuthControllerTest do
       auth_provider: "google"
     }
 
-    person = Auth.Person.upsert_person(data)
+    Auth.Person.upsert_person(data)
 
-    conn = AuthPlug.create_jwt_session(conn, person)
-    |> get("/auth/google/callback", %{"code" => "234", "state" => nil})
+    conn =
+      AuthPlug.create_jwt_session(conn, data)
+      |> get("/auth/google/callback", %{"code" => "234", "state" => nil})
 
     assert html_response(conn, 200) =~ "Google account"
   end
@@ -262,12 +313,12 @@ defmodule AuthWeb.AuthControllerTest do
   end
 
   test "password_create/2 create a new password", %{conn: conn} do
-    %{email: "anabela@mail.com", auth_provider: "email"}
+    %{email: "anabela@mail.com", auth_provider: "email", givenName: "timmy"}
     |> Auth.Person.upsert_person()
 
     params = %{
       "person" => %{
-        "email" => AuthWeb.ApikeyController.encrypt_encode("anabela@mail.com"),
+        "email" => Auth.Apikey.encrypt_encode("anabela@mail.com"),
         "password" => "thiswillbehashed"
       }
     }
@@ -279,7 +330,7 @@ defmodule AuthWeb.AuthControllerTest do
   test "password_create/2 display form when password not valid", %{conn: conn} do
     params = %{
       "person" => %{
-        "email" => AuthWeb.ApikeyController.encrypt_encode("anabela@mail.com"),
+        "email" => Auth.Apikey.encrypt_encode("anabela@mail.com"),
         "password" => "short"
       }
     }
@@ -299,6 +350,7 @@ defmodule AuthWeb.AuthControllerTest do
 
     link = AuthWeb.AuthController.make_verify_link(conn, person, state)
     link = "/auth/verify" <> List.last(String.split(link, "/auth/verify"))
+
     conn = get(conn, link, %{})
     assert html_response(conn, 302) =~ "redirected"
   end
@@ -319,7 +371,7 @@ defmodule AuthWeb.AuthControllerTest do
 
     params = %{
       "person" => %{
-        "email" => AuthWeb.ApikeyController.encrypt_encode(data.email),
+        "email" => Auth.Apikey.encrypt_encode(data.email),
         "password" => "thiswillbehashed",
         "state" => state
       }
@@ -345,7 +397,7 @@ defmodule AuthWeb.AuthControllerTest do
 
     params = %{
       "person" => %{
-        "email" => AuthWeb.ApikeyController.encrypt_encode(data.email),
+        "email" => Auth.Apikey.encrypt_encode(data.email),
         "password" => "fail",
         "state" => state
       }
