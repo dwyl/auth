@@ -124,4 +124,51 @@ defmodule Auth.Log do
   def stringify(map) when is_nil(map) do
     "nil"
   end
+
+  # get list of people for a given person
+  # Auth.Log.get_list_of_people_for_app()
+  def get_list_of_people(conn) do
+    apps = Auth.App.list_apps(conn) |> Enum.map(fn(a) -> a.id end)
+    apps = if length(apps) > 0, do: apps, else: [0]
+    query = """
+    SELECT l.app_id, l.person_id, p.status,
+    st.text as status, p."givenName", p.picture,
+    l.inserted_at, p.email, l.auth_provider, r.name
+    FROM (
+      SELECT DISTINCT ON (person_id) *
+      FROM logs
+      ORDER BY person_id, inserted_at DESC
+    ) l
+    JOIN people as p on l.person_id = p.id
+    JOIN status as st on p.status = st.id
+    JOIN people_roles as pr on p.id = pr.person_id
+    JOIN roles as r on pr.role_id = r.id
+    WHERE l.app_id in (#{Enum.join(apps, ",")})
+    ORDER BY l.inserted_at DESC
+    """
+    {:ok, result} = Repo.query(query)
+
+    Enum.map(result.rows, fn([aid, pid, sid, s, n, pic, iat, e, aup, role]) ->
+      %{
+        app_id: aid,
+        person_id: pid,
+        status: s,
+        status_id: sid,
+        updated_at: NaiveDateTime.truncate(iat, :second),
+        status: s,
+        givenName: decrypt(n),
+        person_id: pid,
+        picture: pic,
+        email: decrypt(e),
+        auth_provider: aup,
+        role: role
+      }
+    end)
+  end
+
+  defp decrypt(ciphertext) do
+    ciphertext
+    |> Fields.AES.decrypt()
+    |> to_string
+  end
 end
