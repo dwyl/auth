@@ -155,7 +155,11 @@ defmodule AuthWeb.AuthController do
             unauthorized(conn)
 
           secret ->
+            app_id = Auth.Apikey.decode_decrypt(secret)
+
             conn
+            |> assign(:person, person)
+            |> Auth.Log.info(%{status_id: 200, app_id: app_id})
             |> redirect(external: add_jwt_url_param(person, state, secret))
         end
 

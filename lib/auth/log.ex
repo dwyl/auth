@@ -68,14 +68,19 @@ defmodule Auth.Log do
   end
 
   def info(conn, params) do
+    Logger.info(stringify_conn_params(conn, params))
     insert(conn, params)
   end
 
   def error(conn, params) do
-    Logger.error(conn.method <> " " <> conn.request_path <> " > " <>
-      stringify(params) <>
-      " person:" <> stringify(Map.get(conn.assigns, :person)))
+    Logger.error(stringify_conn_params(conn, params))
     insert(conn, params)
+  end
+
+  def stringify_conn_params(conn, params) do
+    conn.method <> " " <> conn.request_path <>
+      " > " <> stringify(params) <>
+      " person:" <> stringify(Map.get(conn.assigns, :person))
   end
 
   def stringify(map) when is_map(map) do
