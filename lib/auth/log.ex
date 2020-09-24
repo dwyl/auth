@@ -5,6 +5,7 @@ defmodule Auth.Log do
   alias Auth.Repo
   import Ecto.Changeset
   use Ecto.Schema
+  require Logger
 
   schema "logs" do
     field :app_id, :id
@@ -31,7 +32,14 @@ defmodule Auth.Log do
     Repo.get_by(__MODULE__, id: id)
   end
 
-  def error(conn, params) do
+  def insert(conn, params) do
+    {auth_provider, person_id} = if Map.has_key?(conn.assigns, :person) do
+      aup = Map.get(conn.assigns.person, :auth_provider)
+      {aup, conn.assigns.person.id}
+    else
+      {nil, nil}
+    end
+
     uaid =
       if Map.has_key?(conn.assigns, :ua) do
         # user_agent string is available
@@ -44,13 +52,43 @@ defmodule Auth.Log do
 
     insert_log(
       Map.merge(params, %{
+        app_id: Map.get(params, :app_id, 1),
+        auth_provider: auth_provider,
+        person_id: person_id,
         request_path: conn.request_path,
-        user_agent_id: uaid,
-        app_id: Map.get(params, :app_id, 1)
+        user_agent_id: uaid
       })
     )
-
     # return conn so we can pipline the log
     conn
+  end
+
+  def info(conn, params) do
+    insert(conn, params)
+  end
+
+  def error(conn, params) do
+    Logger.error(conn.method <> " " <> conn.request_path <> " > " <>
+      stringify(params) <>
+      " person:" <> stringify(Map.get(conn.assigns, :person)))
+    insert(conn, params)
+  end
+
+  def stringify(map) when is_map(map) do
+    map
+    |> Map.delete(:__meta__)
+    |> Map.delete(:__struct__)
+    |> Map.keys()
+    |> Enum.map(fn key ->
+      if not is_nil(Map.get(map, key)) do
+        "#{key}:#{Map.get(map, key)}"
+      end
+    end)
+    |> Enum.filter(& !is_nil(&1))
+    |> Enum.join(", ")
+  end
+
+  def stringify(map) when is_nil(map) do
+    "nil"
   end
 end
