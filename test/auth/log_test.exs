@@ -4,10 +4,10 @@ defmodule Auth.LogTest do
   require Logger
 
   test "Auth.Log.error/2 inserts error log into db", %{conn: conn} do
-
-    conn = conn
-    |> Auth.UserAgent.assign_ua()
-    |> AuthWeb.AuthController.not_found("no content")
+    conn =
+      conn
+      |> Auth.UserAgent.assign_ua()
+      |> AuthWeb.AuthController.not_found("no content")
 
     assert conn.status == 404
 
@@ -21,5 +21,4 @@ defmodule Auth.LogTest do
     Logger.warn(inspect(log))
     # assert log.status_id == 404
   end
-
 end

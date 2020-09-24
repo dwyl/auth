@@ -35,15 +35,17 @@ defmodule AuthWeb.ApiController do
     else
       roles = Auth.PeopleRoles.get_roles_for_person_for_app(app_id, person_id)
 
-      roles = Enum.map(roles, fn role ->
-        # it's easier if we just control exactly what data we return:
-        %{
-          name: role.role.name,
-          desc: role.role.desc,
-          inserted_at: role.inserted_at,
-          role_id: role.role_id
-        }
-      end)
+      roles =
+        Enum.map(roles, fn role ->
+          # it's easier if we just control exactly what data we return:
+          %{
+            name: role.role.name,
+            desc: role.role.desc,
+            inserted_at: role.inserted_at,
+            role_id: role.role_id
+          }
+        end)
+
       json(conn, roles)
     end
   end

@@ -136,7 +136,8 @@ defmodule AuthWeb.ApiControllerTest do
       # roles = Auth.Role.list_roles_for_app(app.id)
       key = List.first(app.apikeys)
       # IO.inspect(app, label: "app")
-      conn = conn
+      conn =
+        conn
         |> put_req_header("accept", "application/json")
         |> get("/personroles/#{grantee.id}/#{key.client_id}")
 

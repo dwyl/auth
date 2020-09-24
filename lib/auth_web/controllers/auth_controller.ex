@@ -360,6 +360,7 @@ defmodule AuthWeb.AuthController do
         msg = """
         That password is incorrect.
         """
+
         Auth.Log.error(conn, %{email: email, app_id: app_id, status_id: 401})
         render_password_form(conn, email, msg, p["state"], "password_prompt")
     end

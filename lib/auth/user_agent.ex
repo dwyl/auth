@@ -29,9 +29,7 @@ defmodule Auth.UserAgent do
   end
 
   def get_by(name, ip) do
-    Repo.one(
-      from(u in __MODULE__, where: u.name == ^name and u.ip_address_hash == ^ip)
-    )
+    Repo.one(from(u in __MODULE__, where: u.name == ^name and u.ip_address_hash == ^ip))
   end
 
   # it makes sense for the Auth.UserAgent.upsert/1 to accept the Plug.Conn
@@ -39,11 +37,13 @@ defmodule Auth.UserAgent do
   def upsert(conn) do
     ip = get_ip_address(conn)
     name = get_user_agent_string(conn)
+
     case get_by(name, ip) do
       # not found, insert it:
       nil ->
         {:ok, ua} = Repo.insert(changeset(%{name: name, ip_address: ip}))
         ua
+
       ua ->
         ua
     end
@@ -78,9 +78,10 @@ defmodule Auth.UserAgent do
     # Fields.Helpers.hash/2 hashes ua.name with salt so it's difficult to guess
     # see: https://hexdocs.pm/fields/Fields.Helpers.html#hash/2
     hash =
-    Fields.Helpers.hash(:sha256, ua.name)
-    |> Base.encode64()
-    |> String.slice(0..8)
+      Fields.Helpers.hash(:sha256, ua.name)
+      |> Base.encode64()
+      |> String.slice(0..8)
+
     "#{ua.id}|#{hash}"
   end
 end

@@ -71,9 +71,10 @@ defmodule Auth.PeopleRoles do
   def get_roles_for_person_for_app(app_id, person_id) do
     Repo.all(
       from(pr in __MODULE__,
-        where: pr.person_id == ^person_id
-        and pr.app_id == ^app_id
-        and is_nil(pr.revoked),
+        where:
+          pr.person_id == ^person_id and
+            pr.app_id == ^app_id and
+            is_nil(pr.revoked),
         preload: [:role]
       )
     )

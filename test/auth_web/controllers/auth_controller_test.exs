@@ -23,6 +23,7 @@ defmodule AuthWeb.AuthControllerTest do
         state: "any"
       }
     }
+
     conn = get(conn, "/", person: params)
     assert html_response(conn, 200) =~ "Sign in"
   end
