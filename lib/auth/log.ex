@@ -42,12 +42,12 @@ defmodule Auth.Log do
       ua.id
     end
 
-    IO.inspect(params, label: "params:45")
     insert_log(Map.merge(params, %{
       request_path: conn.request_path,
       user_agent_id: uaid,
       app_id: Map.get(params, :app_id, 1)
     }))
+
     # return conn so we can pipline the log
     conn
   end
