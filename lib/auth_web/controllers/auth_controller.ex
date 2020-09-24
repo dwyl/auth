@@ -429,6 +429,12 @@ defmodule AuthWeb.AuthController do
   end
 
   def session_data(person) do
+    roles = if Map.has_key?(person, :roles) do
+      RBAC.transform_role_list_to_string(person.roles)
+    else
+      nil
+    end
+
     %{
       auth_provider: person.auth_provider,
       givenName: person.givenName,
@@ -436,7 +442,7 @@ defmodule AuthWeb.AuthController do
       picture: person.picture,
       status: person.status,
       email: person.email,
-      roles: RBAC.transform_role_list_to_string(person.roles),
+      roles: roles,
       app_id: person.app_id
     }
   end

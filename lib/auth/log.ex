@@ -38,22 +38,11 @@ defmodule Auth.Log do
   end
 
   def insert(conn, params) do
-    {auth_provider, person_id} = if Map.has_key?(conn.assigns, :person) do
-      aup = Map.get(conn.assigns.person, :auth_provider)
-      {aup, conn.assigns.person.id}
-    else
-      if Map.has_key?(params, :person_id) do
-        {nil, params.person_id}
-      else
-        {nil, nil}
-      end
-    end
-
     insert_log(
       Map.merge(params, %{
         app_id: Map.get(params, :app_id, 1),
-        auth_provider: auth_provider,
-        person_id: person_id,
+        auth_provider: get_auth_provider(conn, params),
+        person_id: get_person_id(conn, params),
         request_path: conn.request_path,
         user_agent_id: get_user_agent_id(conn),
         email: get_email(conn, params)
@@ -61,6 +50,16 @@ defmodule Auth.Log do
     )
     # return conn so we can pipline the log
     conn
+  end
+
+  def info(conn, params) do
+    Logger.info(stringify_conn_params(conn, params))
+    insert(conn, params)
+  end
+
+  def error(conn, params) do
+    Logger.error(stringify_conn_params(conn, params))
+    insert(conn, params)
   end
 
   defp get_user_agent_id(conn) do
@@ -78,35 +77,29 @@ defmodule Auth.Log do
     if Map.has_key?(conn.assigns, :person) do
       Map.get(conn.assigns.person, :email)
     else
-      if Map.has_key?(params, :email) do
-        Map.get(params, :email)
-      else
-        nil
-      end
+      Map.get(params, :email)
     end
   end
 
-  def info(conn, params) do
-    Logger.info(stringify_conn_params(conn, params))
-    insert(conn, params)
+  defp stringify_conn_params(conn, params) do
+    conn.method <> " " <> conn.request_path
+    <> " > " <> stringify(params)
+    <> " person:#{get_person_id(conn, params)}"
   end
 
-  def error(conn, params) do
-    Logger.error(stringify_conn_params(conn, params))
-    insert(conn, params)
+  defp get_auth_provider(conn, params) do
+    if Map.has_key?(conn.assigns, :person) do
+      conn.assigns.person.auth_provider
+    else
+      Map.get(params, :auth_provider)
+    end
   end
 
-  def stringify_conn_params(conn, params) do
-    conn.method <> " " <> conn.request_path <>
-      " > " <> stringify(params) <>
-      " person:" <> get_person_id(conn)
-  end
-
-  def get_person_id(conn) do
+  defp get_person_id(conn, params) do
     if Map.has_key?(conn.assigns, :person) do
       conn.assigns.person.id
     else
-      "nil"
+      Map.get(params, :person_id)
     end
   end
 
@@ -114,7 +107,7 @@ defmodule Auth.Log do
     map
     |> Map.delete(:__meta__)
     |> Map.delete(:__struct__)
-    # avoid leaking PII data in logs
+    # avoid leaking personal data in logs
     |> Map.delete(:email)
     |> Map.keys()
     |> Enum.map(fn key ->
