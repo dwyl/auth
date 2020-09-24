@@ -158,5 +158,15 @@ defmodule AuthWeb.AppControllerTest do
       conn = get(conn, Routes.app_path(conn, :resetapikey, app))
       assert html_response(conn, 404) =~ "can't touch this."
     end
+
+    # ref: https://github.com/dwyl/auth/issues/124
+    test "regression test for reset apikeys", %{conn: conn, app: app} do
+      conn = admin_login(conn)
+      # get apikey before reset:
+      apikey1 = Auth.Apikey.get_apikey_by_app_id(app.id)
+      get(conn, Routes.app_path(conn, :resetapikey, app))
+      apikey2 = Auth.Apikey.get_apikey_by_app_id(app.id)
+      assert apikey1.id + 1 == apikey2.id
+    end
   end
 end
