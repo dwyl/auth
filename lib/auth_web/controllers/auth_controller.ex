@@ -139,7 +139,7 @@ defmodule AuthWeb.AuthController do
   end
 
   @doc """
-  `redirect_or_render/3` does what it's name suggests,
+  ` ` does what it's name suggests,
   redirects if the `state` (HTTP referer) is defined
   or renders the default `:welcome` template.
   If the `auth_client_id` is undefined or invalid,
@@ -152,14 +152,12 @@ defmodule AuthWeb.AuthController do
       true ->
         case get_client_secret_from_state(state) do
           0 ->
-            unauthorized(conn)
+            unauthorized(conn, "invalid AUTH_API_KEY")
 
           secret ->
-            app_id = Auth.Apikey.decode_decrypt(secret)
-
             conn
-            |> assign(:person, person)
-            |> Auth.Log.info(%{status_id: 200, app_id: app_id})
+            |> AuthPlug.create_jwt_session(session_data(person))
+            |> Auth.Log.info(%{status_id: 200, app_id: get_app_id(state)})
             |> redirect(external: add_jwt_url_param(person, state, secret))
         end
 
@@ -168,25 +166,31 @@ defmodule AuthWeb.AuthController do
         # Grant app_admin role to person who authenticated directly on auth app
         # Auth.PeopleRoles.insert(1, person.id, 8)
         conn
-        |> AuthPlug.create_jwt_session(person)
+        |> AuthPlug.create_jwt_session(session_data(person))
         |> Auth.Log.info(%{status_id: 200, app_id: 1})
         |> render(:welcome, person: person, apps: App.list_apps(person.id))
     end
   end
 
   # create a human-friendy response?
-  def unauthorized(conn) do
+  def unauthorized(conn, message \\ nil) do
+    msg =
+      if is_nil(message) do
+        "invalid AUTH_API_KEY/client_id please check"
+      else
+        message
+      end
     conn
-    |> Auth.Log.error(%{status_id: 401})
+    |> Auth.Log.error(%{status_id: 401, msg: msg})
     |> put_resp_content_type("text/html")
-    |> send_resp(401, "invalid AUTH_API_KEY/client_id please check.")
+    |> send_resp(401, msg)
     |> halt()
   end
 
   # refactor this to render a template with a nice layout? #HelpWanted
   def not_found(conn, message) do
     conn
-    |> Auth.Log.error(%{status_id: 404})
+    |> Auth.Log.error(%{status_id: 404, msg: message})
     |> put_resp_content_type("text/html")
     |> send_resp(404, message)
     |> halt()
@@ -424,8 +428,8 @@ defmodule AuthWeb.AuthController do
     end
   end
 
-  def add_jwt_url_param(person, state, client_secret) do
-    data = %{
+  def session_data(person) do
+    %{
       auth_provider: person.auth_provider,
       givenName: person.givenName,
       id: person.id,
@@ -435,9 +439,10 @@ defmodule AuthWeb.AuthController do
       roles: RBAC.transform_role_list_to_string(person.roles),
       app_id: person.app_id
     }
+  end
 
-    jwt = AuthPlug.Token.generate_jwt!(data, client_secret)
-
+  def add_jwt_url_param(person, state, client_secret) do
+    jwt = AuthPlug.Token.generate_jwt!(session_data(person), client_secret)
     List.first(String.split(URI.decode(state), "?")) <>
       "?jwt=" <> jwt
   end

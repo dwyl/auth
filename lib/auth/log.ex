@@ -10,6 +10,7 @@ defmodule Auth.Log do
   schema "logs" do
     field :app_id, :id
     field :email, Fields.Encrypted
+    field :msg, :string
     field :person_id, :id
     field :request_path, Fields.Encrypted
     field :status_id, :id
@@ -80,7 +81,15 @@ defmodule Auth.Log do
   def stringify_conn_params(conn, params) do
     conn.method <> " " <> conn.request_path <>
       " > " <> stringify(params) <>
-      " person:" <> stringify(Map.get(conn.assigns, :person))
+      " person:" <> get_person_id(conn)
+  end
+
+  def get_person_id(conn) do
+    if Map.has_key?(conn.assigns, :person) do
+      conn.assigns.person.id
+    else
+      "nil"
+    end
   end
 
   def stringify(map) when is_map(map) do
