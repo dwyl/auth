@@ -8,7 +8,7 @@ defmodule AuthWeb.PeopleController do
   `index/2` lists all the people who have authenticated with the auth app.
   """
   def index(conn, _params) do
-    people = Auth.Log.get_list_of_people(conn)
+    people = Auth.Person.get_list_of_people(conn)
     if length(people) > 0 do
       render(conn, :index, people: people)
     else

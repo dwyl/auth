@@ -278,39 +278,59 @@ defmodule Auth.Person do
   end
 
   # @doc """
-  # `list_people/0` lists all people in the system.
+  # `get_list_of_people/1` retrieves the list of people
+  # that a given logged in person can see for all the Apps they have.
   # Used for displaying the table of authenticated people.
   # """
-  # def list_people do
-  #   Repo.all(from(pr in __MODULE__, preload: [:roles, :statuses]))
-    # keeping this query commented here for now in case I decide to use it
-    # instead of having to call PeopleView.status_string/2
-    # query = """
-    # SELECT DISTINCT ON (s.status_id, s.person_id) s.id, s.message_id,
-    # s.updated_at, s.template, st.text as status, s.person_id
-    # FROM sent s
-    # JOIN status as st on s.status_id = st.id
-    # WHERE s.message_id IS NOT NULL
-    # """
-    # {:ok, result} = Repo.query(query)
+  def get_list_of_people(conn) do
+    # IO.inspect(conn.assigns.person)
+    apps = Auth.App.list_apps(conn) |> Enum.map(fn(a) -> a.id end)
+    app_ids = if length(apps) > 0, do: Enum.join(apps, ","), else: "0"
+    query = """
+    SELECT l.app_id, l.person_id, p.status,
+    st.text as status, p."givenName", p.picture,
+    l.inserted_at, p.email, l.auth_provider, r.name
+    FROM (
+      SELECT DISTINCT ON (person_id) *
+      FROM logs
+      ORDER BY person_id, inserted_at DESC
+    ) l
+    JOIN people as p on l.person_id = p.id
+    LEFT JOIN status as st on p.status = st.id
+    LEFT JOIN people_roles as pr on p.id = pr.person_id
+    LEFT JOIN roles as r on pr.role_id = r.id
+    WHERE l.app_id in (#{app_ids})
+    ORDER BY l.inserted_at DESC
+    NULLS LAST
+    """
+    {:ok, result} = Repo.query(query)
 
-    # # create List of Maps from the result.rows:
-    # Enum.map(result.rows, fn([id, mid, iat, t, s, pid]) ->
-    #   # e = Fields.AES.decrypt(e)
-    #   # e = case e !== :error and e =~ "@" do
-    #   #   true -> e |> String.split("@") |> List.first
-    #   #   false -> e
-    #   # end
-    #   %{
-    #     id: id,
-    #     message_id: mid,
-    #     updated_at: NaiveDateTime.truncate(iat, :second),
-    #     template: t,
-    #     status: s,
-    #     person_id: pid,
-    #     email: ""
-    #   }
-    # end)
-    # |> Enum.sort(&(&1.id > &2.id))
-  # end
+    Enum.map(result.rows, fn([aid, pid, sid, s, n, pic, iat, e, aup, role]) ->
+      %{
+        app_id: aid,
+        person_id: pid,
+        status: s,
+        status_id: sid,
+        updated_at: NaiveDateTime.truncate(iat, :second),
+        givenName: decrypt(n),
+        picture: pic,
+        email: decrypt(e),
+        auth_provider: aup,
+        role: role
+      }
+    end)
+  end
+
+  def decrypt(ciphertext) do
+    if not is_nil(ciphertext) do
+      e = Fields.AES.decrypt(ciphertext)
+      if(e == :error) do
+        nil
+      else
+        e
+      end
+    else
+      nil
+    end
+  end
 end
