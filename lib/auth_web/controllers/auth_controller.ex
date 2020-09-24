@@ -165,6 +165,7 @@ defmodule AuthWeb.AuthController do
         # Auth.PeopleRoles.insert(1, person.id, 8)
         conn
         |> AuthPlug.create_jwt_session(person)
+        |> Auth.Log.info(%{status_id: 200, app_id: 1})
         |> render(:welcome, person: person, apps: App.list_apps(person.id))
     end
   end

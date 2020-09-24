@@ -16,8 +16,7 @@ defmodule Auth.LogTest do
 
     assert conn.assigns.ua == ua_string
 
-    log = Auth.Log.get_by_id(1)
-    Logger.info(Auth.Log.stringify(log))
-    # assert log.status_id == 404
+    log = List.last(Auth.Log.get_all())
+    assert log.status_id == 404
   end
 end

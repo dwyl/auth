@@ -28,8 +28,12 @@ defmodule Auth.Log do
     |> Repo.insert!()
   end
 
-  def get_by_id(id) do
-    Repo.get_by(__MODULE__, id: id)
+  # def get_by_id(id) do
+  #   Repo.get_by(__MODULE__, id: id)
+  # end
+
+  def get_all() do
+    Repo.all(__MODULE__)
   end
 
   def insert(conn, params) do
