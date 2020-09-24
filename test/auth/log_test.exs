@@ -51,7 +51,8 @@ defmodule Auth.LogTest do
     # insert log entry:
     Auth.Log.error(conn, %{
       status_id: 401, msg: msg, email: email,
-      app_id: app.id, person_id: person.id
+      app_id: app.id, person_id: person.id,
+      auth_provider: "email"
     })
     # retrieve log entry:
     log = List.first(Auth.Log.get_all())
@@ -61,5 +62,6 @@ defmodule Auth.LogTest do
     assert log.msg == msg
     assert log.email == email
     assert log.app_id == app.id
+    assert log.auth_provider == "email"
   end
 end

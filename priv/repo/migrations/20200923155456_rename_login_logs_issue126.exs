@@ -8,6 +8,7 @@ defmodule Auth.Repo.Migrations.RenameLoginLogsIssue126 do
     alter table(:logs) do
       remove :ip_address
       add :app_id, references(:apps, on_delete: :nothing)
+      add :auth_provider, :string
       add :msg, :string
       add :request_path, :binary
       add :status_id, references(:status, on_delete: :nothing)

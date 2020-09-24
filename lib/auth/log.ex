@@ -9,6 +9,7 @@ defmodule Auth.Log do
 
   schema "logs" do
     field :app_id, :id
+    field :auth_provider, :string
     field :email, Fields.Encrypted
     field :msg, :string
     field :person_id, :id
@@ -20,7 +21,8 @@ defmodule Auth.Log do
 
   @doc false
   def changeset(login_log, attrs) do
-    cast(login_log, attrs, [:app_id, :email, :msg, :person_id, :request_path, :status_id, :user_agent_id])
+    cast(login_log, attrs, [:app_id, :auth_provider, :email, :msg, :person_id,
+      :request_path, :status_id, :user_agent_id])
   end
 
   def insert_log(log) do
