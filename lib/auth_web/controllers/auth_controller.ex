@@ -11,29 +11,9 @@ defmodule AuthWeb.AuthController do
     render(conn, :welcome, apps: App.list_apps(conn.assigns.person.id))
   end
 
-  defp get_user_agent_string(conn) do
-    user_agent_header =
-      Enum.filter(conn.req_headers, fn {k, _} ->
-        k == "user-agent"
-      end)
-
-    case user_agent_header do
-      [{_, ua}] -> ua
-      _ -> "undefined_user_agent"
-    end
-  end
-
-  defp get_user_agent(conn) do
-    conn
-    |> get_user_agent_string()
-    |> Auth.UserAgent.get_or_insert_user_agent()
-  end
-
-  defp get_ip_address(conn) do
-    Enum.join(Tuple.to_list(conn.remote_ip), ".")
-  end
-
   def index(conn, params) do
+    # IO.inspect(conn, label: "index:37 conn")
+    # IO.inspect(params, label: "index:38 params")
     params_person = Map.get(params, "person")
 
     email =
@@ -45,8 +25,7 @@ defmodule AuthWeb.AuthController do
       end
 
     state =
-      if not is_nil(params_person) and
-           not is_nil(Map.get(params_person, "state")) do
+      if not is_nil(params_person) and Map.has_key?(params_person, "state") do
         Map.get(params_person, "state")
       else
         # get from headers
@@ -193,6 +172,7 @@ defmodule AuthWeb.AuthController do
   # create a human-friendy response?
   def unauthorized(conn) do
     conn
+    |> Auth.Log.error(%{status_id: 401})
     |> put_resp_content_type("text/html")
     |> send_resp(401, "invalid AUTH_API_KEY/client_id please check.")
     |> halt()
@@ -201,6 +181,7 @@ defmodule AuthWeb.AuthController do
   # refactor this to render a template with a nice layout? #HelpWanted
   def not_found(conn, message) do
     conn
+    |> Auth.Log.error(%{status_id: 404})
     |> put_resp_content_type("text/html")
     |> send_resp(404, message)
     |> halt()
@@ -219,18 +200,11 @@ defmodule AuthWeb.AuthController do
     p = params["person"]
     email = p["email"]
     state = p["state"]
+    app_id = get_app_id(state)
 
     # email is blank or invalid:
     if is_nil(email) or not Fields.Validate.email(email) do
-      # intialise login log data
-      login_log = %{
-        user_agent_id: get_user_agent(conn).id,
-        person_id: nil,
-        ip_address: get_ip_address(conn),
-        email: email
-      }
-
-      Auth.LoginLog.create_login_log(login_log)
+      Auth.Log.error(conn, %{email: email, app_id: app_id, status_id: 401})
 
       # email invalid, re-render the login/register form:
       index(conn, params)
@@ -371,8 +345,12 @@ defmodule AuthWeb.AuthController do
   # verify the password
   def password_prompt(conn, params) do
     p = params["person"]
+    # IO.inspect(p["email"])
     email = Auth.Person.decrypt_email(p["email"])
+    # IO.inspect(email, label: "email:349")
     person = Auth.Person.get_person_by_email(email)
+    state = p["state"]
+    app_id = get_app_id(state)
 
     case Argon2.verify_pass(p["password"], person.password_hash) do
       true ->
@@ -382,19 +360,7 @@ defmodule AuthWeb.AuthController do
         msg = """
         That password is incorrect.
         """
-
-        user_agent = get_user_agent(conn)
-        ip_address = get_ip_address(conn)
-
-        login_log = %{
-          user_agent_id: user_agent.id,
-          person_id: person.id,
-          ip_address: ip_address,
-          email: person.email
-        }
-
-        Auth.LoginLog.create_login_log(login_log)
-
+        Auth.Log.error(conn, %{email: email, app_id: app_id, status_id: 401})
         render_password_form(conn, email, msg, p["state"], "password_prompt")
     end
   end

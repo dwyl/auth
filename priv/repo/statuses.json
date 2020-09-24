@@ -80,6 +80,11 @@
     "desc": "when authentication is required and has failed"
   },
   {
+    "text": "Forbidden", 
+    "id": "403",
+    "desc": "request forbidden"
+  },
+  {
     "text": "Not Found", 
     "id": "404",
     "desc": "requested resource could not be found"

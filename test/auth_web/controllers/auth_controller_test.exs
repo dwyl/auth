@@ -14,6 +14,19 @@ defmodule AuthWeb.AuthControllerTest do
     assert html_response(conn, 200) =~ "Sign in"
   end
 
+  test "invoke index/2 with email and state", %{conn: conn} do
+    person = non_admin_person()
+
+    params = %{
+      person: %{
+        email: person.email,
+        state: "any"
+      }
+    }
+    conn = get(conn, "/", person: params)
+    assert html_response(conn, 200) =~ "Sign in"
+  end
+
   test "GET /profile (without valid session should redirect)", %{conn: conn} do
     conn = get(conn, "/profile")
     # assert html_response(conn, 301) =~ "Login"

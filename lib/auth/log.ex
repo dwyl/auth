@@ -11,7 +11,7 @@ defmodule Auth.Log do
     field :email, Fields.Encrypted
     field :person_id, :id
     field :request_path, Fields.Encrypted
-    field :status, :id
+    field :status_id, :id
     field :user_agent_id, :id
     timestamps()
   end
@@ -28,15 +28,30 @@ defmodule Auth.Log do
     |> Repo.insert!()
   end
 
+  def get_by_id(id) do
+    Repo.get_by(__MODULE__, id: id)
+  end
+
 
   # unauthenticated auth request
   def error(conn, params) do
-    ua = if is_nil(conn.assigns.person) || is_nil(conn.assigns.person.ua) do
-      # no user_agent string in conn
-      ""
-    else
+    # IO.inspect(conn, label: "conn:34")
+    # IO.inspect(conn.assigns, label: "conn.assigns:34")
+    uaid = if Map.has_key?(conn.assigns, :ua) do
       # user_agent string is available
-      conn.assigns.person.ua
+      # IO.inspect(conn.assigns.ua, label: "conn.assigns.ua")
+      List.first(String.split(conn.assigns.ua, "|"))
+    else
+      # no user_agent string in conn
+      ua = Auth.UserAgent.upsert(conn)
+      ua.id
     end
+
+    insert_log(Map.merge(params, %{
+      request_path: conn.request_path,
+      user_agent_id: uaid
+    }))
+
+    conn
   end
 end

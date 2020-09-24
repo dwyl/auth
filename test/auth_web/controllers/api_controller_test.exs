@@ -141,6 +141,7 @@ defmodule AuthWeb.ApiControllerTest do
         |> get("/personroles/#{grantee.id}/#{key.client_id}")
 
       assert conn.status == 200
+      # IO.inspect(conn, label: "conn:144")
       {:ok, json} = Jason.decode(conn.resp_body)
       # IO.inspect(json)
       assert length(json) == 2

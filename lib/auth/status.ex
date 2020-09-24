@@ -19,6 +19,7 @@ defmodule Auth.Status do
     status
     |> cast(attrs, [:text, :desc, :id])
     |> validate_required([:text])
+    |> unique_constraint(:text)
   end
 
   def create_status(attrs, person) do

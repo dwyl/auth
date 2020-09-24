@@ -9,7 +9,7 @@ defmodule Auth.Repo.Migrations.RenameLoginLogsIssue126 do
       remove :ip_address
       add :app_id, references(:apps, on_delete: :nothing)
       add :request_path, :binary
-      add :status, references(:status, on_delete: :nothing)
+      add :status_id, references(:status, on_delete: :nothing)
     end
 
     # :ip_address is encrypted so we can decrypt it later

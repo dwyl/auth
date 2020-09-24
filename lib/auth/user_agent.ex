@@ -8,7 +8,7 @@ defmodule Auth.UserAgent do
   import Plug.Conn
   alias Auth.Repo
   # https://stackoverflow.com/a/47501059/1148249
-  alias __MODULE__
+  # alias __MODULE__
 
   schema "user_agents" do
     field :name, :string
@@ -34,6 +34,8 @@ defmodule Auth.UserAgent do
     )
   end
 
+  # it makes sense for the Auth.UserAgent.upsert/1 to accept the Plug.Conn
+  # because that's where the IP Address and User Agent info are.
   def upsert(conn) do
     ip = get_ip_address(conn)
     name = get_user_agent_string(conn)
