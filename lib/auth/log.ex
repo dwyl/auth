@@ -49,7 +49,7 @@ defmodule Auth.Log do
         user_agent_id: get_user_agent_id(conn),
         email: get_email(conn, params)
       })
-    )
+    ) # |> IO.inspect()
     # return conn so we can pipline the log
     conn
   end
@@ -98,10 +98,14 @@ defmodule Auth.Log do
   end
 
   defp get_person_id(conn, params) do
-    if Map.has_key?(conn.assigns, :person) do
-      conn.assigns.person.id
+    if Map.has_key?(params, :person_id) do
+      params.person_id
     else
-      Map.get(params, :person_id)
+      if Map.has_key?(conn.assigns, :person) do
+        conn.assigns.person.id
+      else
+        nil
+      end
     end
   end
 
@@ -128,8 +132,9 @@ defmodule Auth.Log do
   # get list of people for a given person
   # Auth.Log.get_list_of_people_for_app()
   def get_list_of_people(conn) do
+    # IO.inspect(conn.assigns.person)
     apps = Auth.App.list_apps(conn) |> Enum.map(fn(a) -> a.id end)
-    apps = if length(apps) > 0, do: apps, else: [0]
+    app_ids = if length(apps) > 0, do: Enum.join(apps, ","), else: "0"
     query = """
     SELECT l.app_id, l.person_id, p.status,
     st.text as status, p."givenName", p.picture,
@@ -140,11 +145,12 @@ defmodule Auth.Log do
       ORDER BY person_id, inserted_at DESC
     ) l
     JOIN people as p on l.person_id = p.id
-    JOIN status as st on p.status = st.id
-    JOIN people_roles as pr on p.id = pr.person_id
-    JOIN roles as r on pr.role_id = r.id
-    WHERE l.app_id in (#{Enum.join(apps, ",")})
+    LEFT JOIN status as st on p.status = st.id
+    LEFT JOIN people_roles as pr on p.id = pr.person_id
+    LEFT JOIN roles as r on pr.role_id = r.id
+    WHERE l.app_id in (#{app_ids})
     ORDER BY l.inserted_at DESC
+    NULLS LAST
     """
     {:ok, result} = Repo.query(query)
 
@@ -155,9 +161,7 @@ defmodule Auth.Log do
         status: s,
         status_id: sid,
         updated_at: NaiveDateTime.truncate(iat, :second),
-        status: s,
         givenName: decrypt(n),
-        person_id: pid,
         picture: pic,
         email: decrypt(e),
         auth_provider: aup,
@@ -166,9 +170,16 @@ defmodule Auth.Log do
     end)
   end
 
-  defp decrypt(ciphertext) do
-    ciphertext
-    |> Fields.AES.decrypt()
-    |> to_string
+  def decrypt(ciphertext) do
+    if not is_nil(ciphertext) do
+      e = Fields.AES.decrypt(ciphertext)
+      if(e == :error) do
+        nil
+      else
+        e
+      end
+    else
+      nil
+    end
   end
 end

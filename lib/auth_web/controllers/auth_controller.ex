@@ -11,14 +11,20 @@ defmodule AuthWeb.AuthController do
     render(conn, :welcome, apps: App.list_apps(conn.assigns.person.id))
   end
 
+  # def index(%{assigns: %{person: _}} = conn, _params) do
+  #   person = conn.assigns.person
+  #   conn
+  #   |> AuthPlug.create_jwt_session(session_data(person))
+  #   |> Auth.Log.info(%{status_id: 200, app_id: person.app_id})
+  #   |> render(:welcome, person: person, apps: App.list_apps(person.id))
+  # end
+
   def index(conn, params) do
-    # IO.inspect(conn, label: "index:37 conn")
-    # IO.inspect(params, label: "index:38 params")
     params_person = Map.get(params, "person")
 
     email =
       if not is_nil(params_person) and
-           not is_nil(Map.get(params_person, "email")) do
+          not is_nil(Map.get(params_person, "email")) do
         Map.get(Map.get(params, "person"), "email")
       else
         nil
@@ -213,7 +219,7 @@ defmodule AuthWeb.AuthController do
 
     # email is blank or invalid:
     if is_nil(email) or not Fields.Validate.email(email) do
-      Auth.Log.error(conn, %{email: email, app_id: app_id, status_id: 401})
+      Auth.Log.error(conn, %{email: email, app_id: app_id, status_id: 401, msg: "email invalid"})
 
       # email invalid, re-render the login/register form:
       index(conn, params)

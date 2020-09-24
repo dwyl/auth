@@ -89,7 +89,7 @@ defmodule Auth.PeopleRoles do
   """
   def insert(app_id, grantee_id, granter_id, role_id) do
     %PeopleRoles{}
-    |> cast(%{granter_id: granter_id}, [:granter_id])
+    |> cast(%{app_id: app_id, granter_id: granter_id}, [:app_id, :granter_id])
     |> put_assoc(:app, Auth.App.get_app!(app_id))
     |> put_assoc(:person, Auth.Person.get_person_by_id(grantee_id))
     |> put_assoc(:role, Auth.Role.get_role!(role_id))

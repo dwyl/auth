@@ -8,18 +8,11 @@ defmodule AuthWeb.PeopleController do
   `index/2` lists all the people who have authenticated with the auth app.
   """
   def index(conn, _params) do
-    # should be visible to superadmin and people with "admin" role
-    if conn.assigns.person.id == 1 do
-      render(conn, :index,
-        people: Auth.Person.list_people(),
-        roles: Auth.Role.list_roles(),
-        statuses: Auth.Status.list_statuses(),
-        apps: Auth.App.list_apps(conn)
-      )
-
-      # Note: this can easily be refactored to save on DB queries. #HelpWanted
+    people = Auth.Log.get_list_of_people(conn)
+    if length(people) > 0 do
+      render(conn, :index, people: people)
     else
-      AuthWeb.AuthController.not_found(conn, "Only admins can see people ... for now!")
+      AuthWeb.AuthController.not_found(conn, "No People Using Your App, Yet!")
     end
   end
 
