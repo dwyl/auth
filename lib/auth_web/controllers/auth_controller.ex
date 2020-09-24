@@ -415,6 +415,10 @@ defmodule AuthWeb.AuthController do
       apikey = Auth.Apikey.get_apikey_by_app_id(app_id)
 
       cond do
+        # if the apikey isn't found it will be nil
+        is_nil(apikey) ->
+          0
+
         apikey.app.person_id == 1 ->
           apikey.client_secret
 
