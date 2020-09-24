@@ -4,7 +4,7 @@ defmodule Auth.Person do
   """
   use Ecto.Schema
   import Ecto.Changeset
-  import Ecto.Query
+  # import Ecto.Query
   alias Auth.Repo
   # https://stackoverflow.com/a/47501059/1148249
   alias __MODULE__
@@ -276,12 +276,13 @@ defmodule Auth.Person do
         0
     end
   end
-  @doc """
-  `list_people/0` lists all people in the system.
-  Used for displaying the table of authenticated people.
-  """
-  def list_people do
-    Repo.all(from(pr in __MODULE__, preload: [:roles, :statuses]))
+
+  # @doc """
+  # `list_people/0` lists all people in the system.
+  # Used for displaying the table of authenticated people.
+  # """
+  # def list_people do
+  #   Repo.all(from(pr in __MODULE__, preload: [:roles, :statuses]))
     # keeping this query commented here for now in case I decide to use it
     # instead of having to call PeopleView.status_string/2
     # query = """
@@ -311,5 +312,5 @@ defmodule Auth.Person do
     #   }
     # end)
     # |> Enum.sort(&(&1.id > &2.id))
-  end
+  # end
 end

@@ -22,7 +22,7 @@ defmodule AuthWeb.PeopleControllerTest do
     assert conn.status == 302
   end
 
-  test "Non-admin can see /people relevant to their App", %{conn: conn} do
+  test "Non-admin can see /people relevant to their App(s)", %{conn: conn} do
     conn = non_admin_login(conn)
     person = conn.assigns.person
     app = create_app_for_person(person)
@@ -37,6 +37,13 @@ defmodule AuthWeb.PeopleControllerTest do
     conn = get(conn, "/people")
     assert html_response(conn, 200) =~ "People Authenticated"
   end
+
+  test "Non-admin without app cannot see any people", %{conn: conn} do
+    conn = non_admin_login(conn)
+    conn = get(conn, "/people")
+    assert html_response(conn, 404) =~ "No People Using"
+  end
+
 
   test "GET /people/:person_id displays person", %{conn: conn} do
     conn = get(admin_login(conn), "/people/1")
