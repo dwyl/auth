@@ -1,6 +1,6 @@
 defmodule Auth.Log do
   @moduledoc """
-  Defines login_logs schema and CRUD functions
+  Defines logs schema and CRUD functions
   """
   alias Auth.Repo
   import Ecto.Changeset
@@ -18,8 +18,7 @@ defmodule Auth.Log do
 
   @doc false
   def changeset(login_log, attrs) do
-    login_log
-    |> cast(attrs, [:email, :request_path, :person_id, :user_agent_id, :status_id])
+    cast(login_log, attrs, [:email, :request_path, :person_id, :user_agent_id, :status_id])
   end
 
   def insert_log(log) do
@@ -33,13 +32,9 @@ defmodule Auth.Log do
   end
 
 
-  # unauthenticated auth request
   def error(conn, params) do
-    # IO.inspect(conn, label: "conn:34")
-    # IO.inspect(conn.assigns, label: "conn.assigns:34")
     uaid = if Map.has_key?(conn.assigns, :ua) do
       # user_agent string is available
-      # IO.inspect(conn.assigns.ua, label: "conn.assigns.ua")
       List.first(String.split(conn.assigns.ua, "|"))
     else
       # no user_agent string in conn
@@ -47,11 +42,13 @@ defmodule Auth.Log do
       ua.id
     end
 
+    IO.inspect(params, label: "params:45")
     insert_log(Map.merge(params, %{
       request_path: conn.request_path,
-      user_agent_id: uaid
+      user_agent_id: uaid,
+      app_id: Map.get(params, :app_id, 1)
     }))
-
+    # return conn so we can pipline the log
     conn
   end
 end
