@@ -20,7 +20,7 @@ defmodule Auth.Log do
 
   @doc false
   def changeset(login_log, attrs) do
-    cast(login_log, attrs, [:email, :request_path, :person_id, :user_agent_id, :status_id])
+    cast(login_log, attrs, [:app_id, :email, :msg, :person_id, :request_path, :status_id, :user_agent_id])
   end
 
   def insert_log(log) do
@@ -42,18 +42,12 @@ defmodule Auth.Log do
       aup = Map.get(conn.assigns.person, :auth_provider)
       {aup, conn.assigns.person.id}
     else
-      {nil, nil}
-    end
-
-    uaid =
-      if Map.has_key?(conn.assigns, :ua) do
-        # user_agent string is available
-        List.first(String.split(conn.assigns.ua, "|"))
+      if Map.has_key?(params, :person_id) do
+        {nil, params.person_id}
       else
-        # no user_agent string in conn
-        ua = Auth.UserAgent.upsert(conn)
-        ua.id
+        {nil, nil}
       end
+    end
 
     insert_log(
       Map.merge(params, %{
@@ -61,11 +55,35 @@ defmodule Auth.Log do
         auth_provider: auth_provider,
         person_id: person_id,
         request_path: conn.request_path,
-        user_agent_id: uaid
+        user_agent_id: get_user_agent_id(conn),
+        email: get_email(conn, params)
       })
     )
     # return conn so we can pipline the log
     conn
+  end
+
+  defp get_user_agent_id(conn) do
+    if Map.has_key?(conn.assigns, :ua) do
+      # user_agent string is available
+      List.first(String.split(conn.assigns.ua, "|"))
+    else
+      # no user_agent string in conn
+      ua = Auth.UserAgent.upsert(conn)
+      ua.id
+    end
+  end
+
+  defp get_email(conn, params) do
+    if Map.has_key?(conn.assigns, :person) do
+      Map.get(conn.assigns.person, :email)
+    else
+      if Map.has_key?(params, :email) do
+        Map.get(params, :email)
+      else
+        nil
+      end
+    end
   end
 
   def info(conn, params) do
@@ -96,6 +114,8 @@ defmodule Auth.Log do
     map
     |> Map.delete(:__meta__)
     |> Map.delete(:__struct__)
+    # avoid leaking PII data in logs
+    |> Map.delete(:email)
     |> Map.keys()
     |> Enum.map(fn key ->
       if not is_nil(Map.get(map, key)) do
