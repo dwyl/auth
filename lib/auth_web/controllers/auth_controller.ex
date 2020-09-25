@@ -180,13 +180,7 @@ defmodule AuthWeb.AuthController do
   end
 
   # create a human-friendy response?
-  def unauthorized(conn, message \\ nil) do
-    msg =
-      if is_nil(message) do
-        "invalid AUTH_API_KEY/client_id please check"
-      else
-        message
-      end
+  def unauthorized(conn, msg \\ "invalid AUTH_API_KEY/client_id please check") do
 
     conn
     |> Auth.Log.error(%{status_id: 401, msg: msg})
