@@ -135,7 +135,7 @@ defmodule Auth.Log do
         "#{key}:#{Map.get(map, key)}"
       end
     end)
-    |> Enum.filter(&(!is_nil(&1)))
+    |> Enum.filter(&(!is_nil(&1))) # Remove nil values
     |> Enum.join(", ")
   end
 
