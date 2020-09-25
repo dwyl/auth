@@ -60,16 +60,7 @@ defmodule AuthWeb.PeopleControllerTest do
   end
 
   test "AuthWeb.PeopleController.show/2 unauthorized if not admin", %{conn: conn} do
-    wrong_person_data = %{
-      email: "unauthorized@gmail.com",
-      auth_provider: "email",
-      id: 42
-    }
-
-    Auth.Person.create_person(wrong_person_data)
-    conn = AuthPlug.create_jwt_session(conn, wrong_person_data)
-
-    conn = AuthWeb.PeopleController.show(conn, %{"people_roles_id" => 1})
+    conn = get(non_admin_login(conn), "/people/1")
     assert conn.status == 401
   end
 end

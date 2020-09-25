@@ -284,7 +284,7 @@ defmodule Auth.Person do
   # """
   def get_list_of_people(conn) do
     # IO.inspect(conn.assigns.person)
-    apps = Auth.App.list_apps(conn) |> Enum.map(fn(a) -> a.id end)
+    apps = Enum.map(Auth.App.list_apps(conn), fn(a) -> a.id end)
     app_ids = if length(apps) > 0, do: Enum.join(apps, ","), else: "0"
     query = """
     SELECT l.app_id, l.person_id, p.status,
@@ -324,7 +324,7 @@ defmodule Auth.Person do
   def decrypt(ciphertext) do
     if not is_nil(ciphertext) do
       e = Fields.AES.decrypt(ciphertext)
-      if(e == :error) do
+      if e == :error do
         nil
       else
         e

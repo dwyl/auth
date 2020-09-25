@@ -4,6 +4,7 @@ defmodule Auth.Log do
   """
   alias Auth.Repo
   import Ecto.Changeset
+  import Ecto.Query, warn: false
   use Ecto.Schema
   require Logger
 
@@ -37,6 +38,12 @@ defmodule Auth.Log do
 
   def get_all() do
     Repo.all(__MODULE__)
+  end
+
+  def get_logs_for_apps(app_ids) do
+    __MODULE__
+    |> where([r], r.app_id in ^app_ids)
+    |> Repo.all()
   end
 
   def insert(conn, params) do
