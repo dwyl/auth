@@ -282,8 +282,28 @@ defmodule Auth.Person do
     # IO.inspect(conn.assigns.person)
     apps = Enum.map(Auth.App.list_apps(conn), fn a -> a.id end)
     app_ids = if length(apps) > 0, do: Enum.join(apps, ","), else: "0"
+    {:ok, result} = Repo.query(query(app_ids))
 
-    query = """
+    Enum.map(result.rows, fn [aid, pid, sid, s, n, pic, iat, e, aup, role] ->
+      %{
+        app_id: aid,
+        person_id: pid,
+        status: s,
+        status_id: sid,
+        updated_at: NaiveDateTime.truncate(iat, :second),
+        givenName: decrypt(n),
+        picture: pic,
+        email: decrypt(e),
+        auth_provider: aup,
+        role: role
+      }
+    end)
+  end
+
+  # you can easily modify/test this query in your PostgreSQL ternimal/program
+  # writing the raw SQL was much faster/simpler than using Ecto.
+  defp query(app_ids) do
+    """
     SELECT l.app_id, l.person_id, p.status,
     st.text as status, p."givenName", p.picture,
     l.inserted_at, p.email, l.auth_provider, r.name
@@ -300,23 +320,6 @@ defmodule Auth.Person do
     ORDER BY l.inserted_at DESC
     NULLS LAST
     """
-
-    {:ok, result} = Repo.query(query)
-
-    Enum.map(result.rows, fn [aid, pid, sid, s, n, pic, iat, e, aup, role] ->
-      %{
-        app_id: aid,
-        person_id: pid,
-        status: s,
-        status_id: sid,
-        updated_at: NaiveDateTime.truncate(iat, :second),
-        givenName: decrypt(n),
-        picture: pic,
-        email: decrypt(e),
-        auth_provider: aup,
-        role: role
-      }
-    end)
   end
 
   def decrypt(ciphertext) do

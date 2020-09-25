@@ -41,8 +41,7 @@ defmodule Auth.UserAgent do
     case get_by(name, ip) do
       # not found, insert it:
       nil ->
-        {:ok, ua} = Repo.insert(changeset(%{name: name, ip_address: ip}))
-        ua
+        Repo.insert!(changeset(%{name: name, ip_address: ip}))
 
       ua ->
         ua
