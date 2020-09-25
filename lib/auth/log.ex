@@ -131,7 +131,7 @@ defmodule Auth.Log do
     |> Map.delete(:email)
     |> Map.keys()
     |> Enum.map(fn key ->
-      if not is_nil(Map.get(map, key)) do
+      unless is_nil(Map.get(map, key)) do
         "#{key}:#{Map.get(map, key)}"
       end
     end)
