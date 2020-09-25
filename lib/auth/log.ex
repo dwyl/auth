@@ -131,11 +131,11 @@ defmodule Auth.Log do
     |> Map.delete(:email)
     |> Map.keys()
     |> Enum.map(fn key ->
-      if not is_nil(Map.get(map, key)) do
+      unless is_nil(Map.get(map, key)) do
         "#{key}:#{Map.get(map, key)}"
       end
     end)
-    |> Enum.filter(&(!is_nil(&1)))
+    |> Enum.filter(&(!is_nil(&1))) # Remove nil values
     |> Enum.join(", ")
   end
 
