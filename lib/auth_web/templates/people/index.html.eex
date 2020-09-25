@@ -27,7 +27,7 @@
         <td><%= p.updated_at %></td>
         <td><%= p.email %></td>
         <td><%= p.auth_provider %></td>
-        <td><%= p.app_id %></td>
+        <td><a href="/apps/<%= p.app_id %>" class="no-underline"><%= p.app_id %></a></td>
         <td class="<%= p.role %>"><%= p.role %></td>  
       </tr>
   <% end %>
