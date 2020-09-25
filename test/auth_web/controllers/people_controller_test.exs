@@ -6,12 +6,15 @@ defmodule AuthWeb.PeopleControllerTest do
     conn = admin_login(conn)
     # insert the admin person into the log:
     app_id = conn.assigns.person.app_id
-    IO.inspect(conn.assigns.person)
+    # IO.inspect(conn.assigns.person)
     Auth.Log.info(conn, %{app_id: app_id, status_id: 200})
     # insert new person into log so it appears in people:
     person2 = non_admin_person()
-    Auth.Log.info(conn,
-      %{app_id: app_id, person_id: person2.id, status_id: 200, email: person2.email})
+
+    Auth.Log.info(
+      conn,
+      %{app_id: app_id, person_id: person2.id, status_id: 200, email: person2.email}
+    )
 
     conn = get(conn, "/people")
     assert html_response(conn, 200) =~ "People Authenticated"
@@ -43,7 +46,6 @@ defmodule AuthWeb.PeopleControllerTest do
     conn = get(conn, "/people")
     assert html_response(conn, 404) =~ "No People Using"
   end
-
 
   test "GET /people/:person_id displays person", %{conn: conn} do
     conn = get(admin_login(conn), "/people/1")

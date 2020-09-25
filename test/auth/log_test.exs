@@ -29,7 +29,7 @@ defmodule Auth.LogTest do
     # retrieve log entry:
     log = List.first(Auth.Log.get_all())
     # IO.inspect(log, label: "log:31")
-    # confirm what we expect:
+    #  confirm what we expect:
     assert log.status_id == 200
     assert log.msg == msg
     assert log.person_id == conn.assigns.person.id
@@ -37,6 +37,7 @@ defmodule Auth.LogTest do
 
   test "Auth.Log.error/2 inserts unauthenticated data", %{conn: conn} do
     person = non_admin_person()
+
     app_data = %{
       desc: "appdesc",
       name: "appname",
@@ -44,20 +45,25 @@ defmodule Auth.LogTest do
       status: 3,
       person_id: person.id
     }
+
     {:ok, app} = Auth.App.create_app(app_data)
     rand = :rand.uniform(1_000_000)
     msg = "epic fail #{rand}"
     email = "fail@mail.co"
     # insert log entry:
     Auth.Log.error(conn, %{
-      status_id: 401, msg: msg, email: email,
-      app_id: app.id, person_id: person.id,
+      status_id: 401,
+      msg: msg,
+      email: email,
+      app_id: app.id,
+      person_id: person.id,
       auth_provider: "email"
     })
+
     # retrieve log entry:
     log = List.first(Auth.Log.get_all())
     # IO.inspect(log, label: "log:45")
-    # confirm what we expect:
+    #  confirm what we expect:
     assert log.status_id == 401
     assert log.msg == msg
     assert log.email == email

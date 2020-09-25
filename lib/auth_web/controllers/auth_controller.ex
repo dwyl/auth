@@ -24,7 +24,7 @@ defmodule AuthWeb.AuthController do
 
     email =
       if not is_nil(params_person) and
-          not is_nil(Map.get(params_person, "email")) do
+           not is_nil(Map.get(params_person, "email")) do
         Map.get(Map.get(params, "person"), "email")
       else
         nil
@@ -186,6 +186,7 @@ defmodule AuthWeb.AuthController do
       else
         message
       end
+
     conn
     |> Auth.Log.error(%{status_id: 401, msg: msg})
     |> put_resp_content_type("text/html")
@@ -439,11 +440,12 @@ defmodule AuthWeb.AuthController do
   end
 
   def session_data(person) do
-    roles = if Map.has_key?(person, :roles) do
-      RBAC.transform_role_list_to_string(person.roles)
-    else
-      nil
-    end
+    roles =
+      if Map.has_key?(person, :roles) do
+        RBAC.transform_role_list_to_string(person.roles)
+      else
+        nil
+      end
 
     %{
       auth_provider: person.auth_provider,
@@ -459,6 +461,7 @@ defmodule AuthWeb.AuthController do
 
   def add_jwt_url_param(person, state, client_secret) do
     jwt = AuthPlug.Token.generate_jwt!(session_data(person), client_secret)
+
     List.first(String.split(URI.decode(state), "?")) <>
       "?jwt=" <> jwt
   end

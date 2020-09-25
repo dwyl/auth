@@ -284,8 +284,9 @@ defmodule Auth.Person do
   # """
   def get_list_of_people(conn) do
     # IO.inspect(conn.assigns.person)
-    apps = Enum.map(Auth.App.list_apps(conn), fn(a) -> a.id end)
+    apps = Enum.map(Auth.App.list_apps(conn), fn a -> a.id end)
     app_ids = if length(apps) > 0, do: Enum.join(apps, ","), else: "0"
+
     query = """
     SELECT l.app_id, l.person_id, p.status,
     st.text as status, p."givenName", p.picture,
@@ -303,9 +304,10 @@ defmodule Auth.Person do
     ORDER BY l.inserted_at DESC
     NULLS LAST
     """
+
     {:ok, result} = Repo.query(query)
 
-    Enum.map(result.rows, fn([aid, pid, sid, s, n, pic, iat, e, aup, role]) ->
+    Enum.map(result.rows, fn [aid, pid, sid, s, n, pic, iat, e, aup, role] ->
       %{
         app_id: aid,
         person_id: pid,
@@ -322,15 +324,16 @@ defmodule Auth.Person do
   end
 
   def decrypt(ciphertext) do
-    if not is_nil(ciphertext) do
+    if is_nil(ciphertext) do
+      nil
+    else
       e = Fields.AES.decrypt(ciphertext)
+
       if e == :error do
         nil
       else
         e
       end
-    else
-      nil
     end
   end
 end

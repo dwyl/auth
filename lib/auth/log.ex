@@ -22,8 +22,16 @@ defmodule Auth.Log do
 
   @doc false
   def changeset(login_log, attrs) do
-    cast(login_log, attrs, [:app_id, :auth_provider, :email, :msg, :person_id,
-      :request_path, :status_id, :user_agent_id])
+    cast(login_log, attrs, [
+      :app_id,
+      :auth_provider,
+      :email,
+      :msg,
+      :person_id,
+      :request_path,
+      :status_id,
+      :user_agent_id
+    ])
   end
 
   def insert_log(log) do
@@ -56,7 +64,9 @@ defmodule Auth.Log do
         user_agent_id: get_user_agent_id(conn),
         email: get_email(conn, params)
       })
-    ) # |> IO.inspect()
+    )
+
+    # |> IO.inspect()
     # return conn so we can pipline the log
     conn
   end
@@ -91,9 +101,12 @@ defmodule Auth.Log do
   end
 
   defp stringify_conn_params(conn, params) do
-    conn.method <> " " <> conn.request_path
-    <> " > " <> stringify(params)
-    <> " person:#{get_person_id(conn, params)}"
+    conn.method <>
+      " " <>
+      conn.request_path <>
+      " > " <>
+      stringify(params) <>
+      " person:#{get_person_id(conn, params)}"
   end
 
   defp get_auth_provider(conn, params) do
@@ -128,7 +141,7 @@ defmodule Auth.Log do
         "#{key}:#{Map.get(map, key)}"
       end
     end)
-    |> Enum.filter(& !is_nil(&1))
+    |> Enum.filter(&(!is_nil(&1)))
     |> Enum.join(", ")
   end
 

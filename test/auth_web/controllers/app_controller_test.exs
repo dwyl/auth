@@ -162,6 +162,7 @@ defmodule AuthWeb.AppControllerTest do
     # ref: https://github.com/dwyl/auth/issues/124
     test "regression test for reset apikeys", %{conn: conn} do
       conn = non_admin_login(conn)
+
       app_data = %{
         desc: "appdesc",
         name: "appname",
@@ -169,16 +170,17 @@ defmodule AuthWeb.AppControllerTest do
         status: 3,
         person_id: conn.assigns.person.id
       }
+
       # create app for non_admin:
       {:ok, app} = Auth.App.create_app(app_data)
 
-      # get apikey before reset:
+      #  get apikey before reset:
       apikey1 = Auth.Apikey.get_apikey_by_app_id(app.id)
       get(conn, Routes.app_path(conn, :resetapikey, app))
       apikey2 = Auth.Apikey.get_apikey_by_app_id(app.id)
       assert apikey1.id + 1 == apikey2.id
       state = app.url
-      # The client_id for the original apikey should no longer work:
+      #  The client_id for the original apikey should no longer work:
       sec = AuthWeb.AuthController.get_client_secret(apikey1.client_id, state)
       # so we expect a client_secret of zero:
       assert sec == 0
