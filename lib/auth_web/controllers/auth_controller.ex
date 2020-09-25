@@ -11,6 +11,7 @@ defmodule AuthWeb.AuthController do
     render(conn, :welcome, apps: App.list_apps(conn.assigns.person.id))
   end
 
+  # SEE: https://github.com/dwyl/auth/issues/69
   # def index(%{assigns: %{person: _}} = conn, _params) do
   #   person = conn.assigns.person
   #   conn
@@ -356,14 +357,10 @@ defmodule AuthWeb.AuthController do
   `password_prompt/2` handles all requests to verify a password for a person.
   If the pasword is verified (using Argon2.verify_pass), redirect to their
   desired page. If the password is invalid reset & re-render the form.
-  TODO:
   """
-  # verify the password
   def password_prompt(conn, params) do
     p = params["person"]
-    # IO.inspect(p["email"])
     email = Auth.Person.decrypt_email(p["email"])
-    # IO.inspect(email, label: "email:349")
     person = Auth.Person.get_person_by_email(email)
     state = p["state"]
     app_id = get_app_id(state)

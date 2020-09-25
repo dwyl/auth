@@ -93,7 +93,6 @@ defmodule AuthWeb.AuthControllerTest do
   test "get_client_secret(client_id, state) for 'deleted' apikey (non-admin)" do
     person = non_admin_person()
     {:ok, app} = Auth.App.create_app(Map.merge(@app_data, %{"person_id" => person.id}))
-    # IO.inspect(app, label: "app")
     key = List.first(app.apikeys)
     Auth.Apikey.update_apikey(Map.delete(key, :app), %{status: 6})
     state = "#{app.url}/profile?auth_client_id=#{key.client_id}"
@@ -102,6 +101,7 @@ defmodule AuthWeb.AuthControllerTest do
     assert secret == 0
   end
 
+  # TBD:
   # test "redirect_or_render assigns app_admin role if direct auth", %{conn: conn} do
   #   conn = non_admin_login(conn)
   #   IO.inspect(conn, label: "conn:96")

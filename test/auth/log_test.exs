@@ -28,7 +28,6 @@ defmodule Auth.LogTest do
     Auth.Log.info(conn, %{status_id: 200, msg: msg})
     # retrieve log entry:
     log = List.first(Auth.Log.get_all())
-    # IO.inspect(log, label: "log:31")
     #  confirm what we expect:
     assert log.status_id == 200
     assert log.msg == msg
@@ -59,10 +58,8 @@ defmodule Auth.LogTest do
       person_id: person.id,
       auth_provider: "email"
     })
-
     # retrieve log entry:
     log = List.first(Auth.Log.get_all())
-    # IO.inspect(log, label: "log:45")
     #  confirm what we expect:
     assert log.status_id == 401
     assert log.msg == msg

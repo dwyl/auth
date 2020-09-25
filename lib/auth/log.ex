@@ -40,10 +40,6 @@ defmodule Auth.Log do
     |> Repo.insert!()
   end
 
-  # def get_by_id(id) do
-  #   Repo.get_by(__MODULE__, id: id)
-  # end
-
   def get_all() do
     Repo.all(__MODULE__)
   end
@@ -65,8 +61,6 @@ defmodule Auth.Log do
         email: get_email(conn, params)
       })
     )
-
-    # |> IO.inspect()
     # return conn so we can pipline the log
     conn
   end
@@ -133,7 +127,7 @@ defmodule Auth.Log do
     map
     |> Map.delete(:__meta__)
     |> Map.delete(:__struct__)
-    # avoid leaking personal data in logs
+    # avoid leaking personal data (person.email) in logs
     |> Map.delete(:email)
     |> Map.keys()
     |> Enum.map(fn key ->

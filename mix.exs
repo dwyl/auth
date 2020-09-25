@@ -112,8 +112,4 @@ defmodule Auth.Mixfile do
       links: %{"GitHub" => "https://github.com/dwyl/auth"}
     ]
   end
-
-  # https://elixirforum.com/t/loading-modules-in-test-helper-exs-file/16609/2
-  # def compiler_paths(:test), do: ["test/helpers"] ++ compiler_paths(:prod)
-  # def compiler_paths(_), do: ["lib"]
 end

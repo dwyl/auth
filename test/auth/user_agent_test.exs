@@ -32,7 +32,6 @@ defmodule Auth.UserAgentTest do
     ua = UserAgent.upsert(conn)
     ua_string = UserAgent.make_ua_string(ua)
     conn1 = UserAgent.assign_ua(conn)
-    # IO.inspect(conn1, label: "conn1")
     assert conn1.assigns.ua == ua_string
   end
 end

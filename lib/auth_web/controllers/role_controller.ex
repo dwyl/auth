@@ -141,7 +141,6 @@ defmodule AuthWeb.RoleController do
   role_id a valid role.id
   """
   def grant(conn, params) do
-    # IO.inspect(params, label: "grant/2 params:143")
     # confirm that the granter is either superadmin (conn.assigns.person.id == 1)
     # or has an "admin" role (1 || 2)
     granter_id = conn.assigns.person.id

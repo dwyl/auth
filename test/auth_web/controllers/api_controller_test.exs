@@ -37,7 +37,7 @@ defmodule AuthWeb.ApiControllerTest do
     test "returns (JSON) list of roles", %{conn: conn, app: app} do
       roles = Auth.Role.list_roles_for_app(app.id)
       key = List.first(app.apikeys)
-      # IO.inspect(app, label: "app")
+
       conn =
         conn
         |> admin_login()
@@ -46,9 +46,7 @@ defmodule AuthWeb.ApiControllerTest do
 
       assert conn.status == 200
       {:ok, json} = Jason.decode(conn.resp_body)
-      # IO.inspect(json)
       assert length(roles) == length(json)
-      # assert html_response(conn, 200) =~ "successfully reset"
     end
 
     test "returns only relevant roles", %{conn: conn, app: app} do
@@ -135,16 +133,13 @@ defmodule AuthWeb.ApiControllerTest do
 
       # roles = Auth.Role.list_roles_for_app(app.id)
       key = List.first(app.apikeys)
-      # IO.inspect(app, label: "app")
       conn =
         conn
         |> put_req_header("accept", "application/json")
         |> get("/personroles/#{grantee.id}/#{key.client_id}")
 
       assert conn.status == 200
-      # IO.inspect(conn, label: "conn:144")
       {:ok, json} = Jason.decode(conn.resp_body)
-      # IO.inspect(json)
       assert length(json) == 2
     end
   end
