@@ -12,6 +12,7 @@
         
         <th>Email</th>
         <th>Auth Provider</th>
+        <th>App ID</th>
         <th>Roles</th>
       </tr>
     </thead>
@@ -26,6 +27,7 @@
         <td><%= p.updated_at %></td>
         <td><%= p.email %></td>
         <td><%= p.auth_provider %></td>
+        <td><%= p.app_id %></td>
         <td class="<%= p.role %>"><%= p.role %></td>  
       </tr>
   <% end %>
@@ -34,9 +36,10 @@
 </section>
 
 <style>
-  .verified { background-color: #7bed9f;}
-  .superadmin { background-color: #ffa502; }
+  .creator { background-color: #1abc9c; }
   .subscriber { background-color: #00d2d3; }
+  .superadmin { background-color: #ffa502; }
+  .verified { background-color: #7bed9f;}
 </style>
 
 <!-- DataTables is an *optional* progressive enhancement 
