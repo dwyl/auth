@@ -64,7 +64,6 @@ defmodule Auth.Person do
   end
 
   def create_person(person) do
-
     case get_person_by_email(person.email) do
       nil ->
         person =
@@ -283,7 +282,7 @@ defmodule Auth.Person do
     # IO.inspect(conn.assigns.person)
     apps = Enum.map(Auth.App.list_apps(conn), fn a -> a.id end)
     app_ids = if length(apps) > 0, do: Enum.join(apps, ","), else: "0"
-    {:ok, result} = Repo.query(query(app_ids))
+    {:ok, result} = Repo.query(query())
 
     Enum.map(result.rows, fn [aid, pid, sid, s, n, pic, iat, e, aup, role] ->
       %{
@@ -303,7 +302,7 @@ defmodule Auth.Person do
 
   # you can easily modify/test this query in your PostgreSQL ternimal/program
   # writing the raw SQL was much faster/simpler than using Ecto.
-  defp query(app_ids) do
+  defp query() do
     """
     SELECT l.app_id, l.person_id, p.status,
     st.text as status, p."givenName", p.picture,
@@ -317,7 +316,7 @@ defmodule Auth.Person do
     LEFT JOIN status as st on p.status = st.id
     LEFT JOIN people_roles as pr on p.id = pr.person_id
     LEFT JOIN roles as r on pr.role_id = r.id
-    WHERE l.app_id in (#{app_ids})
+    WHERE p.id != 1
     ORDER BY l.inserted_at DESC
     NULLS LAST
     """
