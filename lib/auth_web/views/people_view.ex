@@ -14,6 +14,16 @@ defmodule AuthWeb.PeopleView do
   end
 
   @doc """
+  show_email/2 determines if we should show the email address in template
+  """
+  def show_email(person, app_ids) do
+    IO.inspect(person.app_id, label: "person.app_id")
+    IO.inspect(app_ids, label: "app_ids")
+    Enum.member?(app_ids, person.app_id)
+  end
+
+
+  @doc """
   capitalize/1 captalises the first character of a string.
   checks for nil values to avoid seeing the following error:
   (FunctionClauseError) no function clause matching in String.capitalize/2

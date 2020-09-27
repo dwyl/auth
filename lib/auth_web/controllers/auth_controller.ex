@@ -180,6 +180,7 @@ defmodule AuthWeb.AuthController do
   end
 
   # create a human-friendy response?
+  @spec unauthorized(atom | %{assigns: map, request_path: any}, any) :: Plug.Conn.t()
   def unauthorized(conn, message \\ nil) do
     msg =
       if is_nil(message) do

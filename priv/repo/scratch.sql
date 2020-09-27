@@ -90,3 +90,50 @@ ORDER BY l.inserted_at DESC
 6	1	10835816	1	verified			2020-09-24 19:28:25		github	subscriber
 4	1	1	1	verified			2020-09-24 17:28:40		google	superadmin
 */
+
+-- Old People query (works)
+SELECT l.app_id, l.person_id, p.status,
+st.text as status, p."givenName", p.picture,
+l.inserted_at, p.email, l.auth_provider, r.name
+FROM (
+  SELECT DISTINCT ON (person_id) *
+  FROM logs
+  ORDER BY person_id, inserted_at DESC
+) l
+JOIN people as p on l.person_id = p.id
+LEFT JOIN status as st on p.status = st.id
+LEFT JOIN people_roles as pr on p.id = pr.person_id
+LEFT JOIN roles as r on pr.role_id = r.id
+WHERE l.app_id in (#{app_ids})
+ORDER BY l.inserted_at DESC
+NULLS LAST
+
+-- New People Query Without Apps Costraint: 
+-- https://github.com/dwyl/auth/issues/127
+SELECT l.app_id, l.person_id, p.status,
+st.text as status, p."givenName", p.picture,
+l.inserted_at, p.email, l.auth_provider, r.name
+FROM (
+  SELECT DISTINCT ON (person_id) *
+  FROM logs
+  ORDER BY person_id, inserted_at DESC
+) l
+JOIN people as p on l.person_id = p.id
+LEFT JOIN status as st on p.status = st.id
+LEFT JOIN people_roles as pr on p.id = pr.person_id
+LEFT JOIN roles as r on pr.role_id = r.id
+WHERE p.id != 1
+ORDER BY l.inserted_at DESC
+NULLS LAST
+
+-- Alterntative faster query without logs:
+SELECT p.id, p."givenName", p.picture,
+p.updated_at, p.email, p.auth_provider, r.name, pr.app_id,
+p.status, st.text as status
+FROM people AS p
+LEFT JOIN people_roles as pr on p.id = pr.person_id
+LEFT JOIN roles as r on pr.role_id = r.id
+LEFT JOIN status as st on p.status = st.id
+WHERE p.id != 1
+ORDER BY p.updated_at DESC
+NULLS LAST

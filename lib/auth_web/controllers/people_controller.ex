@@ -9,9 +9,10 @@ defmodule AuthWeb.PeopleController do
   """
   def index(conn, _params) do
     people = Auth.Person.get_list_of_people(conn)
+    app_ids = Enum.map(Auth.App.list_apps(conn), fn a -> a.id end)
 
     if length(people) > 0 do
-      render(conn, :index, people: people)
+      render(conn, :index, people: people, app_ids: app_ids)
     else
       AuthWeb.AuthController.not_found(conn, "No People Using Your App, Yet!")
     end
