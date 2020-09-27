@@ -17,8 +17,6 @@ defmodule AuthWeb.PeopleView do
   show_email/2 determines if we should show the email address in template
   """
   def show_email(person, app_ids) do
-    IO.inspect(person.app_id, label: "person.app_id")
-    IO.inspect(app_ids, label: "app_ids")
     Enum.member?(app_ids, person.app_id)
   end
 
