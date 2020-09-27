@@ -180,15 +180,7 @@ defmodule AuthWeb.AuthController do
   end
 
   # create a human-friendy response?
-  @spec unauthorized(atom | %{assigns: map, request_path: any}, any) :: Plug.Conn.t()
-  def unauthorized(conn, message \\ nil) do
-    msg =
-      if is_nil(message) do
-        "invalid AUTH_API_KEY/client_id please check"
-      else
-        message
-      end
-
+  def unauthorized(conn, msg \\ "invalid AUTH_API_KEY/client_id please check") do
     conn
     |> Auth.Log.error(%{status_id: 401, msg: msg})
     |> put_resp_content_type("text/html")
