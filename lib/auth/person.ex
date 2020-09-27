@@ -64,18 +64,19 @@ defmodule Auth.Person do
   end
 
   def create_person(person) do
-    person =
-      %Person{}
-      |> changeset(person)
-      |> put_email_status_verified()
-      # assign default role of "subscriber":
-      |> put_assoc(:roles, [Auth.Role.get_role!(6)])
 
-    # other roles can be assigned in the UI
-
-    case get_person_by_email(person.changes.email) do
+    case get_person_by_email(person.email) do
       nil ->
-        Repo.insert!(person)
+        person =
+        %Person{}
+        |> changeset(person)
+        |> put_email_status_verified()
+        |> put_assoc(:roles, [Auth.Role.get_role!(6)])
+        |> Repo.insert!()
+        # assign default role of "subscriber" on system app:
+        Auth.PeopleRoles.insert(1, person.id, 1, 6)
+        # return person record:
+        person
 
       person ->
         person
