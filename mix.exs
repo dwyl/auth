@@ -58,7 +58,7 @@ defmodule Auth.Mixfile do
 
       # Auth:
       # https://github.com/dwyl/elixir-auth-github
-      {:elixir_auth_github, "~> 1.4.0"},
+      {:elixir_auth_github, "~> 1.4.1"},
       # https://github.com/dwyl/elixir-auth-google
       {:elixir_auth_google, "~> 1.3.0"},
       # https://github.com/dwyl/auth_plug
