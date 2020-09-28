@@ -57,7 +57,8 @@ defmodule Auth.Person do
       :username,
       :auth_provider,
       :status,
-      :app_id
+      :app_id,
+      :github_id
     ])
     |> validate_required([:email])
     |> put_email_hash()
@@ -132,6 +133,7 @@ defmodule Auth.Person do
   end
 
   def create_github_person(profile) do
+    # IO.inspect(profile, label: "profile:135")
     person = case get_person_by_github_id(profile.id) do
       nil ->
         upsert_person(transform_github_profile_data_to_person(profile))
@@ -140,6 +142,7 @@ defmodule Auth.Person do
         # prepare profile data:
         profile = transform_github_profile_data_to_person(profile)
         # update any data that may have changed since they last authenticated:
+        person = AuthPlug.Helpers.strip_struct_metadata(person)
         upsert_person(Map.merge(person, profile))
     end
 
@@ -149,6 +152,8 @@ defmodule Auth.Person do
   defp get_person_by_github_id(id) do
     __MODULE__
     |> Repo.get_by(github_id: id)
+    |> Repo.preload(:roles)
+    |> Repo.preload(:statuses)
   end
 
   @doc """

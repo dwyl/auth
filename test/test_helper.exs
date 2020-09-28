@@ -35,7 +35,8 @@ defmodule AuthTest do
       email: "alex+#{rand}@gmail.com",
       givenName: "Alexander McAwesome",
       auth_provider: "email",
-      password: "thiswillbehashed"
+      password: "thiswillbehashed",
+      github_id: "19"
     })
   end
 
