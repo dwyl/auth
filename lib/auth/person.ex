@@ -25,6 +25,7 @@ defmodule Auth.Person do
     field :tag, :id
     field :key_id, :integer
     field :app_id, :integer
+    field :github_id, :integer
     # many_to_many :roles, Auth.Role, join_through: "people_roles"
     # has_many :roles, through: [:people_roles, :role]
     many_to_many :roles, Auth.Role, join_through: Auth.PeopleRoles
@@ -118,17 +119,36 @@ defmodule Auth.Person do
     }
   """
   def transform_github_profile_data_to_person(profile) do
-    Map.merge(profile, %{
+    profile
+    |> Map.merge(%{
       username: profile.login,
       givenName: profile.name,
       picture: profile.avatar_url,
-      auth_provider: "github"
+      auth_provider: "github",
+      github_id: profile.id
     })
+    # avoid id conflict: https://github.com/dwyl/auth/issues/125
+    |> Map.delete(:id)
   end
 
   def create_github_person(profile) do
-    person = upsert_person(transform_github_profile_data_to_person(profile))
+    person = case get_person_by_github_id(profile.id) do
+      nil ->
+        upsert_person(transform_github_profile_data_to_person(profile))
+
+      person ->
+        # prepare profile data:
+        profile = transform_github_profile_data_to_person(profile)
+        # update any data that may have changed since they last authenticated:
+        upsert_person(Map.merge(person, profile))
+    end
+
     Map.replace!(person, :roles, RBAC.transform_role_list_to_string(person.roles))
+  end
+
+  defp get_person_by_github_id(id) do
+    __MODULE__
+    |> Repo.get_by(github_id: id)
   end
 
   @doc """
