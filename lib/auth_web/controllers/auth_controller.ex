@@ -155,13 +155,13 @@ defmodule AuthWeb.AuthController do
   def redirect_or_render(conn, person, state) do
     # check if valid state (HTTP referer) is defined:
     if is_nil(state) or state == "" do
-      # display welcome page on Auth site:
+      # No State > Display Welcome page on Auth site:
       conn
       |> AuthPlug.create_jwt_session(session_data(person))
       |> Auth.Log.info(%{status_id: 200, app_id: 1})
       |> render(:welcome, person: person, apps: App.list_apps(person.id))
     else
-      # redirect
+      # State > Redirect to requesting app:
       case get_client_secret_from_state(state) do
         0 ->
           unauthorized(conn, "invalid AUTH_API_KEY")

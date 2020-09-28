@@ -272,11 +272,15 @@ http://www.phoenixframework.org/docs/sessions
 This project _uses_ and _extends_ it to support several 3rd party auth services.
 
 
+## Background Reading
+
+If you are new to Authentication, 
+we recommend checkout out this great overview:
+https://github.com/teesloane/Auth-Boss
+
 <!--
 ## Research
 
-
-## Further Reading
 
 If you want to learn more about the [**dwyl**](https://github.com/dwyl)
 technology stack and how this module fits into it,
