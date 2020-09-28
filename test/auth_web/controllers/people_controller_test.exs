@@ -62,7 +62,8 @@ defmodule AuthWeb.PeopleControllerTest do
   end
 
   test "AuthWeb.PeopleController.show/2 unauthorized if not admin", %{conn: conn} do
-    conn = get(non_admin_login(conn), "/people/1")
-    assert conn.status == 401
+    conn = non_admin_login(conn)
+    conn = get(conn, "/people/#{conn.assigns.person.id}")
+    assert html_response(conn, 200) =~ conn.assigns.person.givenName
   end
 end

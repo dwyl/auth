@@ -22,11 +22,8 @@ defmodule AuthWeb.PeopleController do
   `show/2` shows the profile of a person with all relevant info.
   """
   def show(conn, params) do
-    # should be visible to superadmin and people with "admin" role
     apps = Auth.App.list_apps(conn)
     app_ids = Enum.map(Auth.App.list_apps(conn), fn a -> a.id end)
-
-    # if Enum.member?(log_people_ids, person_id) or conn.assigns.person.id == 1 do
     person = Auth.Person.get_person_by_id(Map.get(params, "person_id"))
 
     render(conn, :profile,
@@ -37,10 +34,5 @@ defmodule AuthWeb.PeopleController do
       apps: apps,
       app_ids: app_ids
     )
-
-      # Note: this can easily be refactored to save on DB queries. #HelpWanted
-    # else
-    #   AuthWeb.AuthController.unauthorized(conn, "cannot view that person " <> person_id)
-    # end
   end
 end
