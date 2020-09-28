@@ -207,9 +207,9 @@ people in the Elixir/Phoenix community.
 (_so your app handles sessions for authenticated users the same way
   the example apps in all the Phoenix docs_)
 + GitHub OAuth2 Authentication:
-https://github.com/dwyl/elixir-auth-github
+<https://github.com/dwyl/elixir-auth-github>
 + Google OAuth Authentication:
-https://github.com/dwyl/elixir-auth-google
+<https://github.com/dwyl/elixir-auth-google>
 
 
 <br />
@@ -231,7 +231,7 @@ or authenticate with a 3rd party Authentication provider (e.g: Google),
 an email is sent to the `email` address welcoming them.
 The `Auth` App uses an external email service
 for sending emails:
-https://github.com/dwyl/email
+<https://github.com/dwyl/email>
 
 ![app-services-diagram](https://user-images.githubusercontent.com/194400/77526292-41628180-6e82-11ea-8044-dacbc57ba895.png)
 
@@ -267,7 +267,7 @@ be able to extend the code if they choose to.
 ### Phoenix Has a Session System, Does this _Use_ It?
 
 Phoenix has a built-in mechanism for sessions:
-http://www.phoenixframework.org/docs/sessions
+<http://www.phoenixframework.org/docs/sessions>
 
 This project _uses_ and _extends_ it to support several 3rd party auth services.
 
@@ -276,26 +276,8 @@ This project _uses_ and _extends_ it to support several 3rd party auth services.
 
 If you are new to Authentication, 
 we recommend checkout out this great overview:
-https://github.com/teesloane/Auth-Boss
-
-<!--
-## Research
-
-
-If you want to learn more about the [**dwyl**](https://github.com/dwyl)
-technology stack and how this module fits into it,
-please see: https://github.com/dwyl/technology-stack
-
-
-## Google Authentication
-
-> visit: https://console.developers.google.com to get started
-
-
-## Recommended Reading
-
++ Auth Boss: <https://github.com/teesloane/Auth-Boss>
 + Introduction to OAuth2:
-https://www.digitalocean.com/community/tutorials/an-introduction-to-oauth-2
+<https://www.digitalocean.com/community/tutorials/an-introduction-to-oauth-2>
 + Forms in Phoenix:
-http://blog.plataformatec.com.br/2016/09/dynamic-forms-with-phoenix
--->
+<http://blog.plataformatec.com.br/2016/09/dynamic-forms-with-phoenix>
