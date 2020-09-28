@@ -146,7 +146,7 @@ defmodule AuthWeb.AuthController do
   end
 
   @doc """
-  ` ` does what it's name suggests,
+  `redirect_or_render/3` does what it's name suggests,
   redirects if the `state` (HTTP referer) is defined
   or renders the default `:welcome` template.
   If the `auth_client_id` is undefined or invalid,
@@ -154,28 +154,24 @@ defmodule AuthWeb.AuthController do
   """
   def redirect_or_render(conn, person, state) do
     # check if valid state (HTTP referer) is defined:
-    case not (is_nil(state) or state == "") do
-      # redirect
-      true ->
-        case get_client_secret_from_state(state) do
-          0 ->
-            unauthorized(conn, "invalid AUTH_API_KEY")
-
-          secret ->
-            conn
-            |> AuthPlug.create_jwt_session(session_data(person))
-            |> Auth.Log.info(%{status_id: 200, app_id: get_app_id(state)})
-            |> redirect(external: add_jwt_url_param(person, state, secret))
-        end
-
+    if is_nil(state) or state == "" do
       # display welcome page on Auth site:
-      false ->
-        # Grant app_admin role to person who authenticated directly on auth app
-        # Auth.PeopleRoles.insert(1, person.id, 8)
-        conn
-        |> AuthPlug.create_jwt_session(session_data(person))
-        |> Auth.Log.info(%{status_id: 200, app_id: 1})
-        |> render(:welcome, person: person, apps: App.list_apps(person.id))
+      conn
+      |> AuthPlug.create_jwt_session(session_data(person))
+      |> Auth.Log.info(%{status_id: 200, app_id: 1})
+      |> render(:welcome, person: person, apps: App.list_apps(person.id))
+    else
+      # redirect
+      case get_client_secret_from_state(state) do
+        0 ->
+          unauthorized(conn, "invalid AUTH_API_KEY")
+
+        secret ->
+          conn
+          |> AuthPlug.create_jwt_session(session_data(person))
+          |> Auth.Log.info(%{status_id: 200, app_id: get_app_id(state)})
+          |> redirect(external: add_jwt_url_param(person, state, secret))
+      end
     end
   end
 
