@@ -277,7 +277,7 @@ This project _uses_ and _extends_ it to support several 3rd party auth services.
 If you are new to Authentication, 
 we recommend checkout out these great resources
 
-  + Auth Boss: 
-    <https://github.com/teesloane/Auth-Boss>
-  + Introduction to OAuth2:
-    <https://www.digitalocean.com/community/tutorials/an-introduction-to-oauth-2>
++ Auth Boss: 
+  <https://github.com/teesloane/Auth-Boss>
++ Introduction to OAuth2:
+  <https://www.digitalocean.com/community/tutorials/an-introduction-to-oauth-2>
