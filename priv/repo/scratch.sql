@@ -110,7 +110,7 @@ NULLS LAST
 
 -- New People Query Without Apps Costraint: 
 -- https://github.com/dwyl/auth/issues/127
-SELECT l.app_id, l.person_id, p.status,
+SELECT l.app_id, p.id, p.status,
 st.text as status, p."givenName", p.picture,
 l.inserted_at, p.email, l.auth_provider, r.name
 FROM (
@@ -127,7 +127,7 @@ ORDER BY l.inserted_at DESC
 NULLS LAST
 
 -- Alterntative faster query without logs:
-SELECT p.id, p."givenName", p.picture,
+SELECT DISTINCT ON (p.id) p.id, p."givenName", p.picture,
 p.updated_at, p.email, p.auth_provider, r.name, pr.app_id,
 p.status, st.text as status
 FROM people AS p
@@ -135,5 +135,3 @@ LEFT JOIN people_roles as pr on p.id = pr.person_id
 LEFT JOIN roles as r on pr.role_id = r.id
 LEFT JOIN status as st on p.status = st.id
 WHERE p.id != 1
-ORDER BY p.updated_at DESC
-NULLS LAST

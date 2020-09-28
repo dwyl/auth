@@ -284,7 +284,7 @@ defmodule Auth.Person do
     app_ids = if length(apps) > 0, do: Enum.join(apps, ","), else: "0"
     {:ok, result} = Repo.query(query())
 
-    Enum.map(result.rows, fn [aid, pid, sid, s, n, pic, iat, e, aup, role] ->
+    Enum.map(result.rows, fn [pid, aid, sid, s, n, pic, iat, e, aup, role] ->
       %{
         app_id: aid,
         person_id: pid,
@@ -304,7 +304,7 @@ defmodule Auth.Person do
   # writing the raw SQL was much faster/simpler than using Ecto.
   defp query() do
     """
-    SELECT l.app_id, l.person_id, p.status,
+    SELECT DISTINCT ON (p.id) p.id, l.app_id, p.status,
     st.text as status, p."givenName", p.picture,
     l.inserted_at, p.email, l.auth_provider, r.name
     FROM (
@@ -317,8 +317,6 @@ defmodule Auth.Person do
     LEFT JOIN people_roles as pr on p.id = pr.person_id
     LEFT JOIN roles as r on pr.role_id = r.id
     WHERE p.id != 1
-    ORDER BY l.inserted_at DESC
-    NULLS LAST
     """
   end
 

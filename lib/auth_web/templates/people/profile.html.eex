@@ -3,7 +3,9 @@
       class="center db br4"/>
   <h1><%= @person.givenName %> <%= @person.familyName %></h1>
   <div>
-    <strong class="f4"><%= @person.email %></strong> 
+    <%= if show_email(@person, @app_ids) do %>
+      <strong class="f4"><%= @person.email %></strong> 
+    <% end %>
     <span class="f4">(<%= capitalize(@person.auth_provider) %> Auth) </span>
     <span class="w-10 pv1 ph2 f5 mt3 center br3 <%= status_string(@person.status, @statuses) %>">
       <%= capitalize(status_string(@person.status, @statuses)) %>
@@ -27,6 +29,7 @@
     </thead>
     <tbody class="tc">
   <%= for r <- @roles do %>
+    <%= if Enum.member?(@app_ids, r.app_id) do %>
       <tr class="row pt2 f4 datarow">
         <td><%= r.id %></td>
         <td><%= r.app_id %></td>
@@ -50,12 +53,13 @@
             </a>
           <% end %>
         </td>    
-
       </tr>
+    <% end %>
   <% end %>
     </tbody>
   </table>
 
+<%= if length(@apps) > 0 do %>
 <h1 class="tc mt3">Grant a New Role</h1>
 <!-- Grant New Roles -->
 <div class="w-30 tc center mt2">
@@ -76,7 +80,7 @@
     class: "tc center pointer bn bg-green white f2 pa2 mt1 shadow-hover bg-animate pa3 br1" %>
   <% end %>
 </div>
-
+<% end %>
 
 <style>
   .verified { background-color: #91ff91;}

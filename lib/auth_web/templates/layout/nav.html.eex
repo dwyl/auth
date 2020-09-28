@@ -18,7 +18,7 @@
        <a href="/apps" class="white link">Apps</a>
      </li>
      <% end %>
-     <%= if Map.has_key?(@conn.assigns, :person) and @conn.assigns.person.id == 1 do %>
+     <%= if Map.has_key?(@conn.assigns, :person) do %>
      <li class="pl5 pl6-m di-l tl pb2-m">
        <a href="/people" class="white link">People</a>
      </li>

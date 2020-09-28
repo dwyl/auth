@@ -5,10 +5,10 @@
     <thead>
       <tr class="tl">
         <th>ID</th>
-        <th>Pic</th>
+        <th>Image</th>
         <th>Name</th>
         <th>Status</th>
-        <th>Time</th>
+        <th>Last Login</th>
         <th>Email</th>
         <th>Auth Provider</th>
         <th>App ID</th>
@@ -31,7 +31,9 @@
         <% end %>
         <td><%= p.auth_provider %></td>
         <td><a href="/apps/<%= p.app_id %>" class="no-underline"><%= p.app_id %></a></td>
-        <td class="<%= p.role %>"><%= p.role %></td>  
+        <%= if show_email(p, @app_ids) do%>
+          <td class="<%= p.role %>"><%= p.role %></td>  
+        <% end %>
       </tr>
   <% end %>
     </tbody>

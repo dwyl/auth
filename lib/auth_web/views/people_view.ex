@@ -20,7 +20,6 @@ defmodule AuthWeb.PeopleView do
     Enum.member?(app_ids, person.app_id)
   end
 
-
   @doc """
   capitalize/1 captalises the first character of a string.
   checks for nil values to avoid seeing the following error:
