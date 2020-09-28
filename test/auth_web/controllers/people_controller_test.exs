@@ -41,10 +41,10 @@ defmodule AuthWeb.PeopleControllerTest do
     assert html_response(conn, 200) =~ "People Authenticated"
   end
 
-  test "Non-admin without app cannot see any people", %{conn: conn} do
+  test "Non-admin can see people", %{conn: conn} do
     conn = non_admin_login(conn)
     conn = get(conn, "/people")
-    assert html_response(conn, 404) =~ "No People Using"
+    assert html_response(conn, 200) =~ "People Authenticated"
   end
 
   test "GET /people/:person_id displays person", %{conn: conn} do

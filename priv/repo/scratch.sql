@@ -135,3 +135,12 @@ LEFT JOIN people_roles as pr on p.id = pr.person_id
 LEFT JOIN roles as r on pr.role_id = r.id
 LEFT JOIN status as st on p.status = st.id
 WHERE p.id != 1
+
+SELECT DISTINCT ON (p.id) p.id, p.app_id, p.status,
+st.text as status, p."givenName", p.picture,
+p.inserted_at, p.email, p.auth_provider, r.name
+FROM people AS p
+LEFT JOIN people_roles as pr on p.id = pr.person_id
+LEFT JOIN roles as r on pr.role_id = r.id
+LEFT JOIN status as st on p.status = st.id
+WHERE p.id != 1

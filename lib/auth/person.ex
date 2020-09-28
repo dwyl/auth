@@ -278,11 +278,8 @@ defmodule Auth.Person do
   # that a given logged in person can see for all the Apps they have.
   # Used for displaying the table of authenticated people.
   # """
-  def get_list_of_people(conn) do
-    # IO.inspect(conn.assigns.person)
-    apps = Enum.map(Auth.App.list_apps(conn), fn a -> a.id end)
-    app_ids = if length(apps) > 0, do: Enum.join(apps, ","), else: "0"
-    {:ok, result} = Repo.query(query())
+  def get_list_of_people() do
+    result = Repo.query!(query())
 
     Enum.map(result.rows, fn [pid, aid, sid, s, n, pic, iat, e, aup, role] ->
       %{
@@ -304,18 +301,13 @@ defmodule Auth.Person do
   # writing the raw SQL was much faster/simpler than using Ecto.
   defp query() do
     """
-    SELECT DISTINCT ON (p.id) p.id, l.app_id, p.status,
+    SELECT DISTINCT ON (p.id) p.id, p.app_id, p.status,
     st.text as status, p."givenName", p.picture,
-    l.inserted_at, p.email, l.auth_provider, r.name
-    FROM (
-      SELECT DISTINCT ON (person_id) *
-      FROM logs
-      ORDER BY person_id, inserted_at DESC
-    ) l
-    JOIN people as p on l.person_id = p.id
-    LEFT JOIN status as st on p.status = st.id
+    p.inserted_at, p.email, p.auth_provider, r.name
+    FROM people AS p
     LEFT JOIN people_roles as pr on p.id = pr.person_id
     LEFT JOIN roles as r on pr.role_id = r.id
+    LEFT JOIN status as st on p.status = st.id
     WHERE p.id != 1
     """
   end

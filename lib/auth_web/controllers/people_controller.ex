@@ -8,22 +8,18 @@ defmodule AuthWeb.PeopleController do
   `index/2` lists all the people who have authenticated with the auth app.
   """
   def index(conn, _params) do
-    people = Auth.Person.get_list_of_people(conn)
+    people = Auth.Person.get_list_of_people()
     app_ids = Enum.map(Auth.App.list_apps(conn), fn a -> a.id end)
-
-    if length(people) > 0 do
-      render(conn, :index, people: people, app_ids: app_ids)
-    else
-      AuthWeb.AuthController.not_found(conn, "No People Using Your App, Yet!")
-    end
+    render(conn, :index, people: people, app_ids: app_ids)
   end
 
+  @spec show(Plug.Conn.t(), map) :: Plug.Conn.t()
   @doc """
   `show/2` shows the profile of a person with all relevant info.
   """
   def show(conn, params) do
     apps = Auth.App.list_apps(conn)
-    app_ids = Enum.map(Auth.App.list_apps(conn), fn a -> a.id end)
+    app_ids = Enum.map(apps, fn a -> a.id end)
     person = Auth.Person.get_person_by_id(Map.get(params, "person_id"))
 
     render(conn, :profile,
