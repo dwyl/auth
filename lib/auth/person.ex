@@ -274,7 +274,7 @@ defmodule Auth.Person do
   end
 
   # @doc """
-  # `get_list_of_people/1` retrieves the list of people
+  # `get_list_of_people/0` retrieves the list of people
   # that a given logged in person can see for all the Apps they have.
   # Used for displaying the table of authenticated people.
   # """

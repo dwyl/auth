@@ -26,7 +26,7 @@ defmodule AuthWeb.PeopleController do
       person: person,
       roles: Auth.PeopleRoles.get_roles_for_person(person.id),
       statuses: Auth.Status.list_statuses(),
-      all_roles: Auth.Role.list_roles(),
+      all_roles: Auth.Role.list_roles_for_apps(app_ids),
       apps: apps,
       app_ids: app_ids
     )
