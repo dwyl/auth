@@ -58,6 +58,7 @@ defmodule Auth.LogTest do
       person_id: person.id,
       auth_provider: "email"
     })
+
     # retrieve log entry:
     log = List.first(Auth.Log.get_all())
     #  confirm what we expect:

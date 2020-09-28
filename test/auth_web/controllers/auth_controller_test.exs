@@ -114,12 +114,14 @@ defmodule AuthWeb.AuthControllerTest do
 
   test "github_handler/2 github auth callback", %{conn: conn} do
     baseurl = AuthPlug.Helpers.get_baseurl_from_conn(conn)
+
     data = %{
       code: "123",
       state:
         baseurl <>
           "&auth_client_id=" <> AuthPlug.Token.client_id()
     }
+
     conn2 = get(conn, "/auth/github/callback", data)
 
     assert html_response(conn2, 302) =~ baseurl
@@ -128,8 +130,15 @@ defmodule AuthWeb.AuthControllerTest do
   # unit test for lookup by github_id for github.com/dwyl/auth/issues/125
   test "create_github_person/1 lookup by github_id" do
     person = non_admin_person()
-    github_profile = %{id: 19, name: "Unit Tests Are Awesome",
-      login: "awesome", avatar_url: "https://a.io", email: person.email}
+
+    github_profile = %{
+      id: 19,
+      name: "Unit Tests Are Awesome",
+      login: "awesome",
+      avatar_url: "https://a.io",
+      email: person.email
+    }
+
     # this will exercise the "not nil" branch:
     github_person = Auth.Person.create_github_person(github_profile)
     assert github_person.givenName == github_profile.name

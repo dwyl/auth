@@ -133,6 +133,7 @@ defmodule AuthWeb.ApiControllerTest do
 
       # roles = Auth.Role.list_roles_for_app(app.id)
       key = List.first(app.apikeys)
+
       conn =
         conn
         |> put_req_header("accept", "application/json")

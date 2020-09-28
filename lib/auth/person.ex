@@ -69,11 +69,12 @@ defmodule Auth.Person do
     case get_person_by_email(person.email) do
       nil ->
         person =
-        %Person{}
-        |> changeset(person)
-        |> put_email_status_verified()
-        |> put_assoc(:roles, [Auth.Role.get_role!(6)])
-        |> Repo.insert!()
+          %Person{}
+          |> changeset(person)
+          |> put_email_status_verified()
+          |> put_assoc(:roles, [Auth.Role.get_role!(6)])
+          |> Repo.insert!()
+
         # assign default role of "subscriber" on system app:
         Auth.PeopleRoles.insert(1, person.id, 1, 6)
         # return person record:
@@ -134,17 +135,18 @@ defmodule Auth.Person do
 
   def create_github_person(profile) do
     # IO.inspect(profile, label: "profile:135")
-    person = case get_person_by_github_id(profile.id) do
-      nil ->
-        upsert_person(transform_github_profile_data_to_person(profile))
+    person =
+      case get_person_by_github_id(profile.id) do
+        nil ->
+          upsert_person(transform_github_profile_data_to_person(profile))
 
-      person ->
-        # prepare profile data:
-        profile = transform_github_profile_data_to_person(profile)
-        # update any data that may have changed since they last authenticated:
-        person = AuthPlug.Helpers.strip_struct_metadata(person)
-        upsert_person(Map.merge(person, profile))
-    end
+        person ->
+          # prepare profile data:
+          profile = transform_github_profile_data_to_person(profile)
+          # update any data that may have changed since they last authenticated:
+          person = AuthPlug.Helpers.strip_struct_metadata(person)
+          upsert_person(Map.merge(person, profile))
+      end
 
     Map.replace!(person, :roles, RBAC.transform_role_list_to_string(person.roles))
   end

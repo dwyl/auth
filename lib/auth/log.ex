@@ -61,6 +61,7 @@ defmodule Auth.Log do
         email: get_email(conn, params)
       })
     )
+
     # return conn so we can pipline the log
     conn
   end
@@ -135,7 +136,8 @@ defmodule Auth.Log do
         "#{key}:#{Map.get(map, key)}"
       end
     end)
-    |> Enum.filter(&(!is_nil(&1))) # Remove nil values
+    # Remove nil values
+    |> Enum.filter(&(!is_nil(&1)))
     |> Enum.join(", ")
   end
 
