@@ -3,14 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <title>Auth App Error <%= @conn.status %></title>
-
     <style>
       body {
+        background: #ffd32a;
+        color: #424545;
         font-family: Helvetica, sans-serif;
         text-align: center;
-        background: #f1c40f;
         transition: background 500ms ease;
-        color: #424545;
+        
+      }
+      body:hover, body:active {
+        background: #0be881;
+        transition: background 3s ease-in;
       }
       .error .emoji {
         font-size: 5em;
@@ -21,10 +25,6 @@
         font-weight: bold;
         margin-bottom: 20px;
         margin-top: 20px;
-      }
-      body:hover, body:active {
-        background: #2ecc71;
-        transition: background 3s ease-in;
       }
     </style>
 </head>
