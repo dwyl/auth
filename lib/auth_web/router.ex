@@ -12,8 +12,13 @@ defmodule AuthWeb.Router do
     plug :put_secure_browser_headers
   end
 
+  pipeline :auth_optional do
+    plug(AuthPlugOptional, %{})
+  end
+
   scope "/", AuthWeb do
     pipe_through :browser
+    pipe_through :auth_optional
 
     get "/", AuthController, :index
     get "/auth/github/callback", AuthController, :github_handler
