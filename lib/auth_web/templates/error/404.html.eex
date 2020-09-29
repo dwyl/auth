@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Auth App Error <%= @conn.status %></title>
+
+    <style>
+      body {
+        font-family: Helvetica, sans-serif;
+        text-align: center;
+        background: #f1c40f;
+        transition: background 500ms ease;
+        color: #424545;
+      }
+      .error .emoji {
+        font-size: 5em;
+        margin-top: 50px;
+      }
+      .error .status {
+        font-size: 5em;
+        font-weight: bold;
+        margin-bottom: 20px;
+        margin-top: 20px;
+      }
+      body:hover, body:active {
+        background: #2ecc71;
+        transition: background 3s ease-in;
+      }
+    </style>
+</head>
+<body>
+    <div class="error">
+      <div class="emoji">&#x25D5; &#xFE35; &#x25D5;</div>
+      <div class="status"><%= @conn.status %></div>
+      <h2><%= error_message(@conn) %></h2>
+    </div>
+</body>
+</html>
