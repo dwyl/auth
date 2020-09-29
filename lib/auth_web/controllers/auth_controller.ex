@@ -184,12 +184,10 @@ defmodule AuthWeb.AuthController do
     |> render("404.html", conn: conn)
   end
 
-  # create a human-friendy response?
   def unauthorized(conn, msg \\ "invalid AUTH_API_KEY/client_id please check") do
     error(conn, msg, 401)
   end
 
-  # refactor this to render a template with a nice layout? #HelpWanted
   def not_found(conn, msg) do
     error(conn, msg, 404)
   end
