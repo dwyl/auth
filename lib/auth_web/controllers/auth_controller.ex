@@ -178,7 +178,6 @@ defmodule AuthWeb.AuthController do
     conn
     |> Auth.Log.error(%{status_id: status, msg: msg})
     |> put_status(status)
-    |> put_flash(:info, msg)
     |> assign(:reason, %{message: msg})
     |> put_view(AuthWeb.ErrorView)
     |> render("404.html", conn: conn)
