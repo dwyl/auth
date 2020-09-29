@@ -36,7 +36,10 @@ defmodule AuthTest do
       givenName: "Alexander McAwesome",
       auth_provider: "email",
       password: "thiswillbehashed",
-      github_id: "19"
+      github_id: "19",
+      picture: "https://avatars3.githubusercontent.com/u/10835816",
+      status: 1,
+      app_id: 1
     })
   end
 
@@ -46,7 +49,11 @@ defmodule AuthTest do
     data = %{
       id: person.id,
       email: person.email,
-      auth_provider: person.auth_provider
+      auth_provider: person.auth_provider,
+      givenName: person.givenName,
+      picture: person.picture,
+      status: 1,
+      app_id: 1
     }
 
     AuthPlug.create_jwt_session(conn, data)

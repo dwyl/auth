@@ -28,6 +28,14 @@ defmodule AuthWeb.AuthControllerTest do
     assert html_response(conn, 200) =~ "Sign in"
   end
 
+  test "index/2 when logged in shows welcome", %{conn: conn} do
+    conn = conn
+    |> non_admin_login()
+    |> get("/")
+
+    assert html_response(conn, 200) =~ "Welcome"
+  end
+
   test "GET /profile (without valid session should redirect)", %{conn: conn} do
     conn = get(conn, "/profile")
     # assert html_response(conn, 301) =~ "Login"

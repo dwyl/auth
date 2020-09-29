@@ -11,14 +11,10 @@ defmodule AuthWeb.AuthController do
     render(conn, :welcome, apps: App.list_apps(conn.assigns.person.id))
   end
 
-  # SEE: https://github.com/dwyl/auth/issues/69
-  # def index(%{assigns: %{person: _}} = conn, _params) do
-  #   person = conn.assigns.person
-  #   conn
-  #   |> AuthPlug.create_jwt_session(session_data(person))
-  #   |> Auth.Log.info(%{status_id: 200, app_id: person.app_id})
-  #   |> render(:welcome, person: person, apps: App.list_apps(person.id))
-  # end
+  # redirect if already authenticated: github.com/dwyl/auth/issues/69
+  def index(%{assigns: %{person: _}} = conn, _params) do
+    redirect_or_render(conn, conn.assigns.person, nil)
+  end
 
   def index(conn, params) do
     params_person = Map.get(params, "person")
