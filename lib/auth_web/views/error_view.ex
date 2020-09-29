@@ -7,11 +7,11 @@ defmodule AuthWeb.ErrorView do
   #   "Hello"
   # end
   def error_message(conn) do
-    if Map.has_key?(conn.assigns, :reason)
+    if not is_nil(conn) and Map.has_key?(conn.assigns, :reason)
       and Map.has_key?(conn.assigns.reason, :message) do
       "Sorry, " <> conn.assigns.reason.message
     else
-      "Sorry, that page could not be found."
+      "Sorry, That Page Was Not Found."
     end
   end
 
@@ -24,7 +24,7 @@ defmodule AuthWeb.ErrorView do
   # the template name. For example, "404.html" becomes
   # "Not Found".
   def template_not_found(template, _assigns) do
-    IO.inspect(template, label: "template")
+    # IO.inspect(template, label: "template")
     Phoenix.Controller.status_message_from_template(template)
   end
 end

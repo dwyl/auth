@@ -135,13 +135,12 @@ defmodule AuthWeb.AuthController do
   if the state is defined, redirect to it.
   """
   def handler(conn, person, state) do
-    # Send welcome email:
-    Auth.Email.sendemail(%{
-      email: person.email,
-      name: person.givenName,
-      template: "welcome"
-    })
-
+    # Send welcome email: temporarily disabled to avoid noise.
+    # Auth.Email.sendemail(%{
+    #   email: person.email,
+    #   name: person.givenName,
+    #   template: "welcome"
+    # })
     redirect_or_render(conn, person, state)
   end
 
@@ -175,22 +174,24 @@ defmodule AuthWeb.AuthController do
     end
   end
 
+  def error(conn, msg, status) do
+    conn
+    |> Auth.Log.error(%{status_id: status, msg: msg})
+    |> put_status(status)
+    |> put_flash(:info, msg)
+    |> assign(:reason, %{message: msg})
+    |> put_view(AuthWeb.ErrorView)
+    |> render("404.html", conn: conn)
+  end
+
   # create a human-friendy response?
   def unauthorized(conn, msg \\ "invalid AUTH_API_KEY/client_id please check") do
-    conn
-    |> Auth.Log.error(%{status_id: 401, msg: msg})
-    |> put_resp_content_type("text/html")
-    |> send_resp(401, msg)
-    |> halt()
+    error(conn, msg, 401)
   end
 
   # refactor this to render a template with a nice layout? #HelpWanted
-  def not_found(conn, message) do
-    conn
-    |> Auth.Log.error(%{status_id: 404, msg: message})
-    |> put_resp_content_type("text/html")
-    |> send_resp(404, message)
-    |> halt()
+  def not_found(conn, msg) do
+    error(conn, msg, 404)
   end
 
   @doc """

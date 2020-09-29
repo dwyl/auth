@@ -37,7 +37,7 @@ defmodule AuthWeb.AppController do
     if conn.assigns.person.id == app.person_id || conn.assigns.person.id == 1 do
       render(conn, "show.html", app: app)
     else
-      AuthWeb.AuthController.not_found(conn, "can't touch this.")
+      AuthWeb.AuthController.not_found(conn, "this page does not exist")
     end
   end
 
@@ -49,7 +49,7 @@ defmodule AuthWeb.AppController do
       changeset = App.change_app(app)
       render(conn, "edit.html", app: app, changeset: changeset)
     else
-      AuthWeb.AuthController.not_found(conn, "can't touch this.")
+      AuthWeb.AuthController.not_found(conn, "cannot edit app you don't own")
     end
   end
 
@@ -67,7 +67,7 @@ defmodule AuthWeb.AppController do
           render(conn, "edit.html", app: app, changeset: changeset)
       end
     else
-      AuthWeb.AuthController.not_found(conn, "can't touch this.")
+      AuthWeb.AuthController.not_found(conn, "cannot update app you don't own")
     end
   end
 
@@ -81,7 +81,7 @@ defmodule AuthWeb.AppController do
       |> put_flash(:info, "App deleted successfully.")
       |> redirect(to: Routes.app_path(conn, :index))
     else
-      AuthWeb.AuthController.not_found(conn, "can't touch this.")
+      AuthWeb.AuthController.not_found(conn, "cannot delete app you don't own")
     end
   end
 
@@ -92,7 +92,7 @@ defmodule AuthWeb.AppController do
     app = App.get_app!(id)
 
     if conn.assigns.person.id != app.person_id && conn.assigns.person.id != 1 do
-      AuthWeb.AuthController.not_found(conn, "can't touch this.")
+      AuthWeb.AuthController.not_found(conn, "cannot reset App API Key you don't own")
     else
       Enum.each(app.apikeys, fn k ->
         if k.status == 3 do

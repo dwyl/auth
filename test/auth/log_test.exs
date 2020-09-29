@@ -4,11 +4,12 @@ defmodule Auth.LogTest do
   require Logger
 
   test "E2E Test Auth.Log.error/2 inserts error log into db", %{conn: conn} do
+    # IO.inspect(conn, label: "conn")
     conn =
       conn
       |> Auth.UserAgent.assign_ua()
+      |> fetch_flash()
       |> AuthWeb.AuthController.not_found("no content")
-
     assert conn.status == 404
 
     ua = UserAgent.upsert(conn)
