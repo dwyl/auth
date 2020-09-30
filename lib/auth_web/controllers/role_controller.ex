@@ -1,6 +1,7 @@
 defmodule AuthWeb.RoleController do
   use AuthWeb, :controller
   alias Auth.Role
+  require Logger
   # import Auth.Plugs.IsOwner
 
   # plug :is_owner when action in [:index]
@@ -31,7 +32,7 @@ defmodule AuthWeb.RoleController do
   def create(conn, %{"role" => role_params}) do
     apps = Auth.App.list_apps(conn)
     # check that the role_params.app_id is owned by the person:
-    if person_owns_app?(apps, Map.get(role_params, "app_id")) do
+    if person_owns_app?(apps, map_get(role_params, "app_id")) do
       # never allow the request to define the person_id:
       create_attrs = Map.merge(role_params, %{"person_id" => conn.assigns.person.id})
 
@@ -112,6 +113,7 @@ defmodule AuthWeb.RoleController do
     )
   end
 
+  #  confirm that the person owns the app they want add a role for:
   defp person_owns_app?(apps, app_id) do
     app_ids = Enum.map(apps, fn a -> to_string(a.id) end)
     Enum.member?(app_ids, app_id)
@@ -142,16 +144,25 @@ defmodule AuthWeb.RoleController do
     # confirm that the granter is either superadmin (conn.assigns.person.id == 1)
     # or has an "admin" role (1 || 2)
     granter_id = conn.assigns.person.id
-    # we need to expand grant priviledges see: https://github.com/dwyl/auth/issues/119
+    apps = Auth.App.list_apps(conn)
+    # app_ids_list = Enum.map(apps, fn a -> a.id end)
+    # role list includes default_roles 1-8 and any custom roles
+    role_id = map_get(params, "role_id")
+    app_id = map_get(params, "app_id")
 
-    if granter_id == 1 do
-      role_id = map_get(params, "role_id")
-      person_id = map_get(params, "person_id")
-      Auth.PeopleRoles.insert(granter_id, person_id, role_id)
-      redirect(conn, to: Routes.people_path(conn, :show, person_id))
+    if person_owns_app?(apps, app_id) and app_owns_role?(app_id, role_id) do
+      grantee_id = map_get(params, "person_id")
+      Auth.PeopleRoles.insert(app_id, grantee_id, granter_id, role_id)
+      redirect(conn, to: Routes.people_path(conn, :show, grantee_id))
     else
+      Logger.error("person.id #{granter_id} attempted to grant role.id #{role_id}")
       AuthWeb.AuthController.unauthorized(conn)
     end
+  end
+
+  defp app_owns_role?(app_id, role_id) do
+    role_list_ids = Auth.Role.list_role_ids_for_app(app_id)
+    Enum.member?(role_list_ids, role_id)
   end
 
   @doc """
@@ -165,7 +176,11 @@ defmodule AuthWeb.RoleController do
       pr = Auth.PeopleRoles.get_by_id(people_roles_id)
 
       if conn.method == "GET" do
-        render(conn, "revoke.html", role: pr, people_roles_id: people_roles_id)
+        render(conn, "revoke.html",
+          role: pr,
+          people_roles_id: people_roles_id,
+          apps: Auth.App.list_apps(conn)
+        )
       else
         Auth.PeopleRoles.revoke(conn.assigns.person.id, people_roles_id)
         redirect(conn, to: Routes.people_path(conn, :show, pr.person_id))

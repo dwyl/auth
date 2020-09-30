@@ -96,6 +96,21 @@ defmodule AuthWeb.RoleControllerTest do
 
       assert html_response(conn, 404) =~ "Please select an app you own"
     end
+
+    test "cannot create new role with name of existing role", %{conn: conn} do
+      # see: https://github.com/dwyl/auth/issues/118
+      conn = admin_login(conn)
+
+      existing_role = %{
+        name: "superadmin",
+        desc: "this will fail because we don't allow duplicate roles",
+        person_id: 1,
+        app_id: 1
+      }
+
+      conn = post(conn, Routes.role_path(conn, :create), role: existing_role)
+      assert html_response(conn, 200) =~ "Sorry, role name cannot be superadmin"
+    end
   end
 
   describe "edit role" do
@@ -121,7 +136,13 @@ defmodule AuthWeb.RoleControllerTest do
 
     test "redirects when data is valid", %{conn: conn} do
       conn = admin_login(conn)
-      attrs = Map.merge(@create_attrs, %{person_id: conn.assigns.person.id})
+
+      attrs =
+        Map.merge(
+          @create_attrs,
+          %{person_id: conn.assigns.person.id, name: "myrole138"}
+        )
+
       {:ok, role} = Auth.Role.create_role(attrs)
       update_attrs = Map.merge(@update_attrs, %{app_id: 1, role_id: role.id})
       conn = put(conn, Routes.role_path(conn, :update, role), role: update_attrs)
@@ -151,7 +172,13 @@ defmodule AuthWeb.RoleControllerTest do
 
     test "cannot update role I own to App I don't own!", %{conn: conn} do
       conn = non_admin_login(conn)
-      attrs = Map.merge(@create_attrs, %{person_id: conn.assigns.person.id})
+
+      attrs = %{
+        name: "myrole169",
+        desc: "this fails",
+        person_id: conn.assigns.person.id
+      }
+
       {:ok, role} = Auth.Role.create_role(attrs)
       # attempt to update app_id to app owned by admin:
       update_attrs = Map.merge(role, %{app_id: 1})
@@ -186,20 +213,73 @@ defmodule AuthWeb.RoleControllerTest do
     %{role: role}
   end
 
-  test "POST /roles/grant without admin should 401", %{conn: conn} do
-    alex = %{email: "alex_grant_role_fail@gmail.com", auth_provider: "email"}
-    grantee = Auth.Person.create_person(alex)
-    conn = assign(conn, :person, grantee)
-    conn = AuthWeb.RoleController.grant(conn, %{"role_id" => 5, "person_id" => grantee.id})
+  test "non-admin person can grant default role on app they own", %{conn: conn} do
+    # login as non-admin person
+    conn = non_admin_login(conn)
+    # create app:
+    {:ok, app} =
+      Auth.App.create_app(%{
+        "name" => "My Test App",
+        "desc" => "Demo App",
+        "url" => "localhost:4000",
+        "person_id" => conn.assigns.person.id,
+        "status" => 3
+      })
+
+    # create role for app:
+    attrs =
+      Map.merge(
+        @create_attrs,
+        %{person_id: conn.assigns.person.id, app_id: app.id}
+      )
+
+    {:ok, role} = Auth.Role.create_role(attrs)
+
+    # create *different* non-admin person:
+    grantee = non_admin_person()
+
+    #  attempt to grant a role for an app they don't own (should fail):
+    conn =
+      AuthWeb.RoleController.grant(
+        conn,
+        %{"role_id" => role.id, "person_id" => grantee.id, "app_id" => app.id}
+      )
+
+    # confirm redirected to the grantee's person
+    assert html_response(conn, 302) =~ "people/#{grantee.id}"
+  end
+
+  test "Attempt to POST /roles/grant (non-owner of app) should 401", %{conn: conn} do
+    grantee = non_admin_person()
+    # login as *different* non-admin person
+    conn = non_admin_login(conn)
+    #  attempt to grant a role for an app they don't own (should fail):
+    conn =
+      post(
+        conn,
+        Routes.role_path(conn, :grant, %{
+          "role_id" => 5,
+          "person_id" => grantee.id,
+          "app_id" => "1"
+        })
+      )
+
     assert conn.status == 401
   end
 
   test "POST /roles/grant should create people_roles entry", %{conn: conn} do
-    alex = %{email: "alex_grant_success@gmail.com", auth_provider: "email"}
-    grantee = Auth.Person.create_person(alex)
-
+    grantee = non_admin_person()
     conn = admin_login(conn)
-    conn = get(conn, Routes.role_path(conn, :grant, %{"role_id" => 5, "person_id" => grantee.id}))
+
+    conn =
+      get(
+        conn,
+        Routes.role_path(conn, :grant, %{
+          "role_id" => 5,
+          "person_id" => grantee.id,
+          "app_id" => "1"
+        })
+      )
 
     # the grant/2 controller handler redirects back to /person/:id
     assert html_response(conn, 302) =~ "redirected"
@@ -235,8 +315,8 @@ defmodule AuthWeb.RoleControllerTest do
 
     Auth.Person.create_person(wrong_person_data)
     conn = AuthPlug.create_jwt_session(conn, wrong_person_data)
-
-    conn = AuthWeb.RoleController.revoke(conn, %{"people_roles_id" => 1})
+    |> fetch_flash()
+    |> AuthWeb.RoleController.revoke(%{"people_roles_id" => 1})
     assert conn.status == 401
   end
 end

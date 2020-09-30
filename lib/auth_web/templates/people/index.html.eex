@@ -5,13 +5,13 @@
     <thead>
       <tr class="tl">
         <th>ID</th>
-        <th>Pic</th>
+        <th>Image</th>
         <th>Name</th>
         <th>Status</th>
-        <th>Time</th>
-        
+        <th>Last Login</th>
         <th>Email</th>
         <th>Auth Provider</th>
+        <th>App ID</th>
         <th>Roles</th>
       </tr>
     </thead>
@@ -19,14 +19,21 @@
   <%= for {p, idx} <- Enum.with_index(@people) do %>
       <tr class="hover-bg-light-gray
         <%= if rem(idx,2) == 0 do %> bb b--moon-gray bg-light-gray <% end %>">
-        <td><a href="/people/<%= p.id %>" class="no-underline"><%= p.id %></a></td>
+        <td><a href="/people/<%= p.person_id %>" class="no-underline"><%= p.person_id %></a></td>
         <td><img width="64px" src="<%= p.picture %>" class="center db br2"/></td>
         <td><%= p.givenName %></td>
-        <td class="<%= status_string(p.status, @statuses) %>"><%= status_string(p.status, @statuses) %></td>
+        <td class="<%= p.status %>"><%= p.status %></td>
         <td><%= p.updated_at %></td>
-        <td><%= p.email %></td>
+        <%= if show_email(p, @app_ids) do%>
+          <td><%= p.email %></td>
+        <% else %>
+         <td></td>
+        <% end %>
         <td><%= p.auth_provider %></td>
-        <td class="<%= role_string(p.roles) %>"><%= role_string(p.roles) %></td>  
+        <td><a href="/apps/<%= p.app_id %>" class="no-underline"><%= p.app_id %></a></td>
+        <%= if show_email(p, @app_ids) do%>
+          <td class="<%= p.role %>"><%= p.role %></td>  
+        <% end %>
       </tr>
   <% end %>
     </tbody>
@@ -34,9 +41,10 @@
 </section>
 
 <style>
-  .verified { background-color: #7bed9f;}
-  .superadmin { background-color: #ffa502; }
+  .creator { background-color: #1abc9c; }
   .subscriber { background-color: #00d2d3; }
+  .superadmin { background-color: #ffa502; }
+  .verified { background-color: #7bed9f;}
 </style>
 
 <!-- DataTables is an *optional* progressive enhancement 

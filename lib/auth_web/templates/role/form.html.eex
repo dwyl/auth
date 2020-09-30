@@ -7,7 +7,9 @@
 
   <%= label f, :name %>
   <%= text_input f, :name, class: "db w-100 mt2 pa2 mb2 ba b--dark-grey" %>
-  <%= error_tag f, :name %>
+  <div class="pt2 db">
+    <%= error_tag f, :name %>
+  </div>
 
   <%= label f, :desc %>
   <%= text_input f, :desc, class: "db w-100 mt2 pa2 mb2 ba b--dark-grey" %>

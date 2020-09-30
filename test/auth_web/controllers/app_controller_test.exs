@@ -1,7 +1,6 @@
 defmodule AuthWeb.AppControllerTest do
   use AuthWeb.ConnCase
   alias Auth.App
-  alias Auth.Role
 
   @create_attrs %{
     desc: "some description",
@@ -75,7 +74,7 @@ defmodule AuthWeb.AppControllerTest do
     test "attempt to VIEW app you don't own > 404", %{conn: conn, app: app} do
       conn = non_admin_login(conn)
       conn = get(conn, Routes.app_path(conn, :show, app))
-      assert html_response(conn, 404) =~ "can't touch this."
+      assert html_response(conn, 404) =~ "page does not exist"
     end
   end
 
@@ -91,7 +90,7 @@ defmodule AuthWeb.AppControllerTest do
     test "attempt to EDIT app you don't own > 404", %{conn: conn, app: app} do
       conn = non_admin_login(conn)
       conn = get(conn, Routes.app_path(conn, :edit, app))
-      assert html_response(conn, 404) =~ "can't touch this."
+      assert html_response(conn, 404) =~ "cannot edit"
     end
   end
 
@@ -116,7 +115,7 @@ defmodule AuthWeb.AppControllerTest do
     test "attempt UPDATE app you don't own > 404", %{conn: conn, app: app} do
       conn = non_admin_login(conn)
       conn = put(conn, Routes.app_path(conn, :update, app), app: @update_attrs)
-      assert html_response(conn, 404) =~ "can't touch this."
+      assert html_response(conn, 404) =~ "cannot update app"
     end
   end
 
@@ -136,7 +135,7 @@ defmodule AuthWeb.AppControllerTest do
     test "attempt DELETE app you don't own > 404", %{conn: conn, app: app} do
       conn = non_admin_login(conn)
       conn = delete(conn, Routes.app_path(conn, :delete, app))
-      assert html_response(conn, 404) =~ "can't touch this."
+      assert html_response(conn, 404) =~ "cannot delete app"
     end
   end
 
@@ -157,92 +156,37 @@ defmodule AuthWeb.AppControllerTest do
     test "attempt reset apikey you don't own > 404", %{conn: conn, app: app} do
       conn = non_admin_login(conn)
       conn = get(conn, Routes.app_path(conn, :resetapikey, app))
-      assert html_response(conn, 404) =~ "can't touch this."
-    end
-  end
-
-  describe "GET /approles/:client_id" do
-    setup [:create_app]
-
-    test "returns 401 if client_id is invalid", %{conn: conn} do
-      conn =
-        conn
-        |> put_req_header("accept", "application/json")
-        |> get("/approles/invalid")
-
-      assert html_response(conn, 401) =~ "invalid"
+      assert html_response(conn, 404) =~ "cannot reset"
     end
 
-    test "returns (JSON) list of roles", %{conn: conn, app: app} do
-      roles = Auth.Role.list_roles_for_app(app.id)
-      key = List.first(app.apikeys)
-      # IO.inspect(app, label: "app")
-      conn =
-        conn
-        |> admin_login()
-        |> put_req_header("accept", "application/json")
-        |> get("/approles/#{key.client_id}")
+    # ref: https://github.com/dwyl/auth/issues/124
+    test "regression test for reset apikeys", %{conn: conn} do
+      conn = non_admin_login(conn)
 
-      assert conn.status == 200
-      {:ok, json} = Jason.decode(conn.resp_body)
-      # IO.inspect(json)
-      assert length(roles) == length(json)
-      # assert html_response(conn, 200) =~ "successfully reset"
-    end
-
-    test "returns only relevant roles", %{conn: conn, app: app} do
-      roles = Role.list_roles_for_app(app.id)
-      # admin create role:
-      admin_role = %{desc: "admin role", name: "new admin role", app_id: app.id}
-      {:ok, %Role{} = admin_role} = Role.create_role(admin_role)
-      # check that the new role was added to the admin app role list:
-      roles2 = Role.list_roles_for_app(app.id)
-      assert length(roles) < length(roles2)
-      last = List.last(roles2)
-      assert last.name == admin_role.name
-
-      # login as non-admin person
-      conn2 = non_admin_login(conn)
-
-      # create non-admin app (to get API Key)
-      {:ok, non_admin_app} =
-        Auth.App.create_app(%{
-          "name" => "default system app",
-          "desc" => "Demo App",
-          "url" => "localhost:4000",
-          "person_id" => conn2.assigns.person.id,
-          "status" => 3
-        })
-
-      # create non-admin role:
-      role_data = %{
-        desc: "non-admin role",
-        name: "non-admin role",
-        app_id: non_admin_app.id
+      app_data = %{
+        desc: "appdesc",
+        name: "appname",
+        url: "appurl",
+        status: 3,
+        person_id: conn.assigns.person.id
       }
 
-      {:ok, %Role{} = role2} = Role.create_role(role_data)
-      key = List.first(non_admin_app.apikeys)
+      # create app for non_admin:
+      {:ok, app} = Auth.App.create_app(app_data)
 
-      conn3 =
-        conn2
-        |> admin_login()
-        |> put_req_header("accept", "application/json")
-        |> get("/approles/#{key.client_id}")
-
-      assert conn3.status == 200
-      {:ok, json} = Jason.decode(conn3.resp_body)
-      last_role = List.last(json)
-      # confirm the last role in the list is the new non-admin role:
-      assert Map.get(last_role, "name") == role2.name
-
-      # confirm the admin_role is NOT in the JSON reponse:
-      should_be_empty =
-        Enum.filter(json, fn r ->
-          Map.get(r, "name") == admin_role.name
-        end)
-
-      assert should_be_empty == []
+      #  get apikey before reset:
+      apikey1 = Auth.Apikey.get_apikey_by_app_id(app.id)
+      get(conn, Routes.app_path(conn, :resetapikey, app))
+      apikey2 = Auth.Apikey.get_apikey_by_app_id(app.id)
+      assert apikey1.id + 1 == apikey2.id
+      state = app.url
+      #  The client_id for the original apikey should no longer work:
+      sec = AuthWeb.AuthController.get_client_secret(apikey1.client_id, state)
+      # so we expect a client_secret of zero:
+      assert sec == 0
+      # the lookup should work for the new apikey:
+      secret = AuthWeb.AuthController.get_client_secret(apikey2.client_id, state)
+      assert secret == apikey2.client_secret
     end
   end
 end

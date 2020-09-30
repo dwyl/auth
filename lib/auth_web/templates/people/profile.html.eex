@@ -3,7 +3,9 @@
       class="center db br4"/>
   <h1><%= @person.givenName %> <%= @person.familyName %></h1>
   <div>
-    <strong class="f4"><%= @person.email %></strong> 
+    <%= if show_email(@person, @app_ids) do %>
+      <strong class="f4"><%= @person.email %></strong> 
+    <% end %>
     <span class="f4">(<%= capitalize(@person.auth_provider) %> Auth) </span>
     <span class="w-10 pv1 ph2 f5 mt3 center br3 <%= status_string(@person.status, @statuses) %>">
       <%= capitalize(status_string(@person.status, @statuses)) %>
@@ -18,6 +20,7 @@
     <thead>
       <tr class="tc">
         <th>ID</th>
+        <th>App ID</th>
         <th>Role</th>
         <th>Granted</th>
         <th>Granted by</th>
@@ -26,8 +29,10 @@
     </thead>
     <tbody class="tc">
   <%= for r <- @roles do %>
+    <%= if Enum.member?(@app_ids, r.app_id) do %>
       <tr class="row pt2 f4 datarow">
         <td><%= r.id %></td>
+        <td><%= r.app_id %></td>
         <td><%= r.role.name %></td>
         <td><%= r.inserted_at %></td>  
         <td>
@@ -48,23 +53,33 @@
             </a>
           <% end %>
         </td>    
-
       </tr>
+    <% end %>
   <% end %>
     </tbody>
   </table>
 
+<%= if length(@apps) > 0 do %>
 <h1 class="tc mt3">Grant a New Role</h1>
 <!-- Grant New Roles -->
-<%= form_tag("/roles/grant/", method: "get", class: "w-30 tc center mt2") do %>
-  <select name="role_id" id="1" class="center input-reset ba b--black-20 pa2 mb2 db w-15">
-    <option class="tc" value="">▼ Please Select a Role ▼</option>
-  <%= for r <- @all_roles do %>
-    <option value="<%= r.id %>"><%= r.name %></option>
+<div class="w-30 tc center mt2">
+  <%= form_for @conn, Routes.role_path(AuthWeb.Endpoint, :grant), fn f -> %>
+    <input name="person_id" type="hidden" value="<%= @person.id %>">
+   
+    <%= label f, :app_id, class: "f3"  %>
+    <%= select f, :app_id, Enum.map(@apps, &{&1.name, &1.id}), 
+      class: "w-100 f3 pa2 mt2 mb2 bg-white b--black-20"%>
+    <%= error_tag f, :app_id %>
+
+    <%= label f, :role_id, class: "f3" %>
+    <%= select f, :role_id, Enum.map(@all_roles, &{&1.name, &1.id}), 
+      class: "w-100 f3 pa2 mt2 mb2 bg-white b--black-20"%>
+    <%= error_tag f, :role_id %>
+
+    <%= submit "Grant Role", 
+    class: "tc center pointer bn bg-green white f2 pa2 mt1 shadow-hover bg-animate pa3 br1" %>
   <% end %>
-  </select>
-  <input name="person_id" type="hidden" value="<%= @person.id %>">
-  <%= submit "Grant Role", class: "pointer bn bg-green white f2 pa2 mt1 shadow-hover bg-animate pa3 br1" %>
+</div>
 <% end %>
 
 <style>

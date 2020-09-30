@@ -80,7 +80,7 @@ defmodule Auth.Apikey do
   def get_apikey_by_app_id(app_id) do
     from(
       a in __MODULE__,
-      where: a.app_id == ^app_id
+      where: a.app_id == ^app_id and a.status != 6
     )
     |> Repo.one()
     |> Repo.preload(:app)

@@ -11,26 +11,9 @@ defmodule AuthWeb.AuthController do
     render(conn, :welcome, apps: App.list_apps(conn.assigns.person.id))
   end
 
-  defp get_user_agent_string(conn) do
-    user_agent_header =
-      Enum.filter(conn.req_headers, fn {k, _} ->
-        k == "user-agent"
-      end)
-
-    case user_agent_header do
-      [{_, ua}] -> ua
-      _ -> "undefined_user_agent"
-    end
-  end
-
-  defp get_user_agent(conn) do
-    conn
-    |> get_user_agent_string()
-    |> Auth.UserAgent.get_or_insert_user_agent()
-  end
-
-  defp get_ip_address(conn) do
-    Enum.join(Tuple.to_list(conn.remote_ip), ".")
+  # redirect if already authenticated: github.com/dwyl/auth/issues/69
+  def index(%{assigns: %{person: _}} = conn, _params) do
+    redirect_or_render(conn, conn.assigns.person, nil)
   end
 
   def index(conn, params) do
@@ -45,8 +28,7 @@ defmodule AuthWeb.AuthController do
       end
 
     state =
-      if not is_nil(params_person) and
-           not is_nil(Map.get(params_person, "state")) do
+      if not is_nil(params_person) and Map.has_key?(params_person, "state") do
         Map.get(params_person, "state")
       else
         # get from headers
@@ -149,13 +131,12 @@ defmodule AuthWeb.AuthController do
   if the state is defined, redirect to it.
   """
   def handler(conn, person, state) do
-    # Send welcome email:
-    Auth.Email.sendemail(%{
-      email: person.email,
-      name: person.givenName,
-      template: "welcome"
-    })
-
+    # Send welcome email: temporarily disabled to avoid noise.
+    # Auth.Email.sendemail(%{
+    #   email: person.email,
+    #   name: person.givenName,
+    #   template: "welcome"
+    # })
     redirect_or_render(conn, person, state)
   end
 
@@ -168,42 +149,42 @@ defmodule AuthWeb.AuthController do
   """
   def redirect_or_render(conn, person, state) do
     # check if valid state (HTTP referer) is defined:
-    case not (is_nil(state) or state == "") do
-      # redirect
-      true ->
-        case get_client_secret_from_state(state) do
-          0 ->
-            unauthorized(conn)
+    if is_nil(state) or state == "" do
+      # No State > Display Welcome page on Auth site:
+      conn
+      |> AuthPlug.create_jwt_session(session_data(person))
+      |> Auth.Log.info(%{status_id: 200, app_id: 1})
+      |> render(:welcome, person: person, apps: App.list_apps(person.id))
+    else
+      # State > Redirect to requesting app:
+      case get_client_secret_from_state(state) do
+        0 ->
+          unauthorized(conn, "invalid AUTH_API_KEY")
 
-          secret ->
-            conn
-            |> redirect(external: add_jwt_url_param(person, state, secret))
-        end
-
-      # display welcome page on Auth site:
-      false ->
-        # Grant app_admin role to person who authenticated directly on auth app
-        # Auth.PeopleRoles.insert(1, person.id, 8)
-        conn
-        |> AuthPlug.create_jwt_session(person)
-        |> render(:welcome, person: person, apps: App.list_apps(person.id))
+        secret ->
+          conn
+          |> AuthPlug.create_jwt_session(session_data(person))
+          |> Auth.Log.info(%{status_id: 200, app_id: get_app_id(state)})
+          |> redirect(external: add_jwt_url_param(person, state, secret))
+      end
     end
   end
 
-  # create a human-friendy response?
-  def unauthorized(conn) do
+  def error(conn, msg, status) do
     conn
-    |> put_resp_content_type("text/html")
-    |> send_resp(401, "invalid AUTH_API_KEY/client_id please check.")
-    |> halt()
+    |> Auth.Log.error(%{status_id: status, msg: msg})
+    |> put_status(status)
+    |> assign(:reason, %{message: msg})
+    |> put_view(AuthWeb.ErrorView)
+    |> render("404.html", conn: conn)
   end
 
-  # refactor this to render a template with a nice layout? #HelpWanted
-  def not_found(conn, message) do
-    conn
-    |> put_resp_content_type("text/html")
-    |> send_resp(404, message)
-    |> halt()
+  def unauthorized(conn, msg \\ "invalid AUTH_API_KEY/client_id please check") do
+    error(conn, msg, 401)
+  end
+
+  def not_found(conn, msg) do
+    error(conn, msg, 404)
   end
 
   @doc """
@@ -219,18 +200,11 @@ defmodule AuthWeb.AuthController do
     p = params["person"]
     email = p["email"]
     state = p["state"]
+    app_id = get_app_id(state)
 
     # email is blank or invalid:
     if is_nil(email) or not Fields.Validate.email(email) do
-      # intialise login log data
-      login_log = %{
-        user_agent_id: get_user_agent(conn).id,
-        person_id: nil,
-        ip_address: get_ip_address(conn),
-        email: email
-      }
-
-      Auth.LoginLog.create_login_log(login_log)
+      Auth.Log.error(conn, %{email: email, app_id: app_id, status_id: 401, msg: "email invalid"})
 
       # email invalid, re-render the login/register form:
       index(conn, params)
@@ -366,13 +340,13 @@ defmodule AuthWeb.AuthController do
   `password_prompt/2` handles all requests to verify a password for a person.
   If the pasword is verified (using Argon2.verify_pass), redirect to their
   desired page. If the password is invalid reset & re-render the form.
-  TODO:
   """
-  # verify the password
   def password_prompt(conn, params) do
     p = params["person"]
     email = Auth.Person.decrypt_email(p["email"])
     person = Auth.Person.get_person_by_email(email)
+    state = p["state"]
+    app_id = get_app_id(state)
 
     case Argon2.verify_pass(p["password"], person.password_hash) do
       true ->
@@ -383,18 +357,7 @@ defmodule AuthWeb.AuthController do
         That password is incorrect.
         """
 
-        user_agent = get_user_agent(conn)
-        ip_address = get_ip_address(conn)
-
-        login_log = %{
-          user_agent_id: user_agent.id,
-          person_id: person.id,
-          ip_address: ip_address,
-          email: person.email
-        }
-
-        Auth.LoginLog.create_login_log(login_log)
-
+        Auth.Log.error(conn, %{email: email, app_id: app_id, status_id: 401})
         render_password_form(conn, email, msg, p["state"], "password_prompt")
     end
   end
@@ -439,6 +402,10 @@ defmodule AuthWeb.AuthController do
       apikey = Auth.Apikey.get_apikey_by_app_id(app_id)
 
       cond do
+        # if the apikey isn't found it will be nil
+        is_nil(apikey) ->
+          0
+
         apikey.app.person_id == 1 ->
           apikey.client_secret
 
@@ -452,19 +419,28 @@ defmodule AuthWeb.AuthController do
     end
   end
 
-  def add_jwt_url_param(person, state, client_secret) do
-    data = %{
+  def session_data(person) do
+    roles =
+      if Map.has_key?(person, :roles) do
+        RBAC.transform_role_list_to_string(person.roles)
+      else
+        nil
+      end
+
+    %{
       auth_provider: person.auth_provider,
       givenName: person.givenName,
       id: person.id,
       picture: person.picture,
       status: person.status,
       email: person.email,
-      roles: RBAC.transform_role_list_to_string(person.roles),
+      roles: roles,
       app_id: person.app_id
     }
+  end
 
-    jwt = AuthPlug.Token.generate_jwt!(data, client_secret)
+  def add_jwt_url_param(person, state, client_secret) do
+    jwt = AuthPlug.Token.generate_jwt!(session_data(person), client_secret)
 
     List.first(String.split(URI.decode(state), "?")) <>
       "?jwt=" <> jwt

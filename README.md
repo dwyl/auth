@@ -39,16 +39,16 @@ for _all_ our Auth needs. <br />
 
 As a developer, _using_ this App you can _rest assured_ that:
 
-+ [x] **All code** for **authentication** in _your_ app
++   [x] **All code** for **authentication** in _your_ app
 is **nicely contained & organized** in a ***single place***.
-+ [x] An order of magnitude less code than any other auth system
++   [x] An order of magnitude less code than any other auth system
 and all code is ***well documented, tested & maintained***.
-+ [x] Whenever there is an update in the underlying modules (_dependencies_)
++   [x] Whenever there is an update in the underlying modules (_dependencies_)
 we **update** and throughly tested in a ***timely manner***.
-+ [x] All ***personally identifiable information*** is securely stored
++   [x] All ***personally identifiable information*** is securely stored
 in a logically separate place from your main application
 so you have extra security.
-+ [x] You only have to **update _one_ thing**
++   [x] You only have to **update _one_ thing**
 and your app continues to work as expected.
 
 ## What?
@@ -58,9 +58,9 @@ and a predictable usage pattern.
 
 ### What Can People Use to Authenticate?
 
-+ **Email+Password** - Email and Password (_enabled by default_)
-+ **GitHub** - Allow people to login with their GitHub Account using OAuth2
-+ **Google** - Let people authenticate with the most popular auth system!
++   **Email+Password** - Email and Password (_enabled by default_)
++   **GitHub** - Allow people to login with their GitHub Account using OAuth2
++   **Google** - Let people authenticate with the most popular auth system!
 
 <!-- this section needs to be re-worded ... or removed!
 
@@ -190,9 +190,10 @@ mix ecto.setup
 mix phoenix.server
 ```
 
-> It may take a minute to compile the app the first time. ⏳
+**Note**: It may take a minute to compile the app the first time. ⏳
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+Once the Phoenix App is compiled/running,
+you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
 
 <br />
@@ -203,13 +204,11 @@ This project builds on the _fantastic_ work done _many_
 people in the Elixir/Phoenix community.
 
 
-+ Phoenix default session handling
++   Phoenix default session handling
 (_so your app handles sessions for authenticated users the same way
   the example apps in all the Phoenix docs_)
-+ GitHub OAuth2 Authentication:
-https://github.com/dwyl/elixir-auth-github
-+ Google OAuth Authentication:
-https://github.com/dwyl/elixir-auth-google
++   GitHub OAuth2 Authentication: <https://github.com/dwyl/elixir-auth-github>
++   Google OAuth Authentication: <https://github.com/dwyl/elixir-auth-google>
 
 
 <br />
@@ -231,7 +230,7 @@ or authenticate with a 3rd party Authentication provider (e.g: Google),
 an email is sent to the `email` address welcoming them.
 The `Auth` App uses an external email service
 for sending emails:
-https://github.com/dwyl/email
+  <https://github.com/dwyl/email>
 
 ![app-services-diagram](https://user-images.githubusercontent.com/194400/77526292-41628180-6e82-11ea-8044-dacbc57ba895.png)
 
@@ -267,31 +266,15 @@ be able to extend the code if they choose to.
 ### Phoenix Has a Session System, Does this _Use_ It?
 
 Phoenix has a built-in mechanism for sessions:
-http://www.phoenixframework.org/docs/sessions
+  <http://www.phoenixframework.org/docs/sessions>
 
 This project _uses_ and _extends_ it to support several 3rd party auth services.
 
 
-<!--
-## Research
+## Background Reading
 
+If you are new to Authentication, 
+we recommend checkout out these great resources
 
-## Further Reading
-
-If you want to learn more about the [**dwyl**](https://github.com/dwyl)
-technology stack and how this module fits into it,
-please see: https://github.com/dwyl/technology-stack
-
-
-## Google Authentication
-
-> visit: https://console.developers.google.com to get started
-
-
-## Recommended Reading
-
-+ Introduction to OAuth2:
-https://www.digitalocean.com/community/tutorials/an-introduction-to-oauth-2
-+ Forms in Phoenix:
-http://blog.plataformatec.com.br/2016/09/dynamic-forms-with-phoenix
--->
++   Auth Boss: <https://github.com/teesloane/Auth-Boss>
++   Introduction to OAuth2: <https://www.digitalocean.com/community/tutorials/an-introduction-to-oauth-2>

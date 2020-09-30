@@ -12,8 +12,13 @@ defmodule AuthWeb.Router do
     plug :put_secure_browser_headers
   end
 
+  pipeline :auth_optional do
+    plug(AuthPlugOptional, %{})
+  end
+
   scope "/", AuthWeb do
     pipe_through :browser
+    pipe_through :auth_optional
 
     get "/", AuthController, :index
     get "/auth/github/callback", AuthController, :github_handler
@@ -40,6 +45,7 @@ defmodule AuthWeb.Router do
     get "/profile", AuthController, :admin
 
     get "/roles/grant", RoleController, :grant
+    post "/roles/grant", RoleController, :grant
     get "/roles/revoke/:people_roles_id", RoleController, :revoke
     post "/roles/revoke/:people_roles_id", RoleController, :revoke
     resources "/roles", RoleController
@@ -52,12 +58,14 @@ defmodule AuthWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug :fetch_flash
   end
 
   # Other scopes may use custom stacks.
   scope "/", AuthWeb do
     pipe_through :api
 
-    get "/approles/:client_id", AppController, :approles
+    get "/approles/:client_id", ApiController, :approles
+    get "/personroles/:person_id/:client_id", ApiController, :personroles
   end
 end

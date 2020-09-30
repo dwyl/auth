@@ -13,7 +13,7 @@ defmodule Auth.Seeds do
   import Ecto.Changeset
 
   def create_admin do
-    if is_nil(System.get_env("TRAVIS")) do
+    if is_nil(System.get_env("TRAVIS")) && is_nil(System.get_env("HEROKU")) do
       load_env()
     end
 
@@ -136,4 +136,4 @@ Auth.Person.verify_person_by_id(1)
 
 SeedData.create_default_roles()
 # grant superadmin role to app owner:
-Auth.PeopleRoles.insert(1, 1, 1)
+Auth.PeopleRoles.insert(1, 1, 1, 1)

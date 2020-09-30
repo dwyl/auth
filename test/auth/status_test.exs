@@ -6,7 +6,7 @@ defmodule Auth.StatusTest do
     status = Status.upsert_status(%{"text" => "verified"})
     assert status.id == 1
 
-    new_status = Status.upsert_status(%{"text" => "amaze"})
+    new_status = Status.upsert_status(%{"text" => "amaze", "id" => "12"})
     assert new_status.id == 12
   end
 end

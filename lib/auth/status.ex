@@ -17,8 +17,9 @@ defmodule Auth.Status do
   @doc false
   def changeset(status, attrs) do
     status
-    |> cast(attrs, [:text, :desc])
+    |> cast(attrs, [:text, :desc, :id])
     |> validate_required([:text])
+    |> unique_constraint(:text)
   end
 
   def create_status(attrs, person) do
