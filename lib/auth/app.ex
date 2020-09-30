@@ -51,6 +51,9 @@ defmodule Auth.App do
     end
   end
 
+  # This may need to be re-thought if we end up with *thousands* of apps ... 💭
+  #  superadmin will load *all* the Apps from the DB on each role CRUD op. ⏳
+
   def list_apps(person_id) do
     App
     |> where([a], a.status != 6 and a.person_id == ^person_id)

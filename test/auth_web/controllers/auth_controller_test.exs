@@ -14,6 +14,28 @@ defmodule AuthWeb.AuthControllerTest do
     assert html_response(conn, 200) =~ "Sign in"
   end
 
+  test "invoke index/2 with email and state", %{conn: conn} do
+    person = non_admin_person()
+
+    params = %{
+      person: %{
+        email: person.email,
+        state: "any"
+      }
+    }
+
+    conn = get(conn, "/", person: params)
+    assert html_response(conn, 200) =~ "Sign in"
+  end
+
+  test "index/2 when logged in shows welcome", %{conn: conn} do
+    conn = conn
+    |> non_admin_login()
+    |> get("/")
+
+    assert html_response(conn, 200) =~ "Welcome"
+  end
+
   test "GET /profile (without valid session should redirect)", %{conn: conn} do
     conn = get(conn, "/profile")
     # assert html_response(conn, 301) =~ "Login"
@@ -82,15 +104,12 @@ defmodule AuthWeb.AuthControllerTest do
     key = List.first(app.apikeys)
     Auth.Apikey.update_apikey(Map.delete(key, :app), %{status: 6})
     state = "#{app.url}/profile?auth_client_id=#{key.client_id}"
-    # Note: not sure what to assert here ... ¯\_(ツ)_/¯
-    # The API Key is "deleted" so it won't be found in the lookup
-    try do
-      AuthWeb.AuthController.get_client_secret(key.client_id, state)
-    rescue
-      e in BadMapError -> assert e == %BadMapError{term: nil}
-    end
+    secret = AuthWeb.AuthController.get_client_secret(key.client_id, state)
+    # 0 is our failure condition
+    assert secret == 0
   end
 
+  # TBD:
   # test "redirect_or_render assigns app_admin role if direct auth", %{conn: conn} do
   #   conn = non_admin_login(conn)
   #   IO.inspect(conn, label: "conn:96")
@@ -104,16 +123,33 @@ defmodule AuthWeb.AuthControllerTest do
   test "github_handler/2 github auth callback", %{conn: conn} do
     baseurl = AuthPlug.Helpers.get_baseurl_from_conn(conn)
 
-    conn =
-      get(conn, "/auth/github/callback", %{
-        code: "123",
-        state:
-          baseurl <>
-            "&auth_client_id=" <> AuthPlug.Token.client_id()
-      })
+    data = %{
+      code: "123",
+      state:
+        baseurl <>
+          "&auth_client_id=" <> AuthPlug.Token.client_id()
+    }
 
-    # assert html_response(conn, 200) =~ "test@gmail.com"
-    assert html_response(conn, 302) =~ baseurl
+    conn2 = get(conn, "/auth/github/callback", data)
+
+    assert html_response(conn2, 302) =~ baseurl
+  end
+
+  # unit test for lookup by github_id for github.com/dwyl/auth/issues/125
+  test "create_github_person/1 lookup by github_id" do
+    person = non_admin_person()
+
+    github_profile = %{
+      id: 19,
+      name: "Unit Tests Are Awesome",
+      login: "awesome",
+      avatar_url: "https://a.io",
+      email: person.email
+    }
+
+    # this will exercise the "not nil" branch:
+    github_person = Auth.Person.create_github_person(github_profile)
+    assert github_person.givenName == github_profile.name
   end
 
   test "google_handler/2 for google auth callback", %{conn: conn} do

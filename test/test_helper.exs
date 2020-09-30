@@ -6,6 +6,11 @@ defmodule AuthTest do
   Test helper functions :-)
   """
   @admin_email System.get_env("ADMIN_EMAIL")
+  @app_data %{
+    "name" => "Example App",
+    "url" => "https://www.example.com",
+    "status" => 3
+  }
   @doc """
   add a valid JWT/session to the conn for routes that require auth as "SuperAdmin"
   """
@@ -15,7 +20,8 @@ defmodule AuthTest do
     data = %{
       id: person.id,
       email: person.email,
-      auth_provider: person.auth_provider
+      auth_provider: person.auth_provider,
+      app_id: 1
     }
 
     # IO.inspect(person, label: "person")
@@ -29,7 +35,11 @@ defmodule AuthTest do
       email: "alex+#{rand}@gmail.com",
       givenName: "Alexander McAwesome",
       auth_provider: "email",
-      password: "thiswillbehashed"
+      password: "thiswillbehashed",
+      github_id: "19",
+      picture: "https://avatars3.githubusercontent.com/u/10835816",
+      status: 1,
+      app_id: 1
     })
   end
 
@@ -39,9 +49,19 @@ defmodule AuthTest do
     data = %{
       id: person.id,
       email: person.email,
-      auth_provider: person.auth_provider
+      auth_provider: person.auth_provider,
+      givenName: person.givenName,
+      picture: person.picture,
+      status: 1,
+      app_id: 1
     }
 
     AuthPlug.create_jwt_session(conn, data)
+  end
+
+  def create_app_for_person(person) do
+    data = Map.merge(@app_data, %{"person_id" => person.id})
+    {:ok, app} = Auth.App.create_app(data)
+    app
   end
 end

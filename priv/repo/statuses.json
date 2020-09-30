@@ -53,5 +53,50 @@
     "text": "bounce_permanent", 
     "id": "11",
     "desc": "Permanent email bounce e.g. when inbox doesn't exist"
+  },
+  {
+    "text": "OK", 
+    "id": "200",
+    "desc": "successful HTTP request"
+  },
+  {
+    "text": "Temporary Redirect", 
+    "id": "307",
+    "desc": "the request should be repeated with another URI"
+  },
+  {
+    "text": "Permanent Redirect", 
+    "id": "308",
+    "desc": "all future requests should be directed to the given URI"
+  },
+  {
+    "text": "Bad Request", 
+    "id": "400",
+    "desc": "server cannot or will not process the request due to an apparent client error"
+  },
+  {
+    "text": "Unauthorized", 
+    "id": "401",
+    "desc": "when authentication is required and has failed"
+  },
+  {
+    "text": "Forbidden", 
+    "id": "403",
+    "desc": "request forbidden"
+  },
+  {
+    "text": "Not Found", 
+    "id": "404",
+    "desc": "requested resource could not be found"
+  },
+  {
+    "text": "Too Many Requests", 
+    "id": "429",
+    "desc": "has sent too many requests in a given amount of time"
+  },
+  {
+    "text": "Internal Server Error", 
+    "id": "500",
+    "desc": "an unexpected condition was encountered"
   }
 ]

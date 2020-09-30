@@ -14,12 +14,10 @@ defmodule AuthWeb.PeopleView do
   end
 
   @doc """
-  role_string/1 returns a string of all the role names
+  show_email/2 determines if we should show the email address in template
   """
-  def role_string(person_roles) do
-    Enum.map_join(person_roles, " ", fn r ->
-      r.name
-    end)
+  def show_email(person, app_ids) do
+    Enum.member?(app_ids, person.app_id)
   end
 
   @doc """

@@ -1,13 +1,14 @@
 defmodule AuthWeb.PeopleRolesTest do
   use Auth.DataCase
 
-  test "Auth.PeopleRoles.insert/3 happy path" do
+  test "Auth.PeopleRoles.insert/4 happy path" do
+    app_id = 1
     # create a new person:
-    alex = %{email: "alex_grant_role@gmail.com", auth_provider: "email"}
-    grantee = Auth.Person.create_person(alex)
+    grantee = AuthTest.non_admin_person()
+    granter_id = 1
     role_id = 4
     # grant the "creator" role (id: 4) to the new person:
-    Auth.PeopleRoles.insert(1, grantee.id, role_id)
+    Auth.PeopleRoles.insert(app_id, grantee.id, granter_id, role_id)
 
     # confirm people_roles record exists:
     record = Auth.PeopleRoles.get_record(grantee.id, role_id)
@@ -28,12 +29,13 @@ defmodule AuthWeb.PeopleRolesTest do
   end
 
   test "Auth.PeopleRoles.revoke/2 revokes a role" do
+    app_id = 1
     # create a new person:
-    alex = %{email: "alex_revoke@gmail.com", auth_provider: "email"}
-    grantee = Auth.Person.create_person(alex)
+    grantee = non_admin_person()
+    granter_id = 1
     role_id = 3
     # grant the role to the new person:
-    Auth.PeopleRoles.insert(1, grantee.id, role_id)
+    Auth.PeopleRoles.insert(app_id, grantee.id, granter_id, role_id)
 
     # confirm people_roles record exists:
     record = Auth.PeopleRoles.get_record(grantee.id, role_id)

@@ -24,6 +24,7 @@ defmodule Auth.DataCase do
       import Ecto.Changeset
       import Ecto.Query
       import Auth.DataCase
+      import AuthTest
     end
   end
 

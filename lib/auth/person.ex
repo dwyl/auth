@@ -4,7 +4,7 @@ defmodule Auth.Person do
   """
   use Ecto.Schema
   import Ecto.Changeset
-  import Ecto.Query
+  # import Ecto.Query
   alias Auth.Repo
   # https://stackoverflow.com/a/47501059/1148249
   alias __MODULE__
@@ -25,6 +25,7 @@ defmodule Auth.Person do
     field :tag, :id
     field :key_id, :integer
     field :app_id, :integer
+    field :github_id, :integer
     # many_to_many :roles, Auth.Role, join_through: "people_roles"
     # has_many :roles, through: [:people_roles, :role]
     many_to_many :roles, Auth.Role, join_through: Auth.PeopleRoles
@@ -56,7 +57,8 @@ defmodule Auth.Person do
       :username,
       :auth_provider,
       :status,
-      :app_id
+      :app_id,
+      :github_id
     ])
     |> validate_required([:email])
     |> put_email_hash()
@@ -64,18 +66,19 @@ defmodule Auth.Person do
   end
 
   def create_person(person) do
-    person =
-      %Person{}
-      |> changeset(person)
-      |> put_email_status_verified()
-      # assign default role of "subscriber":
-      |> put_assoc(:roles, [Auth.Role.get_role!(6)])
-
-    # other roles can be assigned in the UI
-
-    case get_person_by_email(person.changes.email) do
+    case get_person_by_email(person.email) do
       nil ->
-        Repo.insert!(person)
+        person =
+          %Person{}
+          |> changeset(person)
+          |> put_email_status_verified()
+          |> put_assoc(:roles, [Auth.Role.get_role!(6)])
+          |> Repo.insert!()
+
+        # assign default role of "subscriber" on system app:
+        Auth.PeopleRoles.insert(1, person.id, 1, 6)
+        # return person record:
+        person
 
       person ->
         person
@@ -118,16 +121,41 @@ defmodule Auth.Person do
     }
   """
   def transform_github_profile_data_to_person(profile) do
-    Map.merge(profile, %{
+    profile
+    |> Map.merge(%{
       username: profile.login,
       givenName: profile.name,
       picture: profile.avatar_url,
-      auth_provider: "github"
+      auth_provider: "github",
+      github_id: profile.id
     })
+    # avoid id conflict: https://github.com/dwyl/auth/issues/125
+    |> Map.delete(:id)
   end
 
   def create_github_person(profile) do
-    upsert_person(transform_github_profile_data_to_person(profile))
+    # IO.inspect(profile, label: "profile:135")
+    person =
+      case get_person_by_github_id(profile.id) do
+        nil ->
+          upsert_person(transform_github_profile_data_to_person(profile))
+
+        person ->
+          # prepare profile data:
+          profile = transform_github_profile_data_to_person(profile)
+          # update any data that may have changed since they last authenticated:
+          person = AuthPlug.Helpers.strip_struct_metadata(person)
+          upsert_person(Map.merge(person, profile))
+      end
+
+    Map.replace!(person, :roles, RBAC.transform_role_list_to_string(person.roles))
+  end
+
+  defp get_person_by_github_id(id) do
+    __MODULE__
+    |> Repo.get_by(github_id: id)
+    |> Repo.preload(:roles)
+    |> Repo.preload(:statuses)
   end
 
   @doc """
@@ -272,40 +300,56 @@ defmodule Auth.Person do
     end
   end
 
-  @doc """
-  `list_people/0` lists all people in the system.
-  Used for displaying the table of authenticated people.
-  """
-  def list_people do
-    Repo.all(from(pr in __MODULE__, preload: [:roles, :statuses]))
-    # keeping this query commented here for now in case I decide to use it
-    # instead of having to call PeopleView.status_string/2
-    # query = """
-    # SELECT DISTINCT ON (s.status_id, s.person_id) s.id, s.message_id,
-    # s.updated_at, s.template, st.text as status, s.person_id
-    # FROM sent s
-    # JOIN status as st on s.status_id = st.id
-    # WHERE s.message_id IS NOT NULL
-    # """
-    # {:ok, result} = Repo.query(query)
+  # @doc """
+  # `get_list_of_people/0` retrieves the list of people
+  # that a given logged in person can see for all the Apps they have.
+  # Used for displaying the table of authenticated people.
+  # """
+  def get_list_of_people() do
+    result = Repo.query!(query())
 
-    # # create List of Maps from the result.rows:
-    # Enum.map(result.rows, fn([id, mid, iat, t, s, pid]) ->
-    #   # e = Fields.AES.decrypt(e)
-    #   # e = case e !== :error and e =~ "@" do
-    #   #   true -> e |> String.split("@") |> List.first
-    #   #   false -> e
-    #   # end
-    #   %{
-    #     id: id,
-    #     message_id: mid,
-    #     updated_at: NaiveDateTime.truncate(iat, :second),
-    #     template: t,
-    #     status: s,
-    #     person_id: pid,
-    #     email: ""
-    #   }
-    # end)
-    # |> Enum.sort(&(&1.id > &2.id))
+    Enum.map(result.rows, fn [pid, aid, sid, s, n, pic, iat, e, aup, role] ->
+      %{
+        app_id: aid,
+        person_id: pid,
+        status: s,
+        status_id: sid,
+        updated_at: NaiveDateTime.truncate(iat, :second),
+        givenName: decrypt(n),
+        picture: pic,
+        email: decrypt(e),
+        auth_provider: aup,
+        role: role
+      }
+    end)
+  end
+
+  # you can easily modify/test this query in your PostgreSQL ternimal/program
+  # writing the raw SQL was much faster/simpler than using Ecto.
+  defp query() do
+    """
+    SELECT DISTINCT ON (p.id) p.id, p.app_id, p.status,
+    st.text as status, p."givenName", p.picture,
+    p.inserted_at, p.email, p.auth_provider, r.name
+    FROM people AS p
+    LEFT JOIN people_roles as pr on p.id = pr.person_id
+    LEFT JOIN roles as r on pr.role_id = r.id
+    LEFT JOIN status as st on p.status = st.id
+    WHERE p.id != 1
+    """
+  end
+
+  def decrypt(ciphertext) do
+    if is_nil(ciphertext) do
+      nil
+    else
+      e = Fields.AES.decrypt(ciphertext)
+
+      if e == :error do
+        nil
+      else
+        e
+      end
+    end
   end
 end
