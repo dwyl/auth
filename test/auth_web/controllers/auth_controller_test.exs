@@ -33,7 +33,7 @@ defmodule AuthWeb.AuthControllerTest do
     |> non_admin_login()
     |> get("/")
 
-    assert html_response(conn, 200) =~ "Welcome"
+    assert html_response(conn, 302) =~ "redirected"
   end
 
   test "GET /profile (without valid session should redirect)", %{conn: conn} do
