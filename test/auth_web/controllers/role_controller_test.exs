@@ -315,10 +315,10 @@ defmodule AuthWeb.RoleControllerTest do
 
     Auth.Person.create_person(wrong_person_data)
 
-    conn =
-      AuthPlug.create_jwt_session(conn, wrong_person_data)
-      |> fetch_flash()
-      |> AuthWeb.RoleController.revoke(%{"people_roles_id" => 1})
+    conn = conn
+      |> AuthPlug.create_jwt_session(wrong_person_data)
+      # |> AuthWeb.RoleController.revoke(%{"people_roles_id" => 1})
+      |> post(Routes.role_path(conn, :revoke, 1))
 
     assert conn.status == 401
   end
