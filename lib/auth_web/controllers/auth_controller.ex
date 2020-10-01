@@ -11,20 +11,21 @@ defmodule AuthWeb.AuthController do
     render(conn, :welcome, apps: App.list_apps(conn.assigns.person.id))
   end
 
-  # redirect if already authenticated: github.com/dwyl/auth/issues/69
+  # Handle requests where already authenticated: github.com/dwyl/auth/issues/69
   def index(%{assigns: %{person: _}} = conn, params) do
     state = get_state(conn, params)
     # Check if currently authenticated for app: github.com/dwyl/auth/issues/130
     case get_client_id_from_query(conn) do
       # no auth_client_id means the request is for auth app
       0 ->
-        redirect_or_render(conn, conn.assigns.person, state)
+        Auth.Log.info(conn, params)
+        redirect_or_render(conn, conn.assigns.person, nil)
 
       client_id ->
         case Auth.Apikey.decode_decrypt(client_id) do
           # if there is a client_id in the URL but we cannot decrypt it, reject!
           0 -> 
-            unauthorized(conn, "invalid AUTH_API_KEY")
+            unauthorized(conn, "invalid AUTH_API_KEY (28)")
           
           # able to decrypt the client_id let's see if it matches 
           app_id -> 
@@ -37,7 +38,10 @@ defmodule AuthWeb.AuthController do
               # app_id does not match, force login:
               msg = "auth_client_id (app_id) does not match, please login"
               Auth.Log.error(conn, Map.merge(params, %{status: 401, msg: msg}))
-
+              # remove the conn.assigns.person and jwt to avoid match loop
+              conn = update_in(conn.assigns, &Map.drop(&1, [:person, :jwt]))
+              # force re-auth as for a different app with different roles, etc.
+              index(conn, params)
             end
         end
     end

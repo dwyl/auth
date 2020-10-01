@@ -52,7 +52,7 @@ defmodule Auth.Log do
 
   def insert(conn, params) do
     insert_log(
-      Map.merge(params, %{
+      Map.merge(Useful.atomize_map_keys(params), %{
         app_id: Map.get(params, :app_id, 1),
         auth_provider: get_auth_provider(conn, params),
         person_id: get_person_id(conn, params),
