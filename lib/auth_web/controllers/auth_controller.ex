@@ -212,12 +212,21 @@ defmodule AuthWeb.AuthController do
   end
 
   def error(conn, msg, status) do
-    conn
-    |> Auth.Log.error(%{status_id: status, msg: msg})
-    |> put_status(status)
-    |> assign(:reason, %{message: msg})
-    |> put_view(AuthWeb.ErrorView)
-    |> render("404.html", conn: conn)
+    # https://hexdocs.pm/phoenix/Phoenix.Controller.html#get_format/1
+    if get_format(conn) == "json" do
+      data = %{status_id: status, msg: msg}
+      conn
+      |> Auth.Log.error(data)
+      |> put_status(status)
+      |> json(data)
+    else
+      conn
+      |> Auth.Log.error(%{status_id: status, msg: msg})
+      |> put_status(status)
+      |> assign(:reason, %{message: msg})
+      |> put_view(AuthWeb.ErrorView)
+      |> render("404.html", conn: conn)
+    end
   end
 
   def unauthorized(conn, msg \\ "invalid AUTH_API_KEY/client_id please check") do

@@ -28,10 +28,12 @@ defmodule AuthWeb.ApiControllerTest do
     test "returns 401 if client_id is invalid", %{conn: conn} do
       conn =
         conn
-        |> put_req_header("accept", "application/json")
+        |> put_req_header("content-type", "application/json")
         |> get("/approles/invalid")
 
-      assert html_response(conn, 401) =~ "invalid"
+      assert conn.status == 401
+      {:ok, json} = Jason.decode(conn.resp_body)
+      assert json["msg"] == "invalid AUTH_API_KEY/client_id please check"
     end
 
     test "returns (JSON) list of roles", %{conn: conn, app: app} do
@@ -114,7 +116,9 @@ defmodule AuthWeb.ApiControllerTest do
         |> put_req_header("accept", "application/json")
         |> get("/personroles/1/invalid")
 
-      assert html_response(conn, 401) =~ "invalid"
+      assert conn.status == 401
+      {:ok, json} = Jason.decode(conn.resp_body)
+      assert json["msg"] == "invalid AUTH_API_KEY/client_id please check"
     end
 
     test "returns (JSON) list of roles", %{conn: conn, app: app} do
