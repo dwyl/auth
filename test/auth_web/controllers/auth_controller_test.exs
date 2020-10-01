@@ -38,20 +38,21 @@ defmodule AuthWeb.AuthControllerTest do
 
   # this should prevent session hijacking by people with invalid client_id
   test "index/2 while logged in but with invalid auth_client_id", %{conn: conn} do
-    conn =
-    non_admin_login(conn)
-      |> get(
-        "/?referer=" <>
-          URI.encode("http://localhost/admin") <>
-          "&auth_client_id=" <> String.slice(AuthPlug.Token.client_id(), 0..-3)
-      )
+    conn = conn 
+    |> non_admin_login()
+    |> get(
+      "/?referer=" <>
+        URI.encode("http://localhost/admin") <>
+        "&auth_client_id=" <> String.slice(AuthPlug.Token.client_id(), 0..-3)
+    )
 
     assert html_response(conn, 401) =~ "invalid"
   end
 
   # redirect if the conn.assigns.person.app_id matches client_id (app_id)
   test "index/2 while logged in app_id match", %{conn: conn} do
-    conn = non_admin_login(conn)
+    conn = conn 
+      |> non_admin_login()
       |> get(
         "/?referer=" <>
           URI.encode("http://localhost/admin") <>

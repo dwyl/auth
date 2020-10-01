@@ -11,6 +11,24 @@ defmodule AuthWeb.AuthController do
     render(conn, :welcome, apps: App.list_apps(conn.assigns.person.id))
   end
 
+  # route the request based on conn.assigns.person.app_id == app_id
+  defp check_app_id(conn, params, app_id, state) do
+    if conn.assigns.person.app_id == app_id do 
+      conn
+      |> Auth.Log.info(params)
+      # already logged-in so redirect back to app:
+      |> redirect_or_render(conn.assigns.person, state)
+    else
+      # app_id does not match, force login:
+      msg = "auth_client_id (app_id) does not match, please login"
+      Auth.Log.error(conn, Map.merge(params, %{status: 401, msg: msg}))
+      # remove the conn.assigns.person and jwt to avoid match loop
+      conn = update_in(conn.assigns, &Map.drop(&1, [:person, :jwt]))
+      # force re-auth as for a different app with different roles, etc.
+      index(conn, params)
+    end
+  end
+
   # Handle requests where already authenticated: github.com/dwyl/auth/issues/69
   def index(%{assigns: %{person: _}} = conn, params) do
     state = get_state(conn, params)
@@ -24,25 +42,12 @@ defmodule AuthWeb.AuthController do
       client_id ->
         case Auth.Apikey.decode_decrypt(client_id) do
           # if there is a client_id in the URL but we cannot decrypt it, reject!
-          0 -> 
+          0 ->
             unauthorized(conn, "invalid AUTH_API_KEY (28)")
-          
-          # able to decrypt the client_id let's see if it matches 
-          app_id -> 
-            Auth.Log.info(conn, params)
-            if conn.assigns.person.app_id == app_id do 
-              Auth.Log.info(conn, params)
-              # already logged-in so redirect back to app:
-              |> redirect_or_render(conn.assigns.person, state)
-            else
-              # app_id does not match, force login:
-              msg = "auth_client_id (app_id) does not match, please login"
-              Auth.Log.error(conn, Map.merge(params, %{status: 401, msg: msg}))
-              # remove the conn.assigns.person and jwt to avoid match loop
-              conn = update_in(conn.assigns, &Map.drop(&1, [:person, :jwt]))
-              # force re-auth as for a different app with different roles, etc.
-              index(conn, params)
-            end
+
+          # able to decrypt the client_id let's see if it matches
+          app_id ->
+            check_app_id(conn, params, app_id, state)
         end
     end
   end
