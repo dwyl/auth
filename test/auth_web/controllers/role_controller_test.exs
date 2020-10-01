@@ -314,9 +314,12 @@ defmodule AuthWeb.RoleControllerTest do
     }
 
     Auth.Person.create_person(wrong_person_data)
-    conn = AuthPlug.create_jwt_session(conn, wrong_person_data)
-    |> fetch_flash()
-    |> AuthWeb.RoleController.revoke(%{"people_roles_id" => 1})
+
+    conn =
+      AuthPlug.create_jwt_session(conn, wrong_person_data)
+      |> fetch_flash()
+      |> AuthWeb.RoleController.revoke(%{"people_roles_id" => 1})
+
     assert conn.status == 401
   end
 end

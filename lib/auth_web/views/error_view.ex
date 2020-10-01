@@ -7,8 +7,8 @@ defmodule AuthWeb.ErrorView do
   #   "Hello"
   # end
   def error_message(conn) do
-    if not is_nil(conn) and Map.has_key?(conn.assigns, :reason)
-      and Map.has_key?(conn.assigns.reason, :message) do
+    if not is_nil(conn) and Map.has_key?(conn.assigns, :reason) and
+         Map.has_key?(conn.assigns.reason, :message) do
       "Sorry, " <> conn.assigns.reason.message
     else
       "Sorry, That Page Was Not Found."

@@ -13,7 +13,7 @@ defmodule AuthWeb.AuthController do
 
   # route the request based on conn.assigns.person.app_id == app_id
   defp check_app_id(conn, params, app_id, state) do
-    if conn.assigns.person.app_id == app_id do 
+    if conn.assigns.person.app_id == app_id do
       conn
       |> Auth.Log.info(params)
       # already logged-in so redirect back to app:
@@ -41,7 +41,7 @@ defmodule AuthWeb.AuthController do
 
       client_id ->
         case Auth.Apikey.decode_decrypt(client_id) do
-          # if there is a client_id in the URL but we cannot decrypt it, reject!
+          #  if there is a client_id in the URL but we cannot decrypt it, reject!
           0 ->
             unauthorized(conn, "invalid AUTH_API_KEY (28)")
 
@@ -71,6 +71,7 @@ defmodule AuthWeb.AuthController do
 
   def get_state(conn, params) do
     params_person = Map.get(params, "person")
+
     if not is_nil(params_person) and Map.has_key?(params_person, "state") do
       Map.get(params_person, "state")
     else
@@ -80,8 +81,9 @@ defmodule AuthWeb.AuthController do
 
   def get_email(params) do
     params_person = Map.get(params, "person")
+
     if not is_nil(params_person) and
-      not is_nil(Map.get(params_person, "email")) do
+         not is_nil(Map.get(params_person, "email")) do
       Map.get(Map.get(params, "person"), "email")
     else
       nil

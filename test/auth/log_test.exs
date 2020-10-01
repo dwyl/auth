@@ -10,6 +10,7 @@ defmodule Auth.LogTest do
       |> Auth.UserAgent.assign_ua()
       |> fetch_flash()
       |> AuthWeb.AuthController.not_found("no content")
+
     assert conn.status == 404
 
     ua = UserAgent.upsert(conn)
