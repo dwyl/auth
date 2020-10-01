@@ -125,7 +125,6 @@ defmodule AuthWeb.RoleControllerTest do
 
     test "attempt to edit a role I don't own", %{conn: conn, role: role} do
       conn = non_admin_login(conn)
-      IO.inspect(role, label: "role")
       conn = get(conn, Routes.role_path(conn, :edit, role))
 
       assert html_response(conn, 404) =~ "role not found"
@@ -149,8 +148,6 @@ defmodule AuthWeb.RoleControllerTest do
       conn = put(conn, Routes.role_path(conn, :update, role), role: update_attrs)
 
       assert redirected_to(conn) == Routes.role_path(conn, :show, role)
-      # IO.inspect(role, label: "role:106")
-      # IO.inspect(conn.assigns.person)
 
       conn = get(conn, Routes.role_path(conn, :show, role))
       assert html_response(conn, 200) =~ "some updated desc"
