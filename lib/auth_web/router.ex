@@ -58,7 +58,6 @@ defmodule AuthWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
-    plug :fetch_flash
   end
 
   # Other scopes may use custom stacks.

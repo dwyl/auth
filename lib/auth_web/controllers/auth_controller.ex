@@ -11,30 +11,50 @@ defmodule AuthWeb.AuthController do
     render(conn, :welcome, apps: App.list_apps(conn.assigns.person.id))
   end
 
-  # redirect if already authenticated: github.com/dwyl/auth/issues/69
-  def index(%{assigns: %{person: _}} = conn, _params) do
-    redirect_or_render(conn, conn.assigns.person, nil)
+  # route the request based on conn.assigns.person.app_id == app_id
+  defp check_app_id(conn, params, app_id, state) do
+    if conn.assigns.person.app_id == app_id do
+      conn
+      |> Auth.Log.info(params)
+      # already logged-in so redirect back to app:
+      |> redirect_or_render(conn.assigns.person, state)
+    else
+      # app_id does not match, force login:
+      msg = "auth_client_id (app_id) does not match, please login"
+      Auth.Log.error(conn, Map.merge(params, %{status: 401, msg: msg}))
+      # remove the conn.assigns.person and jwt to avoid match loop
+      conn = update_in(conn.assigns, &Map.drop(&1, [:person, :jwt]))
+      # force re-auth as for a different app with different roles, etc.
+      index(conn, params)
+    end
+  end
+
+  # Handle requests where already authenticated: github.com/dwyl/auth/issues/69
+  def index(%{assigns: %{person: _}} = conn, params) do
+    state = get_state(conn, params)
+    # Check if currently authenticated for app: github.com/dwyl/auth/issues/130
+    case get_client_id_from_query(conn) do
+      # no auth_client_id means the request is for auth app
+      0 ->
+        Auth.Log.info(conn, params)
+        redirect_or_render(conn, conn.assigns.person, nil)
+
+      client_id ->
+        case Auth.Apikey.decode_decrypt(client_id) do
+          #  if there is a client_id in the URL but we cannot decrypt it, reject!
+          0 ->
+            unauthorized(conn, "invalid AUTH_API_KEY (28)")
+
+          # able to decrypt the client_id let's see if it matches
+          app_id ->
+            check_app_id(conn, params, app_id, state)
+        end
+    end
   end
 
   def index(conn, params) do
-    params_person = Map.get(params, "person")
-
-    email =
-      if not is_nil(params_person) and
-           not is_nil(Map.get(params_person, "email")) do
-        Map.get(Map.get(params, "person"), "email")
-      else
-        nil
-      end
-
-    state =
-      if not is_nil(params_person) and Map.has_key?(params_person, "state") do
-        Map.get(params_person, "state")
-      else
-        # get from headers
-        get_referer(conn)
-      end
-
+    email = get_email(params)
+    state = get_state(conn, params)
     oauth_github_url = ElixirAuthGithub.login_url(%{scopes: ["user:email"], state: state})
     oauth_google_url = ElixirAuthGoogle.generate_oauth_url(conn, state)
 
@@ -47,6 +67,27 @@ defmodule AuthWeb.AuthController do
       state: state
       # errors: errors
     )
+  end
+
+  def get_state(conn, params) do
+    params_person = Map.get(params, "person")
+
+    if not is_nil(params_person) and Map.has_key?(params_person, "state") do
+      Map.get(params_person, "state")
+    else
+      get_referer(conn)
+    end
+  end
+
+  def get_email(params) do
+    params_person = Map.get(params, "person")
+
+    if not is_nil(params_person) and
+         not is_nil(Map.get(params_person, "email")) do
+      Map.get(Map.get(params, "person"), "email")
+    else
+      nil
+    end
   end
 
   def append_client_id(ref, client_id) do
@@ -171,12 +212,21 @@ defmodule AuthWeb.AuthController do
   end
 
   def error(conn, msg, status) do
-    conn
-    |> Auth.Log.error(%{status_id: status, msg: msg})
-    |> put_status(status)
-    |> assign(:reason, %{message: msg})
-    |> put_view(AuthWeb.ErrorView)
-    |> render("404.html", conn: conn)
+    # https://hexdocs.pm/phoenix/Phoenix.Controller.html#get_format/1
+    if get_format(conn) == "json" do
+      data = %{status_id: status, msg: msg}
+      conn
+      |> Auth.Log.error(data)
+      |> put_status(status)
+      |> json(data)
+    else
+      conn
+      |> Auth.Log.error(%{status_id: status, msg: msg})
+      |> put_status(status)
+      |> assign(:reason, %{message: msg})
+      |> put_view(AuthWeb.ErrorView)
+      |> render("404.html", conn: conn)
+    end
   end
 
   def unauthorized(conn, msg \\ "invalid AUTH_API_KEY/client_id please check") do
@@ -297,16 +347,6 @@ defmodule AuthWeb.AuthController do
       Auth.Apikey.encrypt_encode(person.id) <>
       "&referer=" <> state
   end
-
-  # def password_input(conn, params) do
-  #   conn
-  #   |> assign(:action, Routes.auth_path(conn, :password_create))
-  #   |> render("password_create.html",
-  #     changeset: Auth.Person.password_new_changeset(%{email: params["email"]}),
-  #     state: params["state"], # so we can redirect after creatig a password
-  #     email: AuthWeb.Apikey.encrypt_encode(params["email"])
-  #   )
-  # end
 
   @doc """
   `password_create/2` is called when a new person is registering with email

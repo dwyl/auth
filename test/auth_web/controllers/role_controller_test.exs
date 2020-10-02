@@ -148,8 +148,6 @@ defmodule AuthWeb.RoleControllerTest do
       conn = put(conn, Routes.role_path(conn, :update, role), role: update_attrs)
 
       assert redirected_to(conn) == Routes.role_path(conn, :show, role)
-      # IO.inspect(role, label: "role:106")
-      # IO.inspect(conn.assigns.person)
 
       conn = get(conn, Routes.role_path(conn, :show, role))
       assert html_response(conn, 200) =~ "some updated desc"
@@ -314,9 +312,12 @@ defmodule AuthWeb.RoleControllerTest do
     }
 
     Auth.Person.create_person(wrong_person_data)
-    conn = AuthPlug.create_jwt_session(conn, wrong_person_data)
-    |> fetch_flash()
-    |> AuthWeb.RoleController.revoke(%{"people_roles_id" => 1})
+
+    conn = conn
+      |> AuthPlug.create_jwt_session(wrong_person_data)
+      # |> AuthWeb.RoleController.revoke(%{"people_roles_id" => 1})
+      |> post(Routes.role_path(conn, :revoke, 1))
+
     assert conn.status == 401
   end
 end
