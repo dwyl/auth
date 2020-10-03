@@ -64,12 +64,11 @@ defmodule AuthWeb.AuthController do
   def index(conn, params) do
     email = get_email(params)
     state = get_state(conn, params)
-    Auth.Log.info(conn, Map.merge(params, %{msg: "index/2:67 state: #{state}"}))
     oauth_github_url = ElixirAuthGithub.login_url(%{scopes: ["user:email"], state: state})
     oauth_google_url = ElixirAuthGoogle.generate_oauth_url(conn, state)
 
     conn
-    |> Auth.Log.info(Map.merge(params, %{msg: "index/2:72 state: #{state}"}))
+    |> Auth.Log.info(Map.merge(params, %{msg: "index/2:71 state: #{state}"}))
     |> assign(:action, Routes.auth_path(conn, :login_register_handler))
     |> render("index.html",
       oauth_github_url: oauth_github_url,
@@ -83,11 +82,15 @@ defmodule AuthWeb.AuthController do
   def get_state(conn, params) do
     params_person = Map.get(params, "person")
 
-    if not is_nil(params_person) and Map.has_key?(params_person, "state") do
-      Map.get(params_person, "state")
-    else
-      get_referer(conn)
-    end
+    state =
+      if not is_nil(params_person) and Map.has_key?(params_person, "state") do
+        Map.get(params_person, "state")
+      else
+        get_referer(conn)
+      end
+
+    Auth.Log.info(conn, Map.merge(params, %{msg: "get_state/2:91 state: #{state}"}))
+    state
   end
 
   def get_email(params) do
@@ -109,7 +112,7 @@ defmodule AuthWeb.AuthController do
     # https://stackoverflow.com/questions/37176911/get-http-referrer
     case List.keyfind(conn.req_headers, "referer", 0) do
       {"referer", referer} ->
-        referer
+        append_client_id(referer, get_client_id_from_query(conn))
 
       #  referer not in headers, check URL query:
       nil ->

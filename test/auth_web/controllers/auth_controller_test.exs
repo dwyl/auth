@@ -109,7 +109,7 @@ defmodule AuthWeb.AuthControllerTest do
     conn =
       conn
       |> put_req_header("referer", "http://localhost/admin")
-      |> get("/")
+      |> get("/?auth_client_id=42")
 
     assert conn.resp_body =~ "state=http://localhost/admin"
   end
