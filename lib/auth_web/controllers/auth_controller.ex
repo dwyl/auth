@@ -64,11 +64,12 @@ defmodule AuthWeb.AuthController do
   def index(conn, params) do
     email = get_email(params)
     state = get_state(conn, params)
+    Auth.Log.info(conn, Map.merge(params, %{msg: "index/2:67 state: #{state}"}))
     oauth_github_url = ElixirAuthGithub.login_url(%{scopes: ["user:email"], state: state})
     oauth_google_url = ElixirAuthGoogle.generate_oauth_url(conn, state)
 
     conn
-    |> Auth.Log.info(Map.merge(params, %{msg: "index/2:68 state: #{state}"}))
+    |> Auth.Log.info(Map.merge(params, %{msg: "index/2:72 state: #{state}"}))
     |> assign(:action, Routes.auth_path(conn, :login_register_handler))
     |> render("index.html",
       oauth_github_url: oauth_github_url,
