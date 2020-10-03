@@ -5,11 +5,13 @@ defmodule Auth.LogTest do
 
   test "E2E Test Auth.Log.error/2 inserts error log into db", %{conn: conn} do
     {:ok, role} = Auth.Role.create_role(%{name: "test", desc: "test", app_id: 1})
-    conn = conn
-    |> non_admin_login()
-    |> put_req_header("content-type", "text/html")
-    |> Auth.UserAgent.assign_ua()
-    |> get(Routes.role_path(conn, :edit, role))
+
+    conn =
+      conn
+      |> non_admin_login()
+      |> put_req_header("content-type", "text/html")
+      |> Auth.UserAgent.assign_ua()
+      |> get(Routes.role_path(conn, :edit, role))
 
     assert conn.status == 404
 

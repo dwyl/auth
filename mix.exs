@@ -10,6 +10,7 @@ defmodule Auth.Mixfile do
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       test_coverage: [tool: ExCoveralls],
       preferred_cli_env: [
+        c: :test,
         coveralls: :test,
         "coveralls.detail": :test,
         "coveralls.post": :test,
@@ -98,6 +99,7 @@ defmodule Auth.Mixfile do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
+      c: ["coveralls.html"],
       "ecto.setup": ["ecto.create --quiet", "ecto.migrate --quiet", "seeds"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       seeds: ["run priv/repo/seeds.exs"],

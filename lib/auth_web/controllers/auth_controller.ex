@@ -14,18 +14,23 @@ defmodule AuthWeb.AuthController do
   # route the request based on conn.assigns.person.app_id == app_id
   defp check_app_id(conn, params, app_id, state) do
     if conn.assigns.person.app_id == app_id do
+      msg = "person: #{conn.assigns.person.id} already logged into app: #{app_id}"
+
       conn
-      |> Auth.Log.info(params)
+      |> Auth.Log.info(Map.merge(params, %{msg: msg}))
       # already logged-in so redirect back to app:
       |> redirect_or_render(conn.assigns.person, state)
     else
-      # app_id does not match, force login:
-      msg = "auth_client_id (app_id) does not match, please login"
-      Auth.Log.error(conn, Map.merge(params, %{status: 401, msg: msg}))
+      # app_id does not match, force login:mix
+      msg = "auth_client_id (#{app_id}) does not match, please login"
       # remove the conn.assigns.person and jwt to avoid match loop
       conn = update_in(conn.assigns, &Map.drop(&1, [:person, :jwt]))
+
+      conn
+      |> Auth.Log.error(Map.merge(params, %{status: 401, msg: msg}))
+      |> put_flash(:error, msg)
       # force re-auth as for a different app with different roles, etc.
-      index(conn, params)
+      |> index(params)
     end
   end
 
@@ -40,10 +45,14 @@ defmodule AuthWeb.AuthController do
         redirect_or_render(conn, conn.assigns.person, nil)
 
       client_id ->
+        msg = "index/2:48 request with client_id: " <> client_id
+        Auth.Log.info(conn, Map.merge(params, %{msg: msg}))
+
         case Auth.Apikey.decode_decrypt(client_id) do
           #  if there is a client_id in the URL but we cannot decrypt it, reject!
           0 ->
-            unauthorized(conn, "invalid AUTH_API_KEY (28)")
+            Auth.Log.info(conn, Map.merge(params, %{msg: msg}))
+            unauthorized(conn, "invalid AUTH_API_KEY (index/2:55)")
 
           # able to decrypt the client_id let's see if it matches
           app_id ->
@@ -59,6 +68,7 @@ defmodule AuthWeb.AuthController do
     oauth_google_url = ElixirAuthGoogle.generate_oauth_url(conn, state)
 
     conn
+    |> Auth.Log.info(Map.merge(params, %{msg: "index/2:68 state: #{state}"}))
     |> assign(:action, Routes.auth_path(conn, :login_register_handler))
     |> render("index.html",
       oauth_github_url: oauth_github_url,
@@ -215,6 +225,7 @@ defmodule AuthWeb.AuthController do
     # https://hexdocs.pm/phoenix/Phoenix.Controller.html#get_format/1
     if get_format(conn) == "json" do
       data = %{status_id: status, msg: msg}
+
       conn
       |> Auth.Log.error(data)
       |> put_status(status)
