@@ -139,6 +139,11 @@ defmodule AuthWeb.AuthControllerTest do
     assert html_response(conn, 401) =~ "not valid"
   end
 
+  # regression test for: https://github.com/dwyl/auth/issues/135
+  test "append_client_id/2 unit test" do
+    assert AuthWeb.AuthController.append_client_id("ref", nil) == "ref"
+  end
+
   test "get_client_secret(client_id, state) gets the secret for the given client_id" do
     {:ok, app} = Auth.App.create_app(@app_data)
     key = List.first(app.apikeys)
