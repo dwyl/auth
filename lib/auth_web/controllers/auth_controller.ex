@@ -81,16 +81,11 @@ defmodule AuthWeb.AuthController do
 
   def get_state(conn, params) do
     params_person = Map.get(params, "person")
-
-    state =
-      if not is_nil(params_person) and Map.has_key?(params_person, "state") do
-        Map.get(params_person, "state")
-      else
-        get_referer(conn)
-      end
-
-    Auth.Log.info(conn, Map.merge(params, %{msg: "get_state/2:91 state: #{state}"}))
-    state
+    if not is_nil(params_person) and Map.has_key?(params_person, "state") do
+      Map.get(params_person, "state")
+    else
+      get_referer(conn)
+    end
   end
 
   def get_email(params) do
