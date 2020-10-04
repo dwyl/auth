@@ -109,7 +109,7 @@ defmodule AuthWeb.AuthControllerTest do
     conn =
       conn
       |> put_req_header("referer", "http://localhost/admin")
-      |> get("/?auth_client_id=42")
+      |> get("/?auth_client_id=#{AuthPlug.Token.client_id()}")
 
     assert conn.resp_body =~ "state=http://localhost/admin"
   end
@@ -124,6 +124,19 @@ defmodule AuthWeb.AuthControllerTest do
       )
 
     assert conn.resp_body =~ "state=http://localhost/admin"
+  end
+
+  # Fail Early on invalid client_id test for: github.com/dwyl/auth/issues/129
+  test "index/2 (not logged in) invalid auth_client_id", %{conn: conn} do
+    conn =
+      conn
+      |> get(
+        "/?referer=" <>
+          URI.encode("http://localhost/admin") <>
+          "&auth_client_id=" <> String.slice(AuthPlug.Token.client_id(), 0..-2)
+      )
+
+    assert html_response(conn, 401) =~ "not valid"
   end
 
   test "get_client_secret(client_id, state) gets the secret for the given client_id" do
