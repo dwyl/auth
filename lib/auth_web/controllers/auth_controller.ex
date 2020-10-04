@@ -76,6 +76,7 @@ defmodule AuthWeb.AuthController do
         else
           msg = "auth_client_id: #{client_id} is not valid (index:77)"
           Auth.Log.error(conn, Map.merge(params, %{msg: msg}))
+
           conn
           |> put_flash(:error, msg)
           |> unauthorized(msg)
@@ -150,7 +151,10 @@ defmodule AuthWeb.AuthController do
   end
 
   def append_client_id(ref, client_id) do
-    ref <> "?auth_client_id=" <> client_id
+    if is_nil(client_id) or
+         client_id == 0,
+       do: ref,
+       else: "#{ref}?auth_client_id=#{client_id}"
   end
 
   def get_referer(conn) do
