@@ -72,7 +72,7 @@ defmodule Auth.Mixfile do
       # Base58 Encodeing: https://github.com/dwyl/base58
       {:B58, "~> 1.0", hex: :b58},
       # Useful functions: https://github.com/dwyl/useful
-      {:useful, "~> 0.1.0"},
+      {:useful, "~> 0.2.0"},
 
       # Ping to Wake Heroku Instance: https://github.com/dwyl/ping
       {:ping, "~> 1.0.1"},
