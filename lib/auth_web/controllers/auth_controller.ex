@@ -27,7 +27,7 @@ defmodule AuthWeb.AuthController do
       conn = update_in(conn.assigns, &Map.drop(&1, [:person, :jwt]))
 
       conn
-      |> Auth.Log.error(Map.merge(params, %{status: 401, msg: msg}))
+      |> Auth.Log.error(Map.merge(params  , %{status: 401, msg: msg}))
       |> put_flash(:error, msg)
       # force re-auth as for a different app with different roles, etc.
       |> index(params)
@@ -45,7 +45,7 @@ defmodule AuthWeb.AuthController do
         redirect_or_render(conn, conn.assigns.person, nil)
 
       client_id ->
-        msg = "index/2:48 request with client_id: " <> client_id
+        msg = "request with client_id: #{client_id} (index:48)"
         Auth.Log.info(conn, Map.merge(params, %{msg: msg}))
 
         case Auth.Apikey.decode_decrypt(client_id) do
