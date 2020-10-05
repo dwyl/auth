@@ -116,8 +116,8 @@ defmodule AuthWeb.AuthControllerTest do
 
   test "get_referer/1 query_string", %{conn: conn} do
     conn =
-      conn
-      |> get(
+      get(
+        conn,
         "/?referer=" <>
           URI.encode("http://localhost/admin") <>
           "&auth_client_id=" <> AuthPlug.Token.client_id()
@@ -129,8 +129,8 @@ defmodule AuthWeb.AuthControllerTest do
   # Fail Early on invalid client_id test for: github.com/dwyl/auth/issues/129
   test "index/2 (not logged in) invalid auth_client_id", %{conn: conn} do
     conn =
-      conn
-      |> get(
+      get(
+        conn,
         "/?referer=" <>
           URI.encode("http://localhost/admin") <>
           "&auth_client_id=" <> String.slice(AuthPlug.Token.client_id(), 0..-2)
