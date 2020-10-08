@@ -1,3 +1,5 @@
+/* global require, module, __dirname */
+
 const path = require('path');
 const glob = require('glob');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
