@@ -130,6 +130,7 @@ defmodule Auth.Log do
     |> Map.delete(:__struct__)
     # avoid leaking personal data (person.email) in logs
     |> Map.delete(:email)
+    |> Useful.flatten_map()
     |> Map.keys()
     |> Enum.map(fn key ->
       unless is_nil(Map.get(map, key)) do

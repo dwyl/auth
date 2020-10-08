@@ -10,6 +10,7 @@ defmodule Auth.Mixfile do
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       test_coverage: [tool: ExCoveralls],
       preferred_cli_env: [
+        c: :test,
         coveralls: :test,
         "coveralls.detail": :test,
         "coveralls.post": :test,
@@ -71,7 +72,7 @@ defmodule Auth.Mixfile do
       # Base58 Encodeing: https://github.com/dwyl/base58
       {:B58, "~> 1.0", hex: :b58},
       # Useful functions: https://github.com/dwyl/useful
-      {:useful, "~> 0.1.0"},
+      {:useful, "~> 0.2.0"},
 
       # Ping to Wake Heroku Instance: https://github.com/dwyl/ping
       {:ping, "~> 1.0.1"},
@@ -98,6 +99,7 @@ defmodule Auth.Mixfile do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
+      c: ["coveralls.html"],
       "ecto.setup": ["ecto.create --quiet", "ecto.migrate --quiet", "seeds"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       seeds: ["run priv/repo/seeds.exs"],

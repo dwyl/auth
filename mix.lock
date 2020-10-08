@@ -58,5 +58,5 @@
   "stream_data": {:hex, :stream_data, "0.4.3", "62aafd870caff0849a5057a7ec270fad0eb86889f4d433b937d996de99e3db25", [:mix], [], "hexpm", "7dafd5a801f0bc897f74fcd414651632b77ca367a7ae4568778191fc3bf3a19a"},
   "telemetry": {:hex, :telemetry, "0.4.2", "2808c992455e08d6177322f14d3bdb6b625fbcfd233a73505870d8738a2f4599", [:rebar3], [], "hexpm", "2d1419bd9dda6a206d7b5852179511722e2b18812310d304620c7bd92a13fcef"},
   "unicode_util_compat": {:hex, :unicode_util_compat, "0.5.0", "8516502659002cec19e244ebd90d312183064be95025a319a6c7e89f4bccd65b", [:rebar3], [], "hexpm", "d48d002e15f5cc105a696cf2f1bbb3fc72b4b770a184d8420c8db20da2674b38"},
-  "useful": {:hex, :useful, "0.1.0", "0b5813196064176d8de31fc54204651f8ee11c66051afe4d9999006118fb002a", [:mix], [], "hexpm", "77d6214ec6eac2f4ab5bd65ba09e471782a7d0b3d8a2b0b1e2557eb77579a0a1"},
+  "useful": {:hex, :useful, "0.2.0", "5af530a0fc8d5ecece48f3a97c7b37e25d17fc795e6d387f7a4b970819a0b20f", [:mix], [], "hexpm", "0ddb4af90a8fe11b82ab5dba8d156419c6d949915154c933ed154ebcd2deb3be"},
 }

@@ -14,18 +14,23 @@ defmodule AuthWeb.AuthController do
   # route the request based on conn.assigns.person.app_id == app_id
   defp check_app_id(conn, params, app_id, state) do
     if conn.assigns.person.app_id == app_id do
+      msg = "person: #{conn.assigns.person.id} already logged into app: #{app_id}"
+
       conn
-      |> Auth.Log.info(params)
+      |> Auth.Log.info(Map.merge(params, %{msg: msg}))
       # already logged-in so redirect back to app:
       |> redirect_or_render(conn.assigns.person, state)
     else
-      # app_id does not match, force login:
-      msg = "auth_client_id (app_id) does not match, please login"
-      Auth.Log.error(conn, Map.merge(params, %{status: 401, msg: msg}))
+      # app_id does not match, force login:mix
+      msg = "auth_client_id (#{app_id}) does not match, please login (check_app_id:25)"
       # remove the conn.assigns.person and jwt to avoid match loop
       conn = update_in(conn.assigns, &Map.drop(&1, [:person, :jwt]))
+
+      conn
+      |> Auth.Log.error(Map.merge(params  , %{status: 401, msg: msg}))
+      |> put_flash(:error, msg)
       # force re-auth as for a different app with different roles, etc.
-      index(conn, params)
+      |> index(params)
     end
   end
 
@@ -40,10 +45,14 @@ defmodule AuthWeb.AuthController do
         redirect_or_render(conn, conn.assigns.person, nil)
 
       client_id ->
+        msg = "request with client_id: #{client_id} (index:48)"
+        Auth.Log.info(conn, Map.merge(params, %{msg: msg}))
+
         case Auth.Apikey.decode_decrypt(client_id) do
           #  if there is a client_id in the URL but we cannot decrypt it, reject!
           0 ->
-            unauthorized(conn, "invalid AUTH_API_KEY (28)")
+            Auth.Log.info(conn, Map.merge(params, %{msg: msg}))
+            unauthorized(conn, "invalid AUTH_API_KEY (index:55)")
 
           # able to decrypt the client_id let's see if it matches
           app_id ->
@@ -53,20 +62,71 @@ defmodule AuthWeb.AuthController do
   end
 
   def index(conn, params) do
+    case get_client_id_from_query(conn) do
+      # no auth_client_id means the request is for auth app
+      0 ->
+        Auth.Log.info(conn, params)
+        render_login_buttons(conn, params)
+
+      client_id ->
+        if client_id_valid?(client_id, conn) do
+          msg = "request with client_id: #{client_id} (index:73)"
+          Auth.Log.info(conn, Map.merge(params, %{msg: msg}))
+          render_login_buttons(conn, params)
+        else
+          msg = "auth_client_id: #{client_id} is not valid (index:77)"
+          Auth.Log.error(conn, Map.merge(params, %{msg: msg}))
+
+          conn
+          |> put_flash(:error, msg)
+          |> unauthorized(msg)
+        end
+    end
+  end
+
+  # render the login page with appropriate redirections
+  def render_login_buttons(conn, params) do
     email = get_email(params)
     state = get_state(conn, params)
     oauth_github_url = ElixirAuthGithub.login_url(%{scopes: ["user:email"], state: state})
     oauth_google_url = ElixirAuthGoogle.generate_oauth_url(conn, state)
 
     conn
+    |> Auth.Log.info(Map.merge(params, %{msg: "render_login_buttons:92 state: #{state}"}))
     |> assign(:action, Routes.auth_path(conn, :login_register_handler))
     |> render("index.html",
       oauth_github_url: oauth_github_url,
       oauth_google_url: oauth_google_url,
       changeset: Auth.Person.login_register_changeset(%{email: email}),
       state: state
-      # errors: errors
     )
+  end
+
+  # confirm that the client_id is valid for the app:
+  def client_id_valid?(client_id, conn) do
+    # attempt to decrypt the client_id
+    case Auth.Apikey.decode_decrypt(client_id) do
+      # if auth_client_id in the URL but we cannot decrypt it, reject early!
+      # see: https://github.com/dwyl/auth/issues/129
+      0 ->
+        msg = "client_id_valid?:109 Unable to decrypt auth_client_id:#{client_id}"
+        Auth.Log.error(conn, %{msg: msg})
+        false
+
+      # able to decrypt the client_id to an app_id check if still valid:
+      app_id ->
+        if client_id_is_current?(app_id, client_id), do: true, else: false
+    end
+  end
+
+  defp client_id_is_current?(app_id, client_id) do
+    case Auth.Apikey.get_apikey_by_app_id(app_id) do
+      nil ->
+        false
+
+      apikey ->
+        if apikey.client_id == client_id, do: true, else: false
+    end
   end
 
   def get_state(conn, params) do
@@ -91,14 +151,17 @@ defmodule AuthWeb.AuthController do
   end
 
   def append_client_id(ref, client_id) do
-    ref <> "?auth_client_id=" <> client_id
+    if is_nil(client_id) or
+         client_id == 0,
+       do: ref,
+       else: "#{ref}?auth_client_id=#{client_id}"
   end
 
   def get_referer(conn) do
     # https://stackoverflow.com/questions/37176911/get-http-referrer
     case List.keyfind(conn.req_headers, "referer", 0) do
       {"referer", referer} ->
-        referer
+        append_client_id(referer, get_client_id_from_query(conn))
 
       #  referer not in headers, check URL query:
       nil ->
@@ -215,6 +278,7 @@ defmodule AuthWeb.AuthController do
     # https://hexdocs.pm/phoenix/Phoenix.Controller.html#get_format/1
     if get_format(conn) == "json" do
       data = %{status_id: status, msg: msg}
+
       conn
       |> Auth.Log.error(data)
       |> put_status(status)
