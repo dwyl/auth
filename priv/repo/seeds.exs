@@ -85,19 +85,15 @@ defmodule Auth.Seeds do
     IO.inspect(path, label: ".env file path")
     {:ok, data} = File.read(path)
 
-    Enum.map(String.split(data, "\n"), fn line ->
-      line =
-        line
-        |> String.replace("export ", "")
-        |> String.replace("'", "")
-
-      # this part is convoluted because some .env values can contain "=" chacter:
-      {index, _} = :binary.match(line, "=")
-      len = String.length(line)
-      value = String.slice(line, index + 1, len)
-      [key | _rest] = String.split(line, "=")
-      # IO.inspect(value, label: key)
-      System.put_env(key, value)
+    data
+    |> String.trim()
+    |> String.split("\n")
+    |> Enum.each(fn line ->
+      with line <- String.replace(line, ["export ", "'"], ""),
+           [key | rest] <- String.split(line, "="),
+           value <- Enum.join(rest, "=") do
+        System.put_env(key, value)
+      end
     end)
   end
 end
