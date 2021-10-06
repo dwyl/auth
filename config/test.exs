@@ -12,7 +12,7 @@ config :auth, Auth.Repo,
 # you can enable the server option below.
 config :auth, AuthWeb.Endpoint,
   http: [port: 4002],
-  server: false
+  server: true # https://elixirforum.com/t/wallaby-with-phoenix-1-16-rc0/42352/9
 
 # Print only warnings and errors during test
 config :logger, level: :warn

@@ -80,12 +80,12 @@ defmodule Auth.Mixfile do
       {:useful, "~> 0.2.0"},
 
       # Ping to Wake Heroku Instance: https://github.com/dwyl/ping
-      {:ping, "~> 1.0.1"},
+      {:ping, "~> 1.1.0"},
 
       # Check test coverage
       {:excoveralls, "~> 0.12.3", only: :test},
 
-      #  Property based tests: github.com/dwyl/learn-property-based-testing
+      #  Property based tests: github.com/dwyl/learn-property-based-testing
       {:stream_data, "~> 0.4.3", only: :test},
 
       # Create Documentation for publishing Hex.docs:
