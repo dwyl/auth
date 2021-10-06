@@ -21,15 +21,9 @@ config :auth, AuthWeb.Endpoint,
   code_reloader: true,
   check_origin: false,
   watchers: [
-    node: [
-      "node_modules/webpack/bin/webpack.js",
-      "--mode",
-      "development",
-      "--watch-stdin",
-      cd: Path.expand("../assets", __DIR__)
-    ]
+    # Start the esbuild watcher by calling Esbuild.install_and_run(:default, args)
+    esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]}
   ]
-
 # ## SSL Support
 #
 # In order to use HTTPS in development, a self-signed
@@ -74,3 +68,11 @@ config :phoenix, :stacktrace_depth, 20
 
 # Initialize plugs at runtime for faster development compilation
 config :phoenix, :plug_init_mode, :runtime
+
+# Configure your database
+config :app, Auth.Repo,
+  username: "postgres",
+  password: "postgres",
+  database: "app_dev",
+  hostname: "localhost",
+  pool_size: 10

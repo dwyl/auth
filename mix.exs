@@ -4,8 +4,8 @@ defmodule Auth.Mixfile do
   def project do
     [
       app: :auth,
-      version: "1.3.1",
-      elixir: "~> 1.10.4",
+      version: "1.5.0",
+      elixir: "~> 1.12.0",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       test_coverage: [tool: ExCoveralls],
@@ -46,29 +46,34 @@ defmodule Auth.Mixfile do
   defp deps do
     [
       # Phoenix core:
-      {:phoenix, "~> 1.5.3"},
-      {:phoenix_pubsub, "~> 2.0"},
-      {:phoenix_ecto, "~> 4.2.0"},
-      {:ecto_sql, "~> 3.4.5"},
+      {:phoenix, "~> 1.6.0"},
+      {:phoenix_ecto, "~> 4.4"},
+      {:ecto_sql, "~> 3.7.0"},
       {:postgrex, ">= 0.0.0"},
-      {:phoenix_html, "~> 2.14.2"},
-      {:phoenix_live_reload, "~> 1.2", only: :dev},
-      {:gettext, "~> 0.18.0"},
-      {:jason, "~> 1.2.1"},
-      {:plug_cowboy, "~> 2.3.0"},
+      {:phoenix_html, "~> 3.0"},
+      {:phoenix_live_view, "~> 0.16.4"},
+      {:floki, ">= 0.30.0", only: :test},
+      {:phoenix_live_dashboard, "~> 0.5"},
+      {:esbuild, "~> 0.2", runtime: Mix.env() == :dev},
+      {:swoosh, "~> 1.3"},
+      {:telemetry_metrics, "~> 0.6"},
+      {:telemetry_poller, "~> 1.0"},
+      {:gettext, "~> 0.18.2"},
+      {:jason, "~> 1.2.2"},
+      {:plug_cowboy, "~> 2.5.2"},
 
       # Auth:
       # https://github.com/dwyl/elixir-auth-github
-      {:elixir_auth_github, "~> 1.4.1"},
+      {:elixir_auth_github, "~> 1.5.0"},
       # https://github.com/dwyl/elixir-auth-google
-      {:elixir_auth_google, "~> 1.3.0"},
+      {:elixir_auth_google, "~> 1.5.0"},
       # https://github.com/dwyl/auth_plug
-      {:auth_plug, "1.2.3"},
+      {:auth_plug, "~> 1.3.0"},
       # https://github.com/dwyl/rbac
-      {:rbac, "~> 0.5.0"},
+      {:rbac, "~> 0.5.3"},
 
       # Field Validation and Encryption: github.com/dwyl/fields
-      {:fields, "~> 2.7.1"},
+      {:fields, "~> 2.8.2"},
       # Base58 Encodeing: https://github.com/dwyl/base58
       {:B58, "~> 1.0", hex: :b58},
       # Useful functions: https://github.com/dwyl/useful
@@ -103,7 +108,8 @@ defmodule Auth.Mixfile do
       "ecto.setup": ["ecto.create --quiet", "ecto.migrate --quiet", "seeds"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       seeds: ["run priv/repo/seeds.exs"],
-      test: ["ecto.reset", "test"]
+      test: ["ecto.create --quiet", "ecto.migrate", "test"],
+      "assets.deploy": ["esbuild default --minify", "phx.digest"]
     ]
   end
 
