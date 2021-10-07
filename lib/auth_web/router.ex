@@ -22,7 +22,7 @@ defmodule AuthWeb.Router do
 
     get "/", AuthController, :index
     get "/auth/github/callback", AuthController, :github_handler
-    get "/auth/google/callback", AuthController, :google_handler
+    get "/auth/google/callback", AuthController, :google_handmixler
     get "/auth/verify", AuthController, :verify_email
     post "/auth/loginregister", AuthController, :login_register_handler
     # get "/auth/password/new", AuthController, :password_input
