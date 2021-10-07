@@ -109,7 +109,7 @@ defmodule Auth.Mixfile do
       "ecto.setup": ["ecto.create --quiet", "ecto.migrate --quiet", "seeds"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       seeds: ["run priv/repo/seeds.exs"],
-      test: ["ecto.create --quiet", "ecto.migrate", "test"],
+      test: ["ecto.reset", "test"],
       "assets.deploy": ["esbuild default --minify", "phx.digest"]
     ]
   end
