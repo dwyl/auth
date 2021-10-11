@@ -6,6 +6,8 @@
     "test/",
     "lib/auth/application.ex",
     "lib/auth_web.ex",
-    "lib/auth_web/views/error_helpers.ex"
+    "lib/auth_web/views/error_helpers.ex",
+    "lib/auth_web/channels/user_socket.ex",
+    "lib/auth_web/telemetry.ex"
   ]
 }

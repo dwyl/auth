@@ -239,7 +239,7 @@ defmodule AuthWeb.AuthControllerTest do
 
     conn =
       get(conn, "/auth/google/callback", %{
-        code: "123",
+        code: "234",
         state:
           AuthPlug.Helpers.get_baseurl_from_conn(conn) <>
             "&auth_client_id=" <> key.client_id

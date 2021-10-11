@@ -68,6 +68,8 @@ defmodule AuthWeb.Router do
     get "/personroles/:person_id/:client_id", ApiController, :personroles
   end
 
+  # Added in Phoenix 1.6 ... Nice-to-have. Not tested.
+  # coveralls-ignore-start
   if Mix.env() in [:dev, :test] do
     import Phoenix.LiveDashboard.Router
 
@@ -76,6 +78,8 @@ defmodule AuthWeb.Router do
       live_dashboard "/dashboard", metrics: AuthWeb.Telemetry
     end
   end
+  # coveralls-ignore-stop
+
 
   # Enables the Swoosh mailbox preview in development.
   #
