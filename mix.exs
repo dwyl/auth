@@ -46,7 +46,7 @@ defmodule Auth.Mixfile do
   defp deps do
     [
       # Phoenix core:
-      {:phoenix, "~> 1.6.0"},
+      {:phoenix, "~> 1.6.2"},
       {:phoenix_ecto, "~> 4.4"},
       {:ecto_sql, "~> 3.7.0"},
       {:postgrex, ">= 0.0.0"},
@@ -55,7 +55,7 @@ defmodule Auth.Mixfile do
       {:phoenix_live_view, "~> 0.16.4"},
       {:floki, ">= 0.30.0", only: :test},
       {:phoenix_live_dashboard, "~> 0.5"},
-      {:esbuild, "~> 0.2", runtime: Mix.env() == :dev},
+      {:esbuild, "~> 0.3", runtime: Mix.env() == :dev},
       {:swoosh, "~> 1.3"},
       {:telemetry_metrics, "~> 0.6"},
       {:telemetry_poller, "~> 1.0"},
@@ -76,24 +76,24 @@ defmodule Auth.Mixfile do
       # Field Validation and Encryption: github.com/dwyl/fields
       {:fields, "~> 2.8.2"},
       # Base58 Encodeing: https://github.com/dwyl/base58
-      {:B58, "~> 1.0", hex: :b58},
+      {:b58, "~>1.0.2"},
       # Useful functions: https://github.com/dwyl/useful
-      {:useful, "~> 0.2.0"},
+      {:useful, "~> 0.4.0"},
 
       # Ping to Wake Heroku Instance: https://github.com/dwyl/ping
       {:ping, "~> 1.1.0"},
 
       # Check test coverage
-      {:excoveralls, "~> 0.12.3", only: :test},
+      {:excoveralls, "~> 0.14.3", only: :test},
 
       #  Property based tests: github.com/dwyl/learn-property-based-testing
-      {:stream_data, "~> 0.4.3", only: :test},
+      {:stream_data, "~> 0.5.0", only: :test},
 
       # Create Documentation for publishing Hex.docs:
-      {:ex_doc, "~> 0.21.3", only: :dev},
+      {:ex_doc, "~> 0.25.3", only: :dev},
       {:credo, "~> 1.4", only: [:dev], runtime: false},
       {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
-      {:sobelow, "~> 0.10.2", only: [:dev]}
+      {:sobelow, "~> 0.11.1", only: [:dev]}
     ]
   end
 
@@ -124,5 +124,3 @@ defmodule Auth.Mixfile do
     ]
   end
 end
-
-
