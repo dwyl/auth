@@ -27,7 +27,7 @@ defmodule AuthWeb.AuthController do
       conn = update_in(conn.assigns, &Map.drop(&1, [:person, :jwt]))
 
       conn
-      |> Auth.Log.error(Map.merge(params  , %{status: 401, msg: msg}))
+      |> Auth.Log.error(Map.merge(params, %{status: 401, msg: msg}))
       |> put_flash(:error, msg)
       # force re-auth as for a different app with different roles, etc.
       |> index(params)
@@ -222,7 +222,6 @@ defmodule AuthWeb.AuthController do
   def google_handler(conn, %{"code" => code, "state" => state}) do
     {:ok, token} = ElixirAuthGoogle.get_token(code, conn)
     {:ok, profile} = ElixirAuthGoogle.get_user_profile(token.access_token)
-    
     # save profile to people:
     app_id = get_app_id(state)
     person = Person.create_google_person(Map.merge(profile, %{app_id: app_id}))
