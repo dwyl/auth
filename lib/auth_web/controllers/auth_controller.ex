@@ -222,6 +222,7 @@ defmodule AuthWeb.AuthController do
   def google_handler(conn, %{"code" => code, "state" => state}) do
     {:ok, token} = ElixirAuthGoogle.get_token(code, conn)
     {:ok, profile} = ElixirAuthGoogle.get_user_profile(token.access_token)
+    
     # save profile to people:
     app_id = get_app_id(state)
     person = Person.create_google_person(Map.merge(profile, %{app_id: app_id}))
