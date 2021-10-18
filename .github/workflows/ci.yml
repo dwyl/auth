@@ -42,5 +42,11 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         MIX_ENV: test
         AUTH_API_KEY: ${{ secrets.AUTH_API_KEY }}
+        ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }} 
+        EMAIL_APP_URL: ${{ secrets.EMAIL_APP_URL }}
+        ENCRYPTION_KEYS: ${{ secrets.ENCRYPTION_KEYS }}
+        GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+        GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+        SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1
