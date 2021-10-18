@@ -145,26 +145,12 @@ defmodule AuthWeb.AuthController do
     end
   end
 
+  # returns the state from the person or call get_referer
   def get_state(conn, params) do
-    params_person = Map.get(params, "person")
-
-    if not is_nil(params_person) and Map.has_key?(params_person, "state") do
-      Map.get(params_person, "state")
-    else
-      get_referer(conn)
-    end
+    (params["person"] && params["person"]["state"]) || get_referer(conn)
   end
 
-  def get_email(params) do
-    params_person = Map.get(params, "person")
-
-    if not is_nil(params_person) and
-         not is_nil(Map.get(params_person, "email")) do
-      Map.get(Map.get(params, "person"), "email")
-    else
-      nil
-    end
-  end
+  def get_email(params), do: params["person"] && params["person"]["email"]
 
   # do not append the client id if it doesn't exist, see #135
   def append_client_id(referer, nil), do: referer
