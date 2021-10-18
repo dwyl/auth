@@ -480,7 +480,7 @@ defmodule AuthWeb.AuthController do
 
     # Lookup client_id in apikeys table
     # or state without client_id is not valid
-    if is_nil(client_id), do: get_client_secret(client_id, state), else: 0
+    if is_nil(client_id), do: 0, else: get_client_secret(client_id, state)
   end
 
   def get_client_secret(client_id, state) do
