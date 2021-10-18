@@ -41,15 +41,13 @@ defmodule Auth.Apikey do
   `decode_decrypt/1` accepts a `key` and attempts to Base58.decode
   followed by AES.decrypt it. If decode or decrypt fails, return 0 (zero).
   """
-  def decode_decrypt(nil), do: 0
-  def decode_decrypt(0), do: 0
-
   def decode_decrypt(key) do
     try do
-      key |> Base58.decode() |> Fields.AES.decrypt() |> String.to_integer()
+      decrypted_key = key |> Base58.decode() |> Fields.AES.decrypt() |> String.to_integer()
+      {:ok, decrypted_key}
     rescue
       _ ->
-        0
+        {:error, "invalid key"}
     end
   end
 

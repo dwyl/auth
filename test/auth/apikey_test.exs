@@ -19,7 +19,7 @@ defmodule Auth.ApikeyTest do
     test "decode_decrypt/1 reverses the operation of encrypt_encode/1" do
       app_id = 4_869_234_521
       key = Auth.Apikey.encrypt_encode(app_id)
-      id = Auth.Apikey.decode_decrypt(key)
+      {:ok, id} = Auth.Apikey.decode_decrypt(key)
       assert app_id == id
     end
 
@@ -28,29 +28,30 @@ defmodule Auth.ApikeyTest do
       key = Auth.Apikey.create_api_key(app_id)
       assert key =~ "/"
       parts = String.split(key, "/")
-      assert Auth.Apikey.decode_decrypt(List.first(parts)) == app_id
+      assert Auth.Apikey.decode_decrypt(List.first(parts)) == {:ok, app_id}
     end
 
     test "decrypt_api_key/1 decrypts an AUTH_API_KEY" do
       app_id = 1234
       key = Auth.Apikey.create_api_key(app_id)
-      decrypted = Auth.Apikey.decrypt_api_key(key)
+      {:ok, decrypted} = Auth.Apikey.decrypt_api_key(key)
       assert decrypted == app_id
     end
 
     test "decode_decrypt/1 with invalid client_id" do
       valid_key = Auth.Apikey.encrypt_encode(1)
-      app_id = Auth.Apikey.decode_decrypt(valid_key)
+      {:ok, app_id} = Auth.Apikey.decode_decrypt(valid_key)
       assert app_id == 1
 
       invalid_key = String.slice(valid_key, 0..-2)
-      error = Auth.Apikey.decode_decrypt(invalid_key)
-      assert error == 0
+
+      {err, _} = Auth.Apikey.decode_decrypt(invalid_key)
+      assert :error == err
     end
 
     property "Check a batch of int values can be decoded decode_decrypt/1" do
       check all(int <- integer()) do
-        assert Auth.Apikey.decode_decrypt(Auth.Apikey.encrypt_encode(int)) == int
+        assert Auth.Apikey.decode_decrypt(Auth.Apikey.encrypt_encode(int)) == {:ok, int}
       end
     end
   end

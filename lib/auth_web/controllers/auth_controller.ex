@@ -50,38 +50,52 @@ defmodule AuthWeb.AuthController do
 
         case Auth.Apikey.decode_decrypt(client_id) do
           #  if there is a client_id in the URL but we cannot decrypt it, reject!
-          0 ->
+          {:error, _} ->
             Auth.Log.info(conn, Map.merge(params, %{msg: msg}))
             unauthorized(conn, "invalid AUTH_API_KEY (index:55)")
 
           # able to decrypt the client_id let's see if it matches
-          app_id ->
+          {:ok, app_id} ->
             check_app_id(conn, params, app_id, state)
         end
     end
   end
 
   def index(conn, params) do
-    case get_client_id_from_query(conn) do
-      # no auth_client_id means the request is for auth app
-      nil ->
-        Auth.Log.info(conn, params)
-        render_login_buttons(conn, params)
+    client_id = get_client_id_from_query(conn)
+    valid_client_id = client_id && client_id_valid?(client_id, conn)
 
-      client_id ->
-        if client_id_valid?(client_id, conn) do
-          msg = "request with client_id: #{client_id} (index:73)"
-          Auth.Log.info(conn, Map.merge(params, %{msg: msg}))
-          render_login_buttons(conn, params)
-        else
-          msg = "auth_client_id: #{client_id} is not valid (index:77)"
-          Auth.Log.error(conn, Map.merge(params, %{msg: msg}))
+    # Log authentication information, see https://github.com/dwyl/auth/issues/129
+    # This will save in the database the status for each login attempt
+    log_auth(conn, params, client_id, valid_client_id)
 
-          conn
-          |> put_flash(:error, msg)
-          |> unauthorized(msg)
-        end
+    # if the client_id is not defined, the user then login in Auth app
+    # if client_id defined and valid we still display the login UI, Auth will redirect to the user app
+    if is_nil(client_id) or valid_client_id do
+      render_login_buttons(conn, params)
+    else
+      error_message = "client_id: #{client_id} is not valid"
+
+      conn
+      |> put_flash(:error, error_message)
+      |> unauthorized(error_message)
     end
+  end
+
+  # log authentication
+  # client_id is not defined as query parameter, ie auth on Auth app
+  defp log_auth(conn, params, nil, _), do: Auth.Log.info(conn, params)
+
+  # client_id defined and valid
+  defp log_auth(conn, params, client_id, true) do
+    msg = "request with client_id: #{client_id} index in auth controller"
+    Auth.Log.info(conn, Map.merge(params, %{msg: msg}))
+  end
+
+  # client_id not valid
+  defp log_auth(conn, params, client_id, false) do
+    msg = "auth_client_id: #{client_id} is not valid index in auth controller"
+    Auth.Log.error(conn, Map.merge(params, %{msg: msg}))
   end
 
   # render the login page with appropriate redirections
@@ -109,13 +123,13 @@ defmodule AuthWeb.AuthController do
     case Auth.Apikey.decode_decrypt(client_id) do
       # if auth_client_id in the URL but we cannot decrypt it, reject early!
       # see: https://github.com/dwyl/auth/issues/129
-      0 ->
+      {:error, _} ->
         msg = "client_id_valid?:109 Unable to decrypt auth_client_id:#{client_id}"
         Auth.Log.error(conn, %{msg: msg})
         false
 
       # able to decrypt the client_id to an app_id check if still valid:
-      app_id ->
+      {:ok, app_id} ->
         client_id_is_current?(app_id, client_id)
     end
   end
@@ -183,7 +197,6 @@ defmodule AuthWeb.AuthController do
   # returns the auth_client_id or nil if it doesn't exist in the query
   def get_client_id_from_query(conn), do: conn.query_params["auth_client_id"]
 
-
   @doc """
   `github_auth/2` handles the callback from GitHub Auth API redirect.
   """
@@ -199,13 +212,15 @@ defmodule AuthWeb.AuthController do
   end
 
   def get_app_id(state) do
-    state
-    # client_id
-    |> get_client_secret_from_state()
-    # app_id
-    |> Auth.Apikey.decode_decrypt()
-    # returns 1 if app_id is 0 otherwise app_id
-    |> (&if(&1 == 0, do: 1, else: &1)).()
+    client_secret =
+      state
+      |> get_client_secret_from_state()
+      |> Auth.Apikey.decode_decrypt()
+
+    case client_secret do
+      {:ok, app_id} -> app_id
+      {:error, _} -> 1
+    end
   end
 
   @doc """
@@ -459,7 +474,7 @@ defmodule AuthWeb.AuthController do
   end
 
   def verify_email(conn, params) do
-    id = Auth.Apikey.decode_decrypt(params["id"])
+    {:ok, id} = Auth.Apikey.decode_decrypt(params["id"])
     person = Auth.Person.verify_person_by_id(id)
     redirect_or_render(conn, person, params["referer"])
   end
@@ -484,28 +499,29 @@ defmodule AuthWeb.AuthController do
   end
 
   def get_client_secret(client_id, state) do
-    app_id = Auth.Apikey.decode_decrypt(client_id)
     # decode_decrypt fails with 0:
-    if app_id == 0 do
-      0
-    else
-      apikey = Auth.Apikey.get_apikey_by_app_id(app_id)
+    case Auth.Apikey.decode_decrypt(client_id) do
+      {:error, _} ->
+        0
 
-      cond do
-        # if the apikey isn't found it will be nil
-        is_nil(apikey) ->
-          0
+      {:ok, app_id} ->
+        apikey = Auth.Apikey.get_apikey_by_app_id(app_id)
 
-        apikey.app.person_id == 1 ->
-          apikey.client_secret
+        cond do
+          # if the apikey isn't found it will be nil
+          is_nil(apikey) ->
+            0
 
-        # all other keys require matching the app url and status to not be "deleted":
-        apikey.client_id == client_id && state =~ apikey.app.url && apikey.status != 6 ->
-          apikey.client_secret
+          apikey.app.person_id == 1 ->
+            apikey.client_secret
 
-        true ->
-          0
-      end
+          # all other keys require matching the app url and status to not be "deleted":
+          apikey.client_id == client_id && state =~ apikey.app.url && apikey.status != 6 ->
+            apikey.client_secret
+
+          true ->
+            0
+        end
     end
   end
 
