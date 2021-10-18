@@ -40,7 +40,7 @@ defmodule AuthWeb.AuthController do
     # Check if currently authenticated for app: github.com/dwyl/auth/issues/130
     case get_client_id_from_query(conn) do
       # no auth_client_id means the request is for auth app
-      0 ->
+      nil ->
         Auth.Log.info(conn, params)
         redirect_or_render(conn, conn.assigns.person, nil)
 
@@ -64,7 +64,7 @@ defmodule AuthWeb.AuthController do
   def index(conn, params) do
     case get_client_id_from_query(conn) do
       # no auth_client_id means the request is for auth app
-      0 ->
+      nil ->
         Auth.Log.info(conn, params)
         render_login_buttons(conn, params)
 
@@ -103,6 +103,7 @@ defmodule AuthWeb.AuthController do
   end
 
   # confirm that the client_id is valid for the app:
+  # returns the app_id from client_id as app_id is used to create client id and secret
   def client_id_valid?(client_id, conn) do
     # attempt to decrypt the client_id
     case Auth.Apikey.decode_decrypt(client_id) do
@@ -115,17 +116,18 @@ defmodule AuthWeb.AuthController do
 
       # able to decrypt the client_id to an app_id check if still valid:
       app_id ->
-        if client_id_is_current?(app_id, client_id), do: true, else: false
+        client_id_is_current?(app_id, client_id)
     end
   end
 
+  # return true if the app_id is linked to the client_id otherwise false
   defp client_id_is_current?(app_id, client_id) do
     case Auth.Apikey.get_apikey_by_app_id(app_id) do
       nil ->
         false
 
       apikey ->
-        if apikey.client_id == client_id, do: true, else: false
+        apikey.client_id == client_id
     end
   end
 
@@ -150,12 +152,9 @@ defmodule AuthWeb.AuthController do
     end
   end
 
-  def append_client_id(ref, client_id) do
-    if is_nil(client_id) or
-         client_id == 0,
-       do: ref,
-       else: "#{ref}?auth_client_id=#{client_id}"
-  end
+  # do not append the client id if it doesn't exist, see #135
+  def append_client_id(referer, nil), do: referer
+  def append_client_id(referer, client_id), do: "#{referer}?auth_client_id=#{client_id}"
 
   def get_referer(conn) do
     # https://stackoverflow.com/questions/37176911/get-http-referrer
@@ -181,16 +180,9 @@ defmodule AuthWeb.AuthController do
     end
   end
 
-  def get_client_id_from_query(conn) do
-    case conn.query_string =~ "auth_client_id" do
-      true ->
-        Map.get(URI.decode_query(conn.query_string), "auth_client_id")
+  # returns the auth_client_id or nil if it doesn't exist in the query
+  def get_client_id_from_query(conn), do: conn.query_params["auth_client_id"]
 
-      #  no client_id, redirect back to this app.
-      false ->
-        0
-    end
-  end
 
   @doc """
   `github_auth/2` handles the callback from GitHub Auth API redirect.
@@ -207,13 +199,13 @@ defmodule AuthWeb.AuthController do
   end
 
   def get_app_id(state) do
-    client_id = get_client_secret_from_state(state)
-    app_id = Auth.Apikey.decode_decrypt(client_id)
-
-    case app_id == 0 do
-      true -> 1
-      false -> app_id
-    end
+    state
+    # client_id
+    |> get_client_secret_from_state()
+    # app_id
+    |> Auth.Apikey.decode_decrypt()
+    # returns 1 if app_id is 0 otherwise app_id
+    |> (&if(&1 == 0, do: 1, else: &1)).()
   end
 
   @doc """
@@ -486,15 +478,9 @@ defmodule AuthWeb.AuthController do
   def get_client_secret_from_state(state) do
     client_id = get_client_id_from_state(state)
 
-    case not is_nil(client_id) do
-      # Lookup client_id in apikeys table
-      true ->
-        get_client_secret(client_id, state)
-
-      # state without client_id is not valid
-      false ->
-        0
-    end
+    # Lookup client_id in apikeys table
+    # or state without client_id is not valid
+    if is_nil(client_id), do: get_client_secret(client_id, state), else: 0
   end
 
   def get_client_secret(client_id, state) do

@@ -43,14 +43,12 @@ defmodule Auth.Apikey do
   """
   def decode_decrypt(nil), do: 0
   def decode_decrypt(0), do: 0
+
   def decode_decrypt(key) do
     try do
       key |> Base58.decode() |> Fields.AES.decrypt() |> String.to_integer()
     rescue
-      ArgumentError ->
-        0
-
-      ArithmeticError ->
+      _ ->
         0
     end
   end
@@ -65,6 +63,7 @@ defmodule Auth.Apikey do
     |> put_assoc(:app, Map.get(attrs, "app"))
   end
 
+  # client_id is an encrypted version of app.id
   def create_apikey(app) do
     attrs = %{
       "client_secret" => encrypt_encode(app.id),
