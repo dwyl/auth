@@ -36,7 +36,6 @@ defmodule AuthWeb.AuthController do
 
   # Handle requests where already authenticated: github.com/dwyl/auth/issues/69
   def index(%{assigns: %{person: _}} = conn, params) do
-    referer = get_referer(conn)
     # Check if currently authenticated for app: github.com/dwyl/auth/issues/130
     case get_client_id_from_query(conn) do
       # no auth_client_id means the request is for auth app
@@ -56,6 +55,7 @@ defmodule AuthWeb.AuthController do
 
           # able to decrypt the client_id let's see if it matches
           {:ok, app_id} ->
+            referer = get_referer(conn)
             check_app_id(conn, params, app_id, referer)
         end
     end
