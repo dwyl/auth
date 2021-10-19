@@ -135,6 +135,7 @@ defmodule AuthWeb.AuthController do
   end
 
   # return true if the app_id is linked to the client_id otherwise false
+  # Check if the api key hasn't been deleted
   defp client_id_is_current?(app_id, client_id) do
     case Auth.Apikey.get_apikey_by_app_id(app_id) do
       nil ->
@@ -147,7 +148,8 @@ defmodule AuthWeb.AuthController do
 
   # returns the state from the person or call get_referer
   def get_state(conn, params) do
-    (params["person"] && params["person"]["state"]) || get_referer(conn)
+    get_referer((conn))
+    # (params["person"] && params["person"]["state"]) || get_referer(conn)
   end
 
   def get_email(params), do: params["person"] && params["person"]["email"]
