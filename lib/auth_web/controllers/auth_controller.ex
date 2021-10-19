@@ -36,7 +36,7 @@ defmodule AuthWeb.AuthController do
 
   # Handle requests where already authenticated: github.com/dwyl/auth/issues/69
   def index(%{assigns: %{person: _}} = conn, params) do
-    state = get_state(conn, params)
+    referer = get_referer(conn)
     # Check if currently authenticated for app: github.com/dwyl/auth/issues/130
     case get_client_id_from_query(conn) do
       # no auth_client_id means the request is for auth app
@@ -56,7 +56,7 @@ defmodule AuthWeb.AuthController do
 
           # able to decrypt the client_id let's see if it matches
           {:ok, app_id} ->
-            check_app_id(conn, params, app_id, state)
+            check_app_id(conn, params, app_id, referer)
         end
     end
   end
@@ -101,18 +101,18 @@ defmodule AuthWeb.AuthController do
   # render the login page with appropriate redirections
   def render_login_buttons(conn, params) do
     email = get_email(params)
-    state = get_state(conn, params)
-    oauth_github_url = ElixirAuthGithub.login_url(%{scopes: ["user:email"], state: state})
-    oauth_google_url = ElixirAuthGoogle.generate_oauth_url(conn, state)
+    referer = get_referer(conn)
+    oauth_github_url = ElixirAuthGithub.login_url(%{scopes: ["user:email"], state: referer})
+    oauth_google_url = ElixirAuthGoogle.generate_oauth_url(conn, referer)
 
     conn
-    |> Auth.Log.info(Map.merge(params, %{msg: "render_login_buttons:92 state: #{state}"}))
+    |> Auth.Log.info(Map.merge(params, %{msg: "render_login_buttons:92 state: #{referer}"}))
     |> assign(:action, Routes.auth_path(conn, :login_register_handler))
     |> render("index.html",
       oauth_github_url: oauth_github_url,
       oauth_google_url: oauth_google_url,
       changeset: Auth.Person.login_register_changeset(%{email: email}),
-      state: state
+      state: referer
     )
   end
 
@@ -144,12 +144,6 @@ defmodule AuthWeb.AuthController do
       apikey ->
         apikey.client_id == client_id
     end
-  end
-
-  # returns the state from the person or call get_referer
-  def get_state(conn, params) do
-    get_referer((conn))
-    # (params["person"] && params["person"]["state"]) || get_referer(conn)
   end
 
   def get_email(params), do: params["person"] && params["person"]["email"]
