@@ -100,7 +100,6 @@ defmodule AuthWeb.AuthController do
 
   # render the login page with appropriate redirections
   def render_login_buttons(conn, params) do
-    email = get_email(params)
     referer = get_referer(conn)
     oauth_github_url = ElixirAuthGithub.login_url(%{scopes: ["user:email"], state: referer})
     oauth_google_url = ElixirAuthGoogle.generate_oauth_url(conn, referer)
@@ -111,7 +110,7 @@ defmodule AuthWeb.AuthController do
     |> render("index.html",
       oauth_github_url: oauth_github_url,
       oauth_google_url: oauth_google_url,
-      changeset: Auth.Person.login_register_changeset(%{email: email}),
+      changeset: Auth.Person.login_register_changeset(%{}),
       state: referer
     )
   end
@@ -146,33 +145,23 @@ defmodule AuthWeb.AuthController do
     end
   end
 
-  def get_email(params), do: params["person"] && params["person"]["email"]
-
   # do not append the client id if it doesn't exist, see #135
   def append_client_id(referer, nil), do: referer
   def append_client_id(referer, client_id), do: "#{referer}?auth_client_id=#{client_id}"
 
   def get_referer(conn) do
-    # https://stackoverflow.com/questions/37176911/get-http-referrer
-    case List.keyfind(conn.req_headers, "referer", 0) do
-      {"referer", referer} ->
-        append_client_id(referer, get_client_id_from_query(conn))
+    case conn.query_string =~ "referer" do
+      true ->
+        query = URI.decode_query(conn.query_string)
+        ref = Map.get(query, "referer")
+        client_id = get_client_id_from_query(conn)
+        ref |> URI.encode() |> append_client_id(client_id)
 
-      #  referer not in headers, check URL query:
-      nil ->
-        case conn.query_string =~ "referer" do
-          true ->
-            query = URI.decode_query(conn.query_string)
-            ref = Map.get(query, "referer")
-            client_id = get_client_id_from_query(conn)
-            ref |> URI.encode() |> append_client_id(client_id)
-
-          #  no referer, redirect back to Auth app.
-          false ->
-            (AuthPlug.Helpers.get_baseurl_from_conn(conn) <> "/profile")
-            |> URI.encode()
-            |> append_client_id(AuthPlug.Token.client_id())
-        end
+      #  no referer, redirect back to Auth app.
+      false ->
+        (AuthPlug.Helpers.get_baseurl_from_conn(conn) <> "/profile")
+        |> URI.encode()
+        |> append_client_id(AuthPlug.Token.client_id())
     end
   end
 
@@ -462,8 +451,11 @@ defmodule AuthWeb.AuthController do
   end
 
   def get_client_id_from_state(state) do
-    query = URI.decode_query(List.last(String.split(state, "?")))
-    Map.get(query, "auth_client_id")
+    state
+    |> String.split("?")
+    |> List.last()
+    |> URI.decode_query()
+    |> Map.get("auth_client_id")
   end
 
   @doc """
