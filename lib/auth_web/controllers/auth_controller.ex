@@ -36,11 +36,10 @@ defmodule AuthWeb.AuthController do
 
   # Handle requests where already authenticated: github.com/dwyl/auth/issues/69
   def index(%{assigns: %{person: _}} = conn, params) do
-    state = get_state(conn, params)
     # Check if currently authenticated for app: github.com/dwyl/auth/issues/130
     case get_client_id_from_query(conn) do
       # no auth_client_id means the request is for auth app
-      0 ->
+      nil ->
         Auth.Log.info(conn, params)
         redirect_or_render(conn, conn.assigns.person, nil)
 
@@ -50,147 +49,124 @@ defmodule AuthWeb.AuthController do
 
         case Auth.Apikey.decode_decrypt(client_id) do
           #  if there is a client_id in the URL but we cannot decrypt it, reject!
-          0 ->
+          {:error, _} ->
             Auth.Log.info(conn, Map.merge(params, %{msg: msg}))
             unauthorized(conn, "invalid AUTH_API_KEY (index:55)")
 
           # able to decrypt the client_id let's see if it matches
-          app_id ->
-            check_app_id(conn, params, app_id, state)
+          {:ok, app_id} ->
+            referer = get_referer(conn)
+            check_app_id(conn, params, app_id, referer)
         end
     end
   end
 
   def index(conn, params) do
-    case get_client_id_from_query(conn) do
-      # no auth_client_id means the request is for auth app
-      0 ->
-        Auth.Log.info(conn, params)
-        render_login_buttons(conn, params)
+    client_id = get_client_id_from_query(conn)
+    valid_client_id = client_id && client_id_valid?(client_id, conn)
 
-      client_id ->
-        if client_id_valid?(client_id, conn) do
-          msg = "request with client_id: #{client_id} (index:73)"
-          Auth.Log.info(conn, Map.merge(params, %{msg: msg}))
-          render_login_buttons(conn, params)
-        else
-          msg = "auth_client_id: #{client_id} is not valid (index:77)"
-          Auth.Log.error(conn, Map.merge(params, %{msg: msg}))
+    # Log authentication information, see https://github.com/dwyl/auth/issues/129
+    # This will save in the database the status for each login attempt
+    log_auth(conn, params, client_id, valid_client_id)
 
-          conn
-          |> put_flash(:error, msg)
-          |> unauthorized(msg)
-        end
+    # if the client_id is not defined, the user then login in Auth app
+    # if client_id defined and valid we still display the login UI, Auth will redirect to the user app
+    if is_nil(client_id) or valid_client_id do
+      render_login_buttons(conn, params)
+    else
+      error_message = "client_id: #{client_id} is not valid"
+
+      conn
+      |> put_flash(:error, error_message)
+      |> unauthorized(error_message)
     end
+  end
+
+  # log authentication
+  # client_id is not defined as query parameter, ie auth on Auth app
+  defp log_auth(conn, params, nil, _), do: Auth.Log.info(conn, params)
+
+  # client_id defined and valid
+  defp log_auth(conn, params, client_id, true) do
+    msg = "request with client_id: #{client_id} index in auth controller"
+    Auth.Log.info(conn, Map.merge(params, %{msg: msg}))
+  end
+
+  # client_id not valid
+  defp log_auth(conn, params, client_id, false) do
+    msg = "auth_client_id: #{client_id} is not valid index in auth controller"
+    Auth.Log.error(conn, Map.merge(params, %{msg: msg}))
   end
 
   # render the login page with appropriate redirections
   def render_login_buttons(conn, params) do
-    email = get_email(params)
-    state = get_state(conn, params)
-    oauth_github_url = ElixirAuthGithub.login_url(%{scopes: ["user:email"], state: state})
-    oauth_google_url = ElixirAuthGoogle.generate_oauth_url(conn, state)
+    referer = get_referer(conn)
+    oauth_github_url = ElixirAuthGithub.login_url(%{scopes: ["user:email"], state: referer})
+    oauth_google_url = ElixirAuthGoogle.generate_oauth_url(conn, referer)
 
     conn
-    |> Auth.Log.info(Map.merge(params, %{msg: "render_login_buttons:92 state: #{state}"}))
+    |> Auth.Log.info(Map.merge(params, %{msg: "render_login_buttons:92 state: #{referer}"}))
     |> assign(:action, Routes.auth_path(conn, :login_register_handler))
     |> render("index.html",
       oauth_github_url: oauth_github_url,
       oauth_google_url: oauth_google_url,
-      changeset: Auth.Person.login_register_changeset(%{email: email}),
-      state: state
+      changeset: Auth.Person.login_register_changeset(%{}),
+      state: referer
     )
   end
 
   # confirm that the client_id is valid for the app:
+  # returns the app_id from client_id as app_id is used to create client id and secret
   def client_id_valid?(client_id, conn) do
     # attempt to decrypt the client_id
     case Auth.Apikey.decode_decrypt(client_id) do
       # if auth_client_id in the URL but we cannot decrypt it, reject early!
       # see: https://github.com/dwyl/auth/issues/129
-      0 ->
+      {:error, _} ->
         msg = "client_id_valid?:109 Unable to decrypt auth_client_id:#{client_id}"
         Auth.Log.error(conn, %{msg: msg})
         false
 
       # able to decrypt the client_id to an app_id check if still valid:
-      app_id ->
-        if client_id_is_current?(app_id, client_id), do: true, else: false
+      {:ok, app_id} ->
+        client_id_is_current?(app_id, client_id)
     end
   end
 
+  # return true if the app_id is linked to the client_id otherwise false
+  # Check if the api key hasn't been deleted
   defp client_id_is_current?(app_id, client_id) do
     case Auth.Apikey.get_apikey_by_app_id(app_id) do
       nil ->
         false
 
       apikey ->
-        if apikey.client_id == client_id, do: true, else: false
+        apikey.client_id == client_id
     end
   end
 
-  def get_state(conn, params) do
-    params_person = Map.get(params, "person")
-
-    if not is_nil(params_person) and Map.has_key?(params_person, "state") do
-      Map.get(params_person, "state")
-    else
-      get_referer(conn)
-    end
-  end
-
-  def get_email(params) do
-    params_person = Map.get(params, "person")
-
-    if not is_nil(params_person) and
-         not is_nil(Map.get(params_person, "email")) do
-      Map.get(Map.get(params, "person"), "email")
-    else
-      nil
-    end
-  end
-
-  def append_client_id(ref, client_id) do
-    if is_nil(client_id) or
-         client_id == 0,
-       do: ref,
-       else: "#{ref}?auth_client_id=#{client_id}"
-  end
+  # do not append the client id if it doesn't exist, see #135
+  def append_client_id(referer, nil), do: referer
+  def append_client_id(referer, client_id), do: "#{referer}?auth_client_id=#{client_id}"
 
   def get_referer(conn) do
-    # https://stackoverflow.com/questions/37176911/get-http-referrer
-    case List.keyfind(conn.req_headers, "referer", 0) do
-      {"referer", referer} ->
-        append_client_id(referer, get_client_id_from_query(conn))
-
-      #  referer not in headers, check URL query:
-      nil ->
-        case conn.query_string =~ "referer" do
-          true ->
-            query = URI.decode_query(conn.query_string)
-            ref = Map.get(query, "referer")
-            client_id = get_client_id_from_query(conn)
-            ref |> URI.encode() |> append_client_id(client_id)
-
-          #  no referer, redirect back to Auth app.
-          false ->
-            (AuthPlug.Helpers.get_baseurl_from_conn(conn) <> "/profile")
-            |> URI.encode()
-            |> append_client_id(AuthPlug.Token.client_id())
-        end
-    end
-  end
-
-  def get_client_id_from_query(conn) do
-    case conn.query_string =~ "auth_client_id" do
+    case conn.query_string =~ "referer" do
       true ->
-        Map.get(URI.decode_query(conn.query_string), "auth_client_id")
+        query = URI.decode_query(conn.query_string)
+        ref = Map.get(query, "referer")
+        client_id = get_client_id_from_query(conn)
+        ref |> URI.encode() |> append_client_id(client_id)
 
-      #  no client_id, redirect back to this app.
+      #  no referer, redirect back to Auth app.
       false ->
-        0
+        (AuthPlug.Helpers.get_baseurl_from_conn(conn) <> "/profile")
+        |> URI.encode()
+        |> append_client_id(AuthPlug.Token.client_id())
     end
   end
+
+  # returns the auth_client_id or nil if it doesn't exist in the query
+  def get_client_id_from_query(conn), do: conn.query_params["auth_client_id"]
 
   @doc """
   `github_auth/2` handles the callback from GitHub Auth API redirect.
@@ -207,12 +183,14 @@ defmodule AuthWeb.AuthController do
   end
 
   def get_app_id(state) do
-    client_id = get_client_secret_from_state(state)
-    app_id = Auth.Apikey.decode_decrypt(client_id)
+    client_secret =
+      state
+      |> get_client_secret_from_state()
+      |> Auth.Apikey.decode_decrypt()
 
-    case app_id == 0 do
-      true -> 1
-      false -> app_id
+    case client_secret do
+      {:ok, app_id} -> app_id
+      {:error, _} -> 1
     end
   end
 
@@ -467,14 +445,22 @@ defmodule AuthWeb.AuthController do
   end
 
   def verify_email(conn, params) do
-    id = Auth.Apikey.decode_decrypt(params["id"])
-    person = Auth.Person.verify_person_by_id(id)
-    redirect_or_render(conn, person, params["referer"])
+    case Auth.Apikey.decode_decrypt(params["id"]) do
+      {:ok, id} ->
+        person = Auth.Person.verify_person_by_id(id)
+        redirect_or_render(conn, person, params["referer"])
+
+      {:error, _} ->
+        unauthorized(conn, "INVALID AUTH_API_KEY")
+    end
   end
 
   def get_client_id_from_state(state) do
-    query = URI.decode_query(List.last(String.split(state, "?")))
-    Map.get(query, "auth_client_id")
+    state
+    |> String.split("?")
+    |> List.last()
+    |> URI.decode_query()
+    |> Map.get("auth_client_id")
   end
 
   @doc """
@@ -486,40 +472,35 @@ defmodule AuthWeb.AuthController do
   def get_client_secret_from_state(state) do
     client_id = get_client_id_from_state(state)
 
-    case not is_nil(client_id) do
-      # Lookup client_id in apikeys table
-      true ->
-        get_client_secret(client_id, state)
-
-      # state without client_id is not valid
-      false ->
-        0
-    end
+    # Lookup client_id in apikeys table
+    # or state without client_id is not valid
+    if is_nil(client_id), do: 0, else: get_client_secret(client_id, state)
   end
 
   def get_client_secret(client_id, state) do
-    app_id = Auth.Apikey.decode_decrypt(client_id)
     # decode_decrypt fails with 0:
-    if app_id == 0 do
-      0
-    else
-      apikey = Auth.Apikey.get_apikey_by_app_id(app_id)
+    case Auth.Apikey.decode_decrypt(client_id) do
+      {:error, _} ->
+        0
 
-      cond do
-        # if the apikey isn't found it will be nil
-        is_nil(apikey) ->
-          0
+      {:ok, app_id} ->
+        apikey = Auth.Apikey.get_apikey_by_app_id(app_id)
 
-        apikey.app.person_id == 1 ->
-          apikey.client_secret
+        cond do
+          # if the apikey isn't found it will be nil
+          is_nil(apikey) ->
+            0
 
-        # all other keys require matching the app url and status to not be "deleted":
-        apikey.client_id == client_id && state =~ apikey.app.url && apikey.status != 6 ->
-          apikey.client_secret
+          apikey.app.person_id == 1 ->
+            apikey.client_secret
 
-        true ->
-          0
-      end
+          # all other keys require matching the app url and status to not be "deleted":
+          apikey.client_id == client_id && state =~ apikey.app.url && apikey.status != 6 ->
+            apikey.client_secret
+
+          true ->
+            0
+        end
     end
   end
 

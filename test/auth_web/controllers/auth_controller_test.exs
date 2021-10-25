@@ -105,15 +105,6 @@ defmodule AuthWeb.AuthControllerTest do
     assert html_response(conn, 200) =~ "Google account"
   end
 
-  test "get_referer/1", %{conn: conn} do
-    conn =
-      conn
-      |> put_req_header("referer", "http://localhost/admin")
-      |> get("/?auth_client_id=#{AuthPlug.Token.client_id()}")
-
-    assert conn.resp_body =~ "state=http://localhost/admin"
-  end
-
   test "get_referer/1 query_string", %{conn: conn} do
     conn =
       get(
@@ -453,6 +444,13 @@ defmodule AuthWeb.AuthControllerTest do
 
     conn = get(conn, link, %{})
     assert html_response(conn, 302) =~ "redirected"
+  end
+
+  test "verify_email/2 verify email with wrong API key", %{conn: conn} do
+    link = "/auth/verify?id=wrongid"
+
+    conn = get(conn, link, %{})
+    assert html_response(conn, 401)
   end
 
   test "password_prompt/2 verify VALID password", %{conn: conn} do
