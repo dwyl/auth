@@ -445,9 +445,14 @@ defmodule AuthWeb.AuthController do
   end
 
   def verify_email(conn, params) do
-    {:ok, id} = Auth.Apikey.decode_decrypt(params["id"])
-    person = Auth.Person.verify_person_by_id(id)
-    redirect_or_render(conn, person, params["referer"])
+    case Auth.Apikey.decode_decrypt(params["id"]) do
+      {:ok, id} ->
+        person = Auth.Person.verify_person_by_id(id)
+        redirect_or_render(conn, person, params["referer"])
+
+      {:error, _} ->
+        unauthorized(conn, "INVALID AUTH_API_KEY")
+    end
   end
 
   def get_client_id_from_state(state) do

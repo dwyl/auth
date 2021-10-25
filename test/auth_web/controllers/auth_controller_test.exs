@@ -446,6 +446,13 @@ defmodule AuthWeb.AuthControllerTest do
     assert html_response(conn, 302) =~ "redirected"
   end
 
+  test "verify_email/2 verify email with wrong API key", %{conn: conn} do
+    link = "/auth/verify?id=wrongid"
+
+    conn = get(conn, link, %{})
+    assert html_response(conn, 401)
+  end
+
   test "password_prompt/2 verify VALID password", %{conn: conn} do
     data = %{
       email: "ana@mail.com",
