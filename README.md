@@ -11,11 +11,10 @@ you can setup in ***5 minutes***.
 [![Libraries.io dependency status](https://img.shields.io/librariesio/release/hex/auth?logoColor=brightgreen&style=flat-square)](https://libraries.io/hex/auth)
 [![docs](https://img.shields.io/badge/docs-maintained-brightgreen?style=flat-square)](https://hexdocs.pm/auth/api-reference.html)
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat-square)](https://github.com/dwyl/auth/issues)
-[![HitCount](http://hits.dwyl.io/dwyl/auth.svg)](http://hits.dwyl.io/dwyl/auth)
+[![HitCount](http://hits.dwyl.com/dwyl/auth.svg)](http://hits.dwyl.com/dwyl/auth)
 <!-- uncomment when service is working ...
 [![Inline docs](http://inch-ci.org/github/dwyl/auth.svg?branch=master&style=flat-square)](http://inch-ci.org/github/dwyl/auth)
 -->
-![wake-sleeping-heroku-app](https://dwylauth.herokuapp.com/ping)
 
 </div>
 
@@ -278,3 +277,5 @@ we recommend checkout out these great resources
 
 +   Auth Boss: <https://github.com/teesloane/Auth-Boss>
 +   Introduction to OAuth2: <https://www.digitalocean.com/community/tutorials/an-introduction-to-oauth-2>
+
+![wake-sleeping-heroku-app](https://dwylauth.herokuapp.com/ping)
