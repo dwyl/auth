@@ -213,9 +213,6 @@ defmodule AuthWeb.AuthController do
   if the state is defined, redirect to it.
   """
   def handler(conn, person, state) do
-    # IO.inspect(conn, label: "238: conn")
-    # IO.inspect(person, label: "239 person")
-    # IO.inspect(state, label: "240: state")
     # Send welcome email: temporarily disabled to avoid noise.
     # Auth.Email.sendemail(%{
     #   email: person.email,
@@ -239,6 +236,7 @@ defmodule AuthWeb.AuthController do
       conn
       |> AuthPlug.create_jwt_session(session_data(person))
       |> Auth.Log.info(%{status_id: 200, app_id: 1})
+      |> Auth.Session.start_session()
       |> render(:welcome, person: person, apps: App.list_apps(person.id))
     else
       # State > Redirect to requesting app:
@@ -250,6 +248,7 @@ defmodule AuthWeb.AuthController do
           conn
           |> AuthPlug.create_jwt_session(session_data(person))
           |> Auth.Log.info(%{status_id: 200, app_id: get_app_id(state)})
+          |> Auth.Session.start_session()
           |> redirect(external: add_jwt_url_param(person, state, secret))
       end
     end
