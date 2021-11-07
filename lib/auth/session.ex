@@ -78,11 +78,20 @@ defmodule Auth.Session do
   end
 
   @doc """
-  `end_session/1` update session to end it.
+  `update_session_end/1` update session to end it.
   """
-  def end_session(conn) do
+  def update_session_end(conn) do
     get(conn)
     |> changeset(%{end: DateTime.utc_now()})
     |> Repo.update!()
+  end
+
+
+  @doc """
+  `end_session/1` update session to end it.
+  """
+  def end_session(conn) do
+    update_session_end(conn)
+    update_in(conn.assigns, &Map.drop(&1, [:sid]))
   end
 end
