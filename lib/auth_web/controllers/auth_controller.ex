@@ -99,7 +99,7 @@ defmodule AuthWeb.AuthController do
   end
 
   # render the login page with appropriate redirections
-  def render_login_buttons(conn, params) do
+  def render_login_buttons(conn, _params) do
     referer = get_referer(conn)
     oauth_github_url = ElixirAuthGithub.login_url(%{scopes: ["user:email"], state: referer})
     oauth_google_url = ElixirAuthGoogle.generate_oauth_url(conn, referer)
