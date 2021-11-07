@@ -9,7 +9,7 @@ defmodule Auth.Session do
   schema "sessions" do
     field :app_id, :id
     field :auth_provider, :string
-    field :end_at, :utc_datetime
+    field :end, :naive_datetime
     # field :key_id, :integer
     field :person_id, :id
     field :user_agent_id, :id
@@ -18,7 +18,7 @@ defmodule Auth.Session do
   end
 
   def changeset(session, attrs) do
-    cast(session, attrs, [:app_id, :person_id, :auth_provider, :user_agent_id, :end_at])
+    cast(session, attrs, [:app_id, :person_id, :auth_provider, :user_agent_id, :end])
     |> validate_required([:app_id, :person_id])
   end
 
@@ -43,7 +43,7 @@ defmodule Auth.Session do
       and # match on UA in case person has multiple devices/sessions
       s.user_agent_id == ^Auth.UserAgent.get_user_agent_id(conn)
       and # only the sessions that haven't been "ended"
-      is_nil(s.end_at),
+      is_nil(s.end),
       # sort by most recent in case there are older un-ended sessions:
       order_by: [desc: :inserted_at]
     )
@@ -52,7 +52,7 @@ defmodule Auth.Session do
   # update session to end it
   def end_session(conn) do
     get(conn)
-    |> changeset(%{end_at: DateTime.utc_now()})
-    |> Repo.update()
+    |> changeset(%{end: DateTime.utc_now()})
+    |> Repo.update!()
   end
 end
