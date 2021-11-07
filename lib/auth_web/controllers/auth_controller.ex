@@ -105,7 +105,7 @@ defmodule AuthWeb.AuthController do
     oauth_google_url = ElixirAuthGoogle.generate_oauth_url(conn, referer)
 
     conn
-    |> Auth.Log.info(Map.merge(params, %{msg: "render_login_buttons:92 state: #{referer}"}))
+    # |> Auth.Log.info(Map.merge(params, %{msg: "render_login_buttons:95 state: #{state}"}))
     |> assign(:action, Routes.auth_path(conn, :login_register_handler))
     |> render("index.html",
       oauth_github_url: oauth_github_url,
@@ -202,7 +202,7 @@ defmodule AuthWeb.AuthController do
     {:ok, profile} = ElixirAuthGoogle.get_user_profile(token.access_token)
     # save profile to people:
     app_id = get_app_id(state)
-    person = Person.create_google_person(Map.merge(profile, %{app_id: app_id}))
+    person = Person.create_google_person(Map.merge(profile, %{app_id: app_id})) 
 
     # render or redirect:
     handler(conn, person, state)
@@ -213,6 +213,9 @@ defmodule AuthWeb.AuthController do
   if the state is defined, redirect to it.
   """
   def handler(conn, person, state) do
+    # IO.inspect(conn, label: "238: conn")
+    # IO.inspect(person, label: "239 person")
+    # IO.inspect(state, label: "240: state")
     # Send welcome email: temporarily disabled to avoid noise.
     # Auth.Email.sendemail(%{
     #   email: person.email,
@@ -530,4 +533,9 @@ defmodule AuthWeb.AuthController do
     List.first(String.split(URI.decode(state), "?")) <>
       "?jwt=" <> jwt
   end
+
+  # def logout(conn, params) do
+    
+
+  # end
 end
