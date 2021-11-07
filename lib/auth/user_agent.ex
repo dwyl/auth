@@ -53,6 +53,17 @@ defmodule Auth.UserAgent do
     assign(conn, :ua, make_ua_string(ua))
   end
 
+  def get_user_agent_id(conn) do
+    if Map.has_key?(conn.assigns, :ua) do
+      # user_agent string is available
+      List.first(String.split(conn.assigns.ua, "|"))
+    else
+      # no user_agent string in conn
+      ua = Auth.UserAgent.upsert(conn)
+      ua.id
+    end
+  end
+
   defp get_user_agent_string(conn) do
     user_agent_header =
       Enum.filter(conn.req_headers, fn {k, _} ->
