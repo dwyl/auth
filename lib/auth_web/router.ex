@@ -68,6 +68,7 @@ defmodule AuthWeb.Router do
 
     get "/approles/:client_id", ApiController, :approles
     get "/personroles/:person_id/:client_id", ApiController, :personroles
+    
   end
 
   # Added in Phoenix 1.6 ... Nice-to-have. Not tested.
