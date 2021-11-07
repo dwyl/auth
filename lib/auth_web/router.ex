@@ -33,7 +33,7 @@ defmodule AuthWeb.Router do
   end
 
   pipeline :auth do
-    plug(AuthPlug, %{auth_url: "https://dwylauth.herokuapp.com"})
+    plug(AuthPlug, %{auth_url: "http://localhost:4000" }) # "https://dwylauth.herokuapp.com"})
   end
 
   scope "/", AuthWeb do
@@ -54,6 +54,8 @@ defmodule AuthWeb.Router do
     get "/apps/:id/resetapikey", AppController, :resetapikey
     resources "/apps", AppController
     # resources "/settings/apikeys", ApikeyController
+
+    # get "/"
   end
 
   pipeline :api do
@@ -85,11 +87,11 @@ defmodule AuthWeb.Router do
   #
   # Note that preview only shows emails that were sent by the same
   # node running the Phoenix server.
-  if Mix.env() == :dev do
-    scope "/dev" do
-      pipe_through :browser
+  # if Mix.env() == :dev do
+  #   scope "/dev" do
+  #     pipe_through :browser
 
-      forward "/mailbox", Plug.Swoosh.MailboxPreview
-    end
-  end
+  #     forward "/mailbox", Plug.Swoosh.MailboxPreview
+  #   end
+  # end
 end
