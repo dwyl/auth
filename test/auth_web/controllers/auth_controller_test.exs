@@ -404,7 +404,7 @@ defmodule AuthWeb.AuthControllerTest do
   end
 
   test "password_create/2 create a new password", %{conn: conn} do
-    %{email: "anabela@mail.com", auth_provider: "email", givenName: "timmy"}
+    %{email: "anabela@mail.com", auth_provider: "email", givenName: "timmy", app_id: 1}
     |> Auth.Person.upsert_person()
 
     params = %{
