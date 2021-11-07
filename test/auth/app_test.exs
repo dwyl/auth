@@ -1,5 +1,5 @@
 defmodule Auth.AppTest do
-  use Auth.DataCase
+  use Auth.DataCase, async: true
 
   describe "apps" do
     alias Auth.App

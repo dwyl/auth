@@ -1,5 +1,5 @@
 defmodule AuthWeb.PeopleRolesTest do
-  use Auth.DataCase
+  use Auth.DataCase, async: true
 
   test "Auth.PeopleRoles.insert/4 happy path" do
     app_id = 1

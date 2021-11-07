@@ -1,5 +1,5 @@
 defmodule AuthWeb.AppControllerTest do
-  use AuthWeb.ConnCase
+  use AuthWeb.ConnCase, async: true
   alias Auth.App
 
   @create_attrs %{

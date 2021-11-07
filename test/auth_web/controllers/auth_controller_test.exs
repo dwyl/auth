@@ -1,5 +1,5 @@
 defmodule AuthWeb.AuthControllerTest do
-  use AuthWeb.ConnCase
+  use AuthWeb.ConnCase, async: true
   # @email System.get_env("ADMIN_EMAIL")
 
   @app_data %{
@@ -432,7 +432,7 @@ defmodule AuthWeb.AuthControllerTest do
 
   test "verify_email/2 verify an email address", %{conn: conn} do
     person =
-      %{email: "anabela@mail.com", auth_provider: "email"}
+      %{email: "anabela@mail.com", auth_provider: "email", app_id: 1}
       |> Auth.Person.upsert_person()
 
     state =
@@ -458,7 +458,8 @@ defmodule AuthWeb.AuthControllerTest do
       email: "ana@mail.com",
       auth_provider: "email",
       status: 1,
-      password: "thiswillbehashed"
+      password: "thiswillbehashed",
+      app_id: 1
     }
 
     Auth.Person.upsert_person(data)

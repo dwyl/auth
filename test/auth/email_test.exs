@@ -1,5 +1,5 @@
 defmodule Auth.EmailTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
 
   describe "AuthMvp.Email" do
     test "sendemail/1 an email" do

@@ -1,5 +1,5 @@
 defmodule Auth.StatusTest do
-  use Auth.DataCase
+  use Auth.DataCase, async: true
   alias Auth.{Status}
 
   test "upsert_status/1 inserts or updates a status record" do

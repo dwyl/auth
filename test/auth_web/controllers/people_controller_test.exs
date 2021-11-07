@@ -1,5 +1,5 @@
 defmodule AuthWeb.PeopleControllerTest do
-  use AuthWeb.ConnCase
+  use AuthWeb.ConnCase, async: true
   # @email System.get_env("ADMIN_EMAIL")
 
   test "GET /people displays list of people", %{conn: conn} do
