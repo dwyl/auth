@@ -1,5 +1,5 @@
 defmodule Auth.LogTest do
-  use AuthWeb.ConnCase
+  use AuthWeb.ConnCase, async: true
   alias Auth.UserAgent
   require Logger
 

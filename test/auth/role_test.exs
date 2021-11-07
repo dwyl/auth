@@ -1,5 +1,5 @@
 defmodule Auth.RoleTest do
-  use Auth.DataCase
+  use Auth.DataCase, async: true
   # use AuthWeb.ConnCase
 
   describe "roles" do

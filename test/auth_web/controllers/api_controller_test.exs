@@ -1,5 +1,5 @@
 defmodule AuthWeb.ApiControllerTest do
-  use AuthWeb.ConnCase
+  use AuthWeb.ConnCase, async: true
   alias Auth.App
   alias Auth.Role
 
