@@ -11,6 +11,17 @@ defmodule Auth.SessionTest do
     assert session.end == nil
   end
 
+  test "Auth.Session.start_session/1 inserts a session record", %{conn: conn} do
+    conn = 
+      conn 
+      |> non_admin_login()
+      |> Auth.Session.start_session()
+
+    session = Auth.Session.get(conn)
+
+    assert session.id == conn.assigns.sid
+  end
+
   test "Auth.Session.get/1 retrieves a session record", %{conn: conn} do
     conn = non_admin_login(conn)
     session = Auth.Session.insert(conn)

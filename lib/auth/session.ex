@@ -8,6 +8,7 @@ defmodule Auth.Session do
   import Ecto.Changeset
   import Ecto.Query, warn: false
   use Ecto.Schema
+  import Plug.Conn, only: [assign: 3]
 
   # This is an MVP of sessions, if you need more, please open an issue!
   schema "sessions" do
@@ -45,6 +46,16 @@ defmodule Auth.Session do
     })
     |> Repo.insert!()
   end
+
+  @doc """
+  `start_session/1` starts the session and returns conn with conn.assigns.sid.
+  invokes `insert/1` above but returns conn instead of the session record.
+  """
+  def start_session(conn) do
+    session = insert(conn)
+    assign(conn, :sid, session.id)
+  end
+
 
   @doc """
   `get/1` retrieves the current session from DB 
