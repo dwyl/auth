@@ -14,10 +14,7 @@ defmodule AuthWeb.AuthController do
   # first we check for referer and auth_client_id in query parameters
   # This means a consumer app attempt to authenticate
   # we display the login buttons
-  def index(
-        %{query_params: %{"referer" => _referer, "auth_client_id" => client_id}} = conn,
-        params
-      ) do
+  def index(%{query_params: %{"auth_client_id" => client_id}} = conn, params) do
     valid_client_id = client_id && client_id_valid?(client_id, conn)
     log_auth(conn, params, client_id, valid_client_id)
 
@@ -41,6 +38,7 @@ defmodule AuthWeb.AuthController do
 
   # Login for auth app
   def index(conn, params) do
+    log_auth(conn, params, nil, nil)
     render_login_buttons(conn, params)
   end
 
