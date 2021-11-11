@@ -11,24 +11,17 @@ defmodule AuthWeb.AuthController do
     render(conn, :welcome, apps: App.list_apps(conn.assigns.person.id))
   end
 
-  # Handle requests where already authenticated: github.com/dwyl/auth/issues/69
-  # This is used for the auth app only as consumer app doesn't create a session
-  # in the auth app
-  def index(%{assigns: %{person: _}} = conn, _params) do
-    redirect_or_render(conn, conn.assigns.person, nil)
-  end
-
-  def index(conn, params) do
-    client_id = get_client_id_from_query(conn)
+  # first we check for referer and auth_client_id in query parameters
+  # This means a consumer app attempt to authenticate
+  # we display the login buttons
+  def index(
+        %{query_params: %{"referer" => _referer, "auth_client_id" => client_id}} = conn,
+        params
+      ) do
     valid_client_id = client_id && client_id_valid?(client_id, conn)
-
-    # Log authentication information, see https://github.com/dwyl/auth/issues/129
-    # This will save in the database the status for each login attempt
     log_auth(conn, params, client_id, valid_client_id)
 
-    # if the client_id is not defined, the user then login in Auth app
-    # if client_id defined and valid we still display the login UI, Auth will redirect to the user app
-    if is_nil(client_id) or valid_client_id do
+    if valid_client_id do
       render_login_buttons(conn, params)
     else
       error_message = "client_id: #{client_id} is not valid"
@@ -37,6 +30,18 @@ defmodule AuthWeb.AuthController do
       |> put_flash(:error, error_message)
       |> unauthorized(error_message)
     end
+  end
+
+  # Handle requests where already authenticated: github.com/dwyl/auth/issues/69
+  # This is used for the auth app only as consumer app won't create a session
+  # in the auth app
+  def index(%{assigns: %{person: person}} = conn, params) do
+    redirect_or_render(conn, person, nil)
+  end
+
+  # Login for auth app
+  def index(conn, params) do
+    render_login_buttons(conn, params)
   end
 
   # log authentication
@@ -57,6 +62,7 @@ defmodule AuthWeb.AuthController do
 
   # render the login page with appropriate redirections
   def render_login_buttons(conn, params) do
+    # create referer to cosumer app or auth app
     referer = get_referer(conn)
     oauth_github_url = ElixirAuthGithub.login_url(%{scopes: ["user:email"], state: referer})
     oauth_google_url = ElixirAuthGoogle.generate_oauth_url(conn, referer)
@@ -123,7 +129,7 @@ defmodule AuthWeb.AuthController do
   end
 
   # returns the auth_client_id or nil if it doesn't exist in the query
-  def get_client_id_from_query(conn), do: conn.query_params["auth_client_id"]
+  defp get_client_id_from_query(conn), do: conn.query_params["auth_client_id"]
 
   @doc """
   `github_auth/2` handles the callback from GitHub Auth API redirect.
