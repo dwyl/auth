@@ -11,54 +11,11 @@ defmodule AuthWeb.AuthController do
     render(conn, :welcome, apps: App.list_apps(conn.assigns.person.id))
   end
 
-  # route the request based on conn.assigns.person.app_id == app_id
-  defp check_app_id(conn, params, app_id, state) do
-    if conn.assigns.person.app_id == app_id do
-      msg = "person: #{conn.assigns.person.id} already logged into app: #{app_id}"
-
-      conn
-      |> Auth.Log.info(Map.merge(params, %{msg: msg}))
-      # already logged-in so redirect back to app:
-      |> redirect_or_render(conn.assigns.person, state)
-    else
-      # app_id does not match, force login:mix
-      msg = "auth_client_id (#{app_id}) does not match, please login (check_app_id:25)"
-      # remove the conn.assigns.person and jwt to avoid match loop
-      conn = update_in(conn.assigns, &Map.drop(&1, [:person, :jwt]))
-
-      conn
-      |> Auth.Log.error(Map.merge(params, %{status: 401, msg: msg}))
-      |> put_flash(:error, msg)
-      # force re-auth as for a different app with different roles, etc.
-      |> index(params)
-    end
-  end
-
   # Handle requests where already authenticated: github.com/dwyl/auth/issues/69
-  def index(%{assigns: %{person: _}} = conn, params) do
-    # Check if currently authenticated for app: github.com/dwyl/auth/issues/130
-    case get_client_id_from_query(conn) do
-      # no auth_client_id means the request is for auth app
-      nil ->
-        Auth.Log.info(conn, params)
-        redirect_or_render(conn, conn.assigns.person, nil)
-
-      client_id ->
-        msg = "request with client_id: #{client_id} (index:48)"
-        Auth.Log.info(conn, Map.merge(params, %{msg: msg}))
-
-        case Auth.Apikey.decode_decrypt(client_id) do
-          #  if there is a client_id in the URL but we cannot decrypt it, reject!
-          {:error, _} ->
-            Auth.Log.info(conn, Map.merge(params, %{msg: msg}))
-            unauthorized(conn, "invalid AUTH_API_KEY (index:55)")
-
-          # able to decrypt the client_id let's see if it matches
-          {:ok, app_id} ->
-            referer = get_referer(conn)
-            check_app_id(conn, params, app_id, referer)
-        end
-    end
+  # This is used for the auth app only as consumer app doesn't create a session
+  # in the auth app
+  def index(%{assigns: %{person: _}} = conn, _params) do
+    redirect_or_render(conn, conn.assigns.person, nil)
   end
 
   def index(conn, params) do
@@ -245,7 +202,6 @@ defmodule AuthWeb.AuthController do
 
         secret ->
           conn
-          |> AuthPlug.create_jwt_session(session_data(person))
           |> Auth.Log.info(%{status_id: 200, app_id: get_app_id(state)})
           |> redirect(external: add_jwt_url_param(person, state, secret))
       end
