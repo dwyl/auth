@@ -33,7 +33,7 @@ defmodule AuthWeb.Router do
   end
 
   pipeline :auth do
-    plug(AuthPlug, %{auth_url: "http://localhost:4000" }) # "https://dwylauth.herokuapp.com"})
+    plug(AuthPlug, %{auth_url: "https://authdev.herokuapp.com"})
   end
 
   scope "/", AuthWeb do
@@ -55,7 +55,7 @@ defmodule AuthWeb.Router do
     resources "/apps", AppController
     # resources "/settings/apikeys", ApikeyController
 
-    # get "/"
+    get "/logout", AuthController, :logout
   end
 
   pipeline :api do
@@ -68,6 +68,7 @@ defmodule AuthWeb.Router do
 
     get "/approles/:client_id", ApiController, :approles
     get "/personroles/:person_id/:client_id", ApiController, :personroles
+
     
   end
 

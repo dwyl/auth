@@ -533,8 +533,11 @@ defmodule AuthWeb.AuthController do
       "?jwt=" <> jwt
   end
 
-  # def logout(conn, params) do
-    
-
-  # end
+  def logout(conn, params) do
+    conn
+    |> Auth.Session.end_session()
+    |> AuthPlug.logout()
+    |> put_flash(:info, "Successfully logged out.")
+    |> index(params)
+  end
 end
