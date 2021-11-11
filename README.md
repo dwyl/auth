@@ -102,6 +102,12 @@ have an **introductory tutorial**:
 
 ## 5 Minute 5 Step Setup
 
+> **Note** the App will **_not_ compile/work** 
+until you have the **required environment variables**.
+You will see an error similar to: 
+[**issues/157**](https://github.com/dwyl/auth/issues/157).
+See the 3<sup>rd</sup> step below.
+
 
 ### 1. Clone the project:
 
