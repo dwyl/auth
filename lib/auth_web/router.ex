@@ -55,7 +55,7 @@ defmodule AuthWeb.Router do
     resources "/apps", AppController
     # resources "/settings/apikeys", ApikeyController
 
-    # get "/"
+    get "/logout", AuthController, :logout
   end
 
   pipeline :api do
@@ -68,6 +68,7 @@ defmodule AuthWeb.Router do
 
     get "/approles/:client_id", ApiController, :approles
     get "/personroles/:person_id/:client_id", ApiController, :personroles
+
     
   end
 
