@@ -148,4 +148,17 @@ defmodule AuthWeb.ApiControllerTest do
       assert length(json) == 2
     end
   end
+
+  test "GET /logout (API)", %{conn: conn} do
+    conn =
+      conn
+      |> admin_login()
+      |> Auth.Session.start_session()
+      |> put_req_header("accept", "application/json")
+      |> get("/api/logout")
+
+    assert conn.status == 302
+    {:ok, json} = Jason.decode(conn.resp_body)
+    assert json == %{"message" => "Successfully logged out."}
+  end
 end

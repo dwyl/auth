@@ -48,4 +48,11 @@ defmodule AuthWeb.ApiController do
         json(conn, roles)
     end
   end
+
+  def logout(conn, _params) do
+    conn
+    |> Auth.Session.end_session()
+    |> AuthPlug.logout()
+    |> json(%{message: "Successfully logged out."})
+  end
 end
