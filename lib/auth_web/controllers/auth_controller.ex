@@ -32,7 +32,7 @@ defmodule AuthWeb.AuthController do
   # Handle requests where already authenticated: github.com/dwyl/auth/issues/69
   # This is used for the auth app only as consumer app won't create a session
   # in the auth app
-  def index(%{assigns: %{person: person}} = conn, params) do
+  def index(%{assigns: %{person: person}} = conn, _params) do
     redirect_or_render(conn, person, nil)
   end
 
