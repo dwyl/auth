@@ -505,4 +505,11 @@ defmodule AuthWeb.AuthControllerTest do
     conn = post(conn, "/auth/password/verify", params)
     assert html_response(conn, 200) =~ "password is incorrect"
   end
+
+  test "Attempt to /logout", %{conn: conn} do
+    conn = conn |> non_admin_login() |> Auth.Session.start_session()
+
+    conn = get(conn, "/logout", %{})
+    assert html_response(conn, 302) =~ "Successfully logged out."
+  end
 end
