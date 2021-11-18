@@ -2,7 +2,7 @@ defmodule AuthWeb.AppController do
   use AuthWeb, :controller
   alias Auth.App
 
-  @auth_url "https://dwylauth.herokuapp.com"
+  @auth_url "dwylauth.herokuapp.com"
 
   def index(conn, _params) do
     render(conn, "index.html", apps: Auth.App.list_apps(conn))
