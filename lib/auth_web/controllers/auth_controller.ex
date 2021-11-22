@@ -533,6 +533,9 @@ defmodule AuthWeb.AuthController do
       "?jwt=" <> jwt
   end
 
+  @doc """
+  `logout/2` logs the person out of their session and destroys cookie.
+  """
   def logout(conn, params) do
     conn
     |> Auth.Session.end_session()

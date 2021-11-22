@@ -5,7 +5,7 @@
 A ***complete authentication solution*** for **Phoenix** Apps/APIs
 you can setup in ***5 minutes***.
 
-[![Build Status](https://img.shields.io/travis/dwyl/auth/master.svg?style=flat-square)](https://travis-ci.org/dwyl/auth)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/dwyl/auth/Elixir%20CI?label=build&style=flat-square)
 [![codecov.io](https://img.shields.io/codecov/c/github/dwyl/auth/master.svg?style=flat-square)](http://codecov.io/github/dwyl/auth?branch=master)
 [![Hex.pm](https://img.shields.io/hexpm/v/auth?color=brightgreen&style=flat-square)](https://hex.pm/packages/auth)
 [![Libraries.io dependency status](https://img.shields.io/librariesio/release/hex/auth?logoColor=brightgreen&style=flat-square)](https://libraries.io/hex/auth)

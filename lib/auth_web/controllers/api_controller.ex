@@ -49,10 +49,13 @@ defmodule AuthWeb.ApiController do
     end
   end
 
-  def logout(conn, _params) do
+  @doc """
+  `logout/2` logs the person out of their session.
+  """
+  def logout(conn, params) do
     conn
     |> Auth.Session.end_session()
-    |> AuthPlug.logout()
-    |> json(%{message: "Successfully logged out."})
+    |> AuthPlug.logout() # this might not be needed.
+    |> json(%{message: "session ended"})
   end
 end
