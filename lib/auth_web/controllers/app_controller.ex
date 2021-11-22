@@ -2,8 +2,6 @@ defmodule AuthWeb.AppController do
   use AuthWeb, :controller
   alias Auth.App
 
-  @auth_url "dwylauth.herokuapp.com"
-
   def index(conn, _params) do
     render(conn, "index.html", apps: Auth.App.list_apps(conn))
   end
@@ -35,7 +33,7 @@ defmodule AuthWeb.AppController do
     app = App.get_app!(id)
     #  restrict viewership to owner||admin https://github.com/dwyl/auth/issues/99
     if conn.assigns.person.id == app.person_id || conn.assigns.person.id == 1 do
-      render(conn, "show.html", app: app, auth_url: @auth_url)
+      render(conn, "show.html", app: app, auth_url: conn.host)
     else
       AuthWeb.AuthController.not_found(conn, "this page does not exist")
     end
@@ -107,7 +105,7 @@ defmodule AuthWeb.AppController do
       # get the app again and render it:
       conn
       |> put_flash(:info, "Your API Key has been successfully reset")
-      |> render("show.html", app: App.get_app!(id), auth_url: @auth_url)
+      |> render("show.html", app: App.get_app!(id), auth_url: conn.host)
     end
   end
 end
