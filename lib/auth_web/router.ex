@@ -33,7 +33,7 @@ defmodule AuthWeb.Router do
   end
 
   pipeline :auth do
-    plug(AuthPlug, %{auth_url: "https://dwylauth.herokuapp.com"})
+    plug(AuthPlug)
   end
 
   scope "/", AuthWeb do
@@ -78,8 +78,8 @@ defmodule AuthWeb.Router do
       live_dashboard "/dashboard", metrics: AuthWeb.Telemetry
     end
   end
-  # coveralls-ignore-stop
 
+  # coveralls-ignore-stop
 
   # Enables the Swoosh mailbox preview in development.
   #
