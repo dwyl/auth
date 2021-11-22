@@ -54,7 +54,7 @@ defmodule Auth.Mixfile do
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:phoenix_live_view, "~> 0.17.3"},
       {:floki, ">= 0.30.0", only: :test},
-      {:phoenix_live_dashboard, "~> 0.6.1"},
+      # {:phoenix_live_dashboard, "~> 0.6.1"},
       {:esbuild, "~> 0.3", runtime: Mix.env() == :dev},
       # {:swoosh, "~> 1.5.1"},
       {:telemetry_metrics, "~> 0.6"},
