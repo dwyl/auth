@@ -506,10 +506,10 @@ defmodule AuthWeb.AuthControllerTest do
     assert html_response(conn, 200) =~ "password is incorrect"
   end
 
-  test "Attempt to /logout", %{conn: conn} do
-    conn = conn |> non_admin_login() |> Auth.Session.start_session()
+  test "/logout of the auth app", %{conn: conn} do
+    conn1 = conn |> non_admin_login() |> Auth.Session.start_session()
 
-    conn = get(conn, "/logout", %{})
-    assert html_response(conn, 302) =~ "Successfully logged out."
+    conn2 = get(conn1, "/logout", %{})
+    assert html_response(conn2, 200) =~ "Successfully logged out."
   end
 end
