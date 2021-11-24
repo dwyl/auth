@@ -50,12 +50,20 @@ defmodule AuthWeb.ApiController do
   end
 
   @doc """
-  `logout/2` logs the person out of their session.
+  `end_session/2` logs the person out of their session.
   """
-  def logout(conn, params) do
-    conn
-    |> Auth.Session.end_session()
-    |> AuthPlug.logout() # this might not be needed.
-    |> json(%{message: "session ended"})
+  def end_session(conn, %{"person_id" => person_id, "client_id" => client_id}) do
+    # IO.inspect(conn, label: "end_session:56 conn")
+
+    case Auth.Apikey.decode_decrypt(client_id) do
+      {:error, _} ->
+        AuthWeb.AuthController.unauthorized(conn)
+
+      {:ok, app_id} ->
+        conn
+        |> Auth.Session.end_session()
+        # |> AuthPlug.logout() # this might not be needed.
+        |> json(%{message: "session ended"})
+    end
   end
 end

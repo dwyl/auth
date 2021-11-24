@@ -23,6 +23,6 @@ config :elixir_auth_google,
   httpoison_mock: true
 
 config :auth_plug,
-  api_key:
-    "2PzB7PPnpuLsbWmWtXpGyI+kfSQSQ1zUW2Atz/+8PdZuSEJzHgzGnJWV35nTKRwx/authdev.herokuapp.com",
+  api_key: System.get_env("AUTH_API_KEY"),
+    # "2PzB7PPnpuLsbWmWtXpGyI+kfSQSQ1zUW2Atz/+8PdZuSEJzHgzGnJWV35nTKRwx/authdev.herokuapp.com",
   httpoison_mock: true

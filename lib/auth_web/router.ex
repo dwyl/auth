@@ -68,8 +68,8 @@ defmodule AuthWeb.Router do
 
     get "/approles/:client_id", ApiController, :approles
     get "/personroles/:person_id/:client_id", ApiController, :personroles
-    get "/logout/:client_id", ApiController, :logout
-    # get "/end_session/:client_id/:personid/app_id", ApiController, :end_session
+    # get "/logout/:client_id", ApiController, :logout
+    get "/end_session/:client_id/:person_id", ApiController, :end_session
 
     
   end

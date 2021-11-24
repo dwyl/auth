@@ -149,16 +149,24 @@ defmodule AuthWeb.ApiControllerTest do
     end
   end
 
-  test "GET /logout (API)", %{conn: conn} do
+  test "GET /end_session (API)", %{conn: conn} do
     conn =
       conn
       |> admin_login()
       |> Auth.Session.start_session()
-      |> put_req_header("accept", "application/json")
-      |> get("/api/logout")
+  
+    client_id = AuthPlug.Token.client_id()
+    person_id = conn.assigns.person.id
+    end_session_endpoint = "/end_session/#{client_id}/#{person_id}/"
+    # IO.inspect(end_session_endpoint, label: "end_session_endpoint")
 
-    assert conn.status == 302
-    {:ok, json} = Jason.decode(conn.resp_body)
-    assert json == %{"message" => "Successfully logged out."}
+    conn_ended = conn
+      |> put_req_header("accept", "application/json")
+      |> get(end_session_endpoint)
+
+    # IO.inspect(conn_ended, label: "test:168 conn")
+
+    {:ok, json} = Jason.decode(conn_ended.resp_body)
+    assert json == %{"message" => "session ended"}
   end
 end

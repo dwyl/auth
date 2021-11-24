@@ -74,6 +74,7 @@ defmodule Auth.Seeds do
       |> Repo.update()
 
     api_key = key.client_id <> "/" <> key.client_secret <> "/" <> get_auth_url()
+
     # set the AUTH_API_KEY environment variable during test run:
     IO.inspect(Mix.env(), label: "Mix.env()")
     # IO.inspect(person)
