@@ -158,15 +158,38 @@ defmodule AuthWeb.ApiControllerTest do
     client_id = AuthPlug.Token.client_id()
     person_id = conn.assigns.person.id
     end_session_endpoint = "/end_session/#{client_id}/#{person_id}/"
-    # IO.inspect(end_session_endpoint, label: "end_session_endpoint")
 
     conn_ended = conn
       |> put_req_header("accept", "application/json")
       |> get(end_session_endpoint)
 
-    # IO.inspect(conn_ended, label: "test:168 conn")
-
     {:ok, json} = Jason.decode(conn_ended.resp_body)
     assert json == %{"message" => "session ended"}
+
+    # confirm the session was ended:
+    session = Auth.Session.get_by_id(conn)
+    assert session.end == session.updated_at
+  end
+
+  test "attempt to GET /end_session (API) with invalid client_id", %{conn: conn} do
+    conn =
+      conn
+      |> admin_login()
+      |> Auth.Session.start_session()
+  
+    # attempt the request with an invalid client_id:
+    client_id = "invalid.client_id"
+    person_id = conn.assigns.person.id
+    end_session_endpoint = "/end_session/#{client_id}/#{person_id}/"
+
+    conn_failed = conn
+      |> put_req_header("accept", "application/json")
+      |> get(end_session_endpoint)
+
+    # expect 401 + error msg:
+    assert conn_failed.status == 401
+    {:ok, json} = Jason.decode(conn_failed.resp_body)
+    assert Map.get(json, "msg") == "invalid AUTH_API_KEY/client_id please check"
+
   end
 end

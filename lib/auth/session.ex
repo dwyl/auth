@@ -78,6 +78,16 @@ defmodule Auth.Session do
   end
 
   @doc """
+  `get_by_id/1` retrieves a session by id.
+  """
+  def get_by_id(conn) do
+    Repo.one(
+      from s in __MODULE__,
+      where: s.id == ^conn.assigns.sid
+    )
+  end
+
+  @doc """
   `update_session_end/1` update session to end it.
   """
   def update_session_end(conn) do
