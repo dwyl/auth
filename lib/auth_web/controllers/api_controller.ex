@@ -63,7 +63,7 @@ defmodule AuthWeb.ApiController do
       {:ok, app_id} ->
         conn
         # a REST API request might not have the conn.assigns.person so set it here:
-        |> assign(:person, conn.assigns.person || %{id: person_id, app_id: app_id})
+        |> assign(:person, Map.get(conn.assigns, :person, %{id: person_id, app_id: app_id}))
         |> Auth.Session.end_session()
         |> json(%{message: "session ended"})
     end
