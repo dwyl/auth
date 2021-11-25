@@ -538,7 +538,7 @@ defmodule AuthWeb.AuthController do
   """
   def logout(conn, params) do
     conn
-    |> Auth.Session.end_session()
+    # |> Auth.Session.end_session()
     |> AuthPlug.logout()
     |> put_flash(:info, "Successfully logged out.")
     |> index(params)
