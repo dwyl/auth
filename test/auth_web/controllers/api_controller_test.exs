@@ -151,7 +151,6 @@ defmodule AuthWeb.ApiControllerTest do
 
   test "GET /end_session (API)", %{conn: conn} do
     conn = conn |> admin_login()
-    conn = conn |> Auth.Session.start_session(conn.assigns.person)
   
     client_id = AuthPlug.Token.client_id()
     session_id = conn.assigns.sid
@@ -171,7 +170,6 @@ defmodule AuthWeb.ApiControllerTest do
 
   test "attempt to GET /end_session (API) with invalid client_id", %{conn: conn} do
     conn = conn |> admin_login()
-    conn = conn |> Auth.Session.start_session(conn.assigns.person)
   
     # attempt the request with an invalid client_id:
     client_id = "invalid.client_id"

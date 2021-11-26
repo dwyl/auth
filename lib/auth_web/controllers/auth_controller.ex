@@ -230,7 +230,7 @@ defmodule AuthWeb.AuthController do
   render the `unauthorized/1` 401.
   """
   def redirect_or_render(conn, person, state) do
-
+    # create the session in the sessions table:
     conn = Auth.Session.start_session(conn, person)
     # check if valid state (HTTP referer) is defined:
     if is_nil(state) or state == "" do

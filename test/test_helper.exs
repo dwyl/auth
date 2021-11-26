@@ -16,12 +16,14 @@ defmodule AuthTest do
   """
   def admin_login(conn) do
     person = Auth.Person.get_person_by_email(@admin_email)
+    conn = Auth.Session.start_session(conn, %{ person | app_id: 1})
 
     data = %{
       id: person.id,
       email: person.email,
       auth_provider: person.auth_provider,
-      app_id: 1
+      app_id: 1,
+      sid: conn.assigns.sid
     }
 
     # IO.inspect(person, label: "person")
@@ -30,8 +32,7 @@ defmodule AuthTest do
 
   def non_admin_person() do
     rand = :rand.uniform(1_000_000)
-
-    Auth.Person.upsert_person(%{
+    person = %{
       email: "alex+#{rand}@gmail.com",
       givenName: "Alexander McAwesome",
       auth_provider: "email",
@@ -39,12 +40,15 @@ defmodule AuthTest do
       github_id: "19",
       picture: "https://avatars3.githubusercontent.com/u/10835816",
       status: 1,
-      app_id: 1
-    })
+      app_id: 1,
+    }
+
+    Auth.Person.upsert_person(person)
   end
 
   def non_admin_login(conn) do
     person = non_admin_person()
+    conn = Auth.Session.start_session(conn, person)
 
     data = %{
       id: person.id,
@@ -53,7 +57,8 @@ defmodule AuthTest do
       givenName: person.givenName,
       picture: person.picture,
       status: 1,
-      app_id: 1
+      app_id: 1,
+      sid: conn.assigns.sid
     }
 
     AuthPlug.create_jwt_session(conn, data)

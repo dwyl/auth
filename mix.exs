@@ -66,17 +66,22 @@ defmodule Auth.Mixfile do
       # Auth:
       # https://github.com/dwyl/elixir-auth-github
       {:elixir_auth_github, "~> 1.6.0"},
+
       # https://github.com/dwyl/elixir-auth-google
       {:elixir_auth_google, "~> 1.6.1"},
+
       # https://github.com/dwyl/auth_plug
-      {:auth_plug, "~> 1.4.5"},
+      {:auth_plug, "~> 1.4.6"},
+
       # https://github.com/dwyl/rbac
       {:rbac, "~> 0.5.3"},
 
       # Field Validation and Encryption: github.com/dwyl/fields
       {:fields, "~> 2.8.2"},
+
       # Base58 Encodeing: https://github.com/dwyl/base58
       {:b58, "~>1.0.2"},
+      
       # Useful functions: https://github.com/dwyl/useful
       {:useful, "~> 0.4.0"},
 
