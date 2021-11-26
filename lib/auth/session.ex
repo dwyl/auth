@@ -91,16 +91,7 @@ defmodule Auth.Session do
   `update_session_end/1` update session to end it.
   """
   def update_session_end(conn) do
-
-    session = case Map.has_key?(conn.assigns, :sid) do
-      true ->
-        get_by_id(conn)
-      
-      false ->
-        get(conn)
-    end
-    
-    session
+    get_by_id(conn)
     |> changeset(%{end: DateTime.utc_now()})
     |> Repo.update!()
   end
