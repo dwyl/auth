@@ -52,18 +52,18 @@ defmodule AuthWeb.ApiController do
   @doc """
   `end_session/2` logs the person out of their session.
   """
-  def end_session(conn, %{"person_id" => person_id, "client_id" => client_id}) do
-    IO.inspect(conn, label: "end_session:56 conn")
+  def end_session(conn, %{"client_id" => client_id, "session_id" => session_id}) do
+    # IO.inspect(conn, label: "end_session:56 conn")
 
     case Auth.Apikey.decode_decrypt(client_id) do
       {:error, _} ->
         IO.inspect(:error)
         AuthWeb.AuthController.unauthorized(conn)
 
-      {:ok, app_id} ->
+      {:ok, _app_id} ->
         conn
         # a REST API request might not have the conn.assigns.person so set it here:
-        |> assign(:person, Map.get(conn.assigns, :person, %{id: person_id, app_id: app_id}))
+        |> assign(:sid, session_id)
         |> Auth.Session.end_session()
         |> json(%{message: "session ended"})
     end

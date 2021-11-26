@@ -230,13 +230,14 @@ defmodule AuthWeb.AuthController do
   render the `unauthorized/1` 401.
   """
   def redirect_or_render(conn, person, state) do
+
+    conn = Auth.Session.start_session(conn, person)
     # check if valid state (HTTP referer) is defined:
     if is_nil(state) or state == "" do
       # No State > Display Welcome page on Auth site:
       conn
-      |> AuthPlug.create_jwt_session(session_data(person))
+      |> AuthPlug.create_jwt_session(session_data(person, conn.assigns.sid))
       |> Auth.Log.info(%{status_id: 200, app_id: 1})
-      |> Auth.Session.start_session()
       |> render(:welcome, person: person, apps: App.list_apps(person.id))
     else
       # State > Redirect to requesting app:
@@ -246,10 +247,9 @@ defmodule AuthWeb.AuthController do
 
         secret ->
           conn
-          |> AuthPlug.create_jwt_session(session_data(person))
+          |> AuthPlug.create_jwt_session(session_data(person, conn.assigns.sid))
           |> Auth.Log.info(%{status_id: 200, app_id: get_app_id(state)})
-          |> Auth.Session.start_session()
-          |> redirect(external: add_jwt_url_param(person, state, secret))
+          |> redirect(external: add_jwt_url_param(person, conn.assigns.sid, state, secret))
       end
     end
   end
@@ -506,7 +506,7 @@ defmodule AuthWeb.AuthController do
     end
   end
 
-  def session_data(person) do
+  def session_data(person, sid) do
     roles =
       if Map.has_key?(person, :roles) do
         RBAC.transform_role_list_to_string(person.roles)
@@ -522,12 +522,13 @@ defmodule AuthWeb.AuthController do
       status: person.status,
       email: person.email,
       roles: roles,
-      app_id: person.app_id
+      app_id: person.app_id,
+      sid: sid
     }
   end
 
-  def add_jwt_url_param(person, state, client_secret) do
-    jwt = AuthPlug.Token.generate_jwt!(session_data(person), client_secret)
+  def add_jwt_url_param(person, sid, state, client_secret) do
+    jwt = AuthPlug.Token.generate_jwt!(session_data(person, sid), client_secret)
 
     List.first(String.split(URI.decode(state), "?")) <>
       "?jwt=" <> jwt

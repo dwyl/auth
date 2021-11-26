@@ -3,7 +3,7 @@ defmodule Auth.SessionTest do
 
   test "Auth.Session.insert/1 inserts a session record", %{conn: conn} do
     conn = non_admin_login(conn)
-    session = Auth.Session.insert(conn)
+    session = Auth.Session.insert(conn, conn.assigns.person)
 
     assert session.app_id == conn.assigns.person.app_id
     assert session.person_id == conn.assigns.person.id
@@ -12,19 +12,21 @@ defmodule Auth.SessionTest do
   end
 
   test "Auth.Session.start_session/1 inserts a session record", %{conn: conn} do
-    conn = 
+    conn_with_person = 
       conn 
       |> non_admin_login()
-      |> Auth.Session.start_session()
 
-    session = Auth.Session.get(conn)
+    conn_with_session = conn_with_person  
+      |> Auth.Session.start_session(conn_with_person.assigns.person)
 
-    assert session.id == conn.assigns.sid
+    session = Auth.Session.get(conn_with_session)
+
+    assert session.id == conn_with_session.assigns.sid
   end
 
   test "Auth.Session.get/1 retrieves a session record", %{conn: conn} do
     conn = non_admin_login(conn)
-    session = Auth.Session.insert(conn)
+    session = Auth.Session.insert(conn, conn.assigns.person)
 
     # Retrieve the session from DB:
     ses = Auth.Session.get(conn)
@@ -36,7 +38,7 @@ defmodule Auth.SessionTest do
 
   test "Auth.Session.update_session_end/1 updates the session record", %{conn: conn} do
     conn = non_admin_login(conn)
-    session = Auth.Session.insert(conn)
+    session = Auth.Session.insert(conn, conn.assigns.person)
     
     # Initially the session.end is nil (i.e. not yet ended)
     assert session.end == nil
@@ -49,7 +51,9 @@ defmodule Auth.SessionTest do
   end
 
   test "Auth.Session.end_session/1 terminates the session", %{conn: conn} do
-    conn = conn |> non_admin_login() |> Auth.Session.start_session()
+
+    conn = conn |> non_admin_login()
+    conn = conn |> Auth.Session.start_session(conn.assigns.person)
 
     session = Auth.Session.get(conn)
     # The Session is set on conn.assigns

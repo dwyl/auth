@@ -36,13 +36,13 @@ defmodule Auth.Session do
   for the same person/app. 
   So you can be logged in to an app from multiple devices.
   """
-  def insert(conn) do
+  def insert(conn, person) do
     %Auth.Session{}
     |> changeset(%{
-      app_id: conn.assigns.person.app_id,
-      person_id: conn.assigns.person.id,
+      app_id: person.app_id,
+      person_id: person.id,
       user_agent_id: Auth.UserAgent.get_user_agent_id(conn),
-      auth_provider: conn.assigns.person.auth_provider
+      auth_provider: person.auth_provider
     })
     |> Repo.insert!()
   end
@@ -51,8 +51,8 @@ defmodule Auth.Session do
   `start_session/1` starts the session and returns conn with conn.assigns.sid.
   invokes `insert/1` above but returns conn instead of the session record.
   """
-  def start_session(conn) do
-    session = insert(conn)
+  def start_session(conn, person) do
+    session = insert(conn, person)
     assign(conn, :sid, session.id)
   end
 

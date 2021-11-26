@@ -150,14 +150,12 @@ defmodule AuthWeb.ApiControllerTest do
   end
 
   test "GET /end_session (API)", %{conn: conn} do
-    conn =
-      conn
-      |> admin_login()
-      |> Auth.Session.start_session()
+    conn = conn |> admin_login()
+    conn = conn |> Auth.Session.start_session(conn.assigns.person)
   
     client_id = AuthPlug.Token.client_id()
-    person_id = conn.assigns.person.id
-    end_session_endpoint = "/end_session/#{client_id}/#{person_id}/"
+    session_id = conn.assigns.sid
+    end_session_endpoint = "/end_session/#{client_id}/#{session_id}"
 
     conn_ended = conn
       |> put_req_header("accept", "application/json")
@@ -172,15 +170,13 @@ defmodule AuthWeb.ApiControllerTest do
   end
 
   test "attempt to GET /end_session (API) with invalid client_id", %{conn: conn} do
-    conn =
-      conn
-      |> admin_login()
-      |> Auth.Session.start_session()
+    conn = conn |> admin_login()
+    conn = conn |> Auth.Session.start_session(conn.assigns.person)
   
     # attempt the request with an invalid client_id:
     client_id = "invalid.client_id"
-    person_id = conn.assigns.person.id
-    end_session_endpoint = "/end_session/#{client_id}/#{person_id}/"
+    session_id = conn.assigns.sid
+    end_session_endpoint = "/end_session/#{client_id}/#{session_id}"
 
     conn_failed = conn
       |> put_req_header("accept", "application/json")
