@@ -507,10 +507,7 @@ defmodule AuthWeb.AuthControllerTest do
   end
 
   test "/logout of the auth app", %{conn: conn} do
-    conn = conn |> admin_login()
-    conn1 = conn |> Auth.Session.start_session(conn.assigns.person)
-
-    conn2 = get(conn1, "/logout", %{})
+    conn2 = conn |> admin_login() |> get("/logout", %{})
     assert html_response(conn2, 200) =~ "Successfully logged out."
   end
 end
