@@ -69,7 +69,7 @@ defmodule Auth.Mixfile do
       # https://github.com/dwyl/elixir-auth-google
       {:elixir_auth_google, "~> 1.6.1"},
       # https://github.com/dwyl/auth_plug
-      {:auth_plug, "~> 1.4.0"},
+      {:auth_plug, "~> 1.4.6"},
       # https://github.com/dwyl/rbac
       {:rbac, "~> 0.5.3"},
 
