@@ -1,5 +1,5 @@
 defmodule Auth.ApikeyTest do
-  use Auth.DataCase
+  use Auth.DataCase, async: true
   use ExUnitProperties
 
   describe "Create an AUTH_API_KEY for a given person_id" do

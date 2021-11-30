@@ -57,7 +57,7 @@ defmodule Auth.Log do
         auth_provider: get_auth_provider(conn, params),
         person_id: get_person_id(conn, params),
         request_path: conn.request_path,
-        user_agent_id: get_user_agent_id(conn),
+        user_agent_id: Auth.UserAgent.get_user_agent_id(conn),
         email: get_email(conn, params)
       })
     )
@@ -74,17 +74,6 @@ defmodule Auth.Log do
   def error(conn, params) do
     Logger.error(stringify_conn_params(conn, params))
     insert(conn, params)
-  end
-
-  defp get_user_agent_id(conn) do
-    if Map.has_key?(conn.assigns, :ua) do
-      # user_agent string is available
-      List.first(String.split(conn.assigns.ua, "|"))
-    else
-      # no user_agent string in conn
-      ua = Auth.UserAgent.upsert(conn)
-      ua.id
-    end
   end
 
   defp get_email(conn, params) do

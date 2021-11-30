@@ -1,5 +1,5 @@
 defmodule Auth.UserAgentTest do
-  use Auth.DataCase
+  use Auth.DataCase, async: true
   alias Auth.UserAgent
 
   test "Auth.UserAgent.upsert/1 inserts or gets a user_agent record" do

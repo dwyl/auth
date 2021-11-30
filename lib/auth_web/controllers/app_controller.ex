@@ -12,7 +12,6 @@ defmodule AuthWeb.AppController do
   end
 
   def create(conn, %{"app" => app_params}) do
-    # IO.inspect(app_params, label: "app_params:16")
     attrs =
       Map.merge(app_params, %{
         "person_id" => conn.assigns.person.id,
@@ -21,7 +20,6 @@ defmodule AuthWeb.AppController do
 
     case App.create_app(attrs) do
       {:ok, app} ->
-        # IO.inspect(app, label: "app:23")
         conn
         |> put_flash(:info, "App created successfully.")
         |> redirect(to: Routes.app_path(conn, :show, app))
@@ -35,7 +33,7 @@ defmodule AuthWeb.AppController do
     app = App.get_app!(id)
     #  restrict viewership to owner||admin https://github.com/dwyl/auth/issues/99
     if conn.assigns.person.id == app.person_id || conn.assigns.person.id == 1 do
-      render(conn, "show.html", app: app)
+      render(conn, "show.html", app: app, auth_url: conn.host)
     else
       AuthWeb.AuthController.not_found(conn, "this page does not exist")
     end
@@ -107,7 +105,7 @@ defmodule AuthWeb.AppController do
       # get the app again and render it:
       conn
       |> put_flash(:info, "Your API Key has been successfully reset")
-      |> render("show.html", app: App.get_app!(id))
+      |> render("show.html", app: App.get_app!(id), auth_url: conn.host)
     end
   end
 end

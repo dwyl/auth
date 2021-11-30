@@ -1,5 +1,5 @@
 defmodule Auth.PersonTest do
-  use Auth.DataCase
+  use Auth.DataCase, async: true
   alias Auth.{Person}
 
   test "create_person/1" do

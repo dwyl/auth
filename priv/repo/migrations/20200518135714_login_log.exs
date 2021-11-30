@@ -6,7 +6,7 @@ defmodule Auth.Repo.Migrations.LoginLog do
       add :name, :string
     end
 
-    create table(:login_logs) do
+    create table(:login_logs) do # later re-named to just "logs"
       add :email, :binary
       add :ip_address, :binary
       add :person_id, references(:people, on_delete: :nothing)

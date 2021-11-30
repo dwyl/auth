@@ -5,17 +5,16 @@
 A ***complete authentication solution*** for **Phoenix** Apps/APIs
 you can setup in ***5 minutes***.
 
-[![Build Status](https://img.shields.io/travis/dwyl/auth/master.svg?style=flat-square)](https://travis-ci.org/dwyl/auth)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/dwyl/auth/Elixir%20CI?label=build&style=flat-square)
 [![codecov.io](https://img.shields.io/codecov/c/github/dwyl/auth/master.svg?style=flat-square)](http://codecov.io/github/dwyl/auth?branch=master)
 [![Hex.pm](https://img.shields.io/hexpm/v/auth?color=brightgreen&style=flat-square)](https://hex.pm/packages/auth)
 [![Libraries.io dependency status](https://img.shields.io/librariesio/release/hex/auth?logoColor=brightgreen&style=flat-square)](https://libraries.io/hex/auth)
 [![docs](https://img.shields.io/badge/docs-maintained-brightgreen?style=flat-square)](https://hexdocs.pm/auth/api-reference.html)
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat-square)](https://github.com/dwyl/auth/issues)
-[![HitCount](http://hits.dwyl.io/dwyl/auth.svg)](http://hits.dwyl.io/dwyl/auth)
+[![HitCount](http://hits.dwyl.com/dwyl/auth.svg)](http://hits.dwyl.com/dwyl/auth)
 <!-- uncomment when service is working ...
 [![Inline docs](http://inch-ci.org/github/dwyl/auth.svg?branch=master&style=flat-square)](http://inch-ci.org/github/dwyl/auth)
 -->
-![wake-sleeping-heroku-app](https://dwylauth.herokuapp.com/ping)
 
 </div>
 
@@ -102,6 +101,12 @@ have an **introductory tutorial**:
 
 
 ## 5 Minute 5 Step Setup
+
+> **Note** the App will **_not_ compile/work** 
+until you have the **required environment variables**.
+You will see an error similar to: 
+[**issues/157**](https://github.com/dwyl/auth/issues/157).
+See the 3<sup>rd</sup> step below.
 
 
 ### 1. Clone the project:
@@ -278,3 +283,5 @@ we recommend checkout out these great resources
 
 +   Auth Boss: <https://github.com/teesloane/Auth-Boss>
 +   Introduction to OAuth2: <https://www.digitalocean.com/community/tutorials/an-introduction-to-oauth-2>
+
+![wake-sleeping-heroku-app](https://dwylauth.herokuapp.com/ping)

@@ -15,7 +15,7 @@
       <div style="font-size: 1.2em;
       overflow-wrap: break-word; font-family: monospace;
       border: 1px solid black; padding: 10px; background-color: #EBEDEF;">
-      <%= apikey.client_id %>/<%= apikey.client_secret %>
+      <%= apikey.client_id %>/<%= apikey.client_secret %>/<%= @auth_url %>
       </div>
     </p>
 
@@ -23,7 +23,7 @@
       <div style="font-size: 1.2em;
       overflow-wrap: break-word; font-family: monospace;
       border: 1px solid black; padding: 10px; background-color: #EBEDEF;">
-      export AUTH_API_KEY=<%= apikey.client_id %>/<%= apikey.client_secret %>
+      export AUTH_API_KEY=<%= apikey.client_id %>/<%= apikey.client_secret %>/<%= @auth_url %>
       </div>
     </p>
     <% end %>
