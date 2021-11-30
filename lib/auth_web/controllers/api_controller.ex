@@ -59,7 +59,7 @@ defmodule AuthWeb.ApiController do
         Auth.Log.error(conn, %{client_id: client_id})
         AuthWeb.AuthController.unauthorized(conn)
 
-      # pfovided the client_id successfully decrypted, we can end the session:
+      # provided the client_id successfully decrypted, we can end the session:
       {:ok, _app_id} ->
         conn
         # a REST API request will not have the conn.assigns.sid so set it here:
