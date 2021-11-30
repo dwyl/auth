@@ -28,6 +28,13 @@
        <a href="/roles" class="white link">Roles</a>
      </li>
      <% end %>
+
+     <%= if Map.has_key?(@conn.assigns, :person) do %>
+     <li class="pl5 pl6-m di-l tl pb2-m fr pr3">
+       <a href="/logout" class="white link">Logout</a>
+     </li>
+     <% end %>
+
      <!-- 
      <li class="pl6-m tl dn-l pb3">
        <a href="https://youtu.be/dQw4w9WgXcQ"

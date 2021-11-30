@@ -99,13 +99,13 @@ defmodule AuthWeb.AuthController do
   end
 
   # render the login page with appropriate redirections
-  def render_login_buttons(conn, params) do
+  def render_login_buttons(conn, _params) do
     referer = get_referer(conn)
     oauth_github_url = ElixirAuthGithub.login_url(%{scopes: ["user:email"], state: referer})
     oauth_google_url = ElixirAuthGoogle.generate_oauth_url(conn, referer)
 
     conn
-    |> Auth.Log.info(Map.merge(params, %{msg: "render_login_buttons:92 state: #{referer}"}))
+    # |> Auth.Log.info(Map.merge(params, %{msg: "render_login_buttons:95 state: #{state}"}))
     |> assign(:action, Routes.auth_path(conn, :login_register_handler))
     |> render("index.html",
       oauth_github_url: oauth_github_url,
@@ -202,7 +202,7 @@ defmodule AuthWeb.AuthController do
     {:ok, profile} = ElixirAuthGoogle.get_user_profile(token.access_token)
     # save profile to people:
     app_id = get_app_id(state)
-    person = Person.create_google_person(Map.merge(profile, %{app_id: app_id}))
+    person = Person.create_google_person(Map.merge(profile, %{app_id: app_id})) 
 
     # render or redirect:
     handler(conn, person, state)
@@ -230,11 +230,13 @@ defmodule AuthWeb.AuthController do
   render the `unauthorized/1` 401.
   """
   def redirect_or_render(conn, person, state) do
+    # create the session in the sessions table:
+    conn = Auth.Session.start_session(conn, person)
     # check if valid state (HTTP referer) is defined:
     if is_nil(state) or state == "" do
       # No State > Display Welcome page on Auth site:
       conn
-      |> AuthPlug.create_jwt_session(session_data(person))
+      |> AuthPlug.create_jwt_session(session_data(person, conn.assigns.sid))
       |> Auth.Log.info(%{status_id: 200, app_id: 1})
       |> render(:welcome, person: person, apps: App.list_apps(person.id))
     else
@@ -245,9 +247,9 @@ defmodule AuthWeb.AuthController do
 
         secret ->
           conn
-          |> AuthPlug.create_jwt_session(session_data(person))
+          |> AuthPlug.create_jwt_session(session_data(person, conn.assigns.sid))
           |> Auth.Log.info(%{status_id: 200, app_id: get_app_id(state)})
-          |> redirect(external: add_jwt_url_param(person, state, secret))
+          |> redirect(external: add_jwt_url_param(person, conn.assigns.sid, state, secret))
       end
     end
   end
@@ -504,7 +506,7 @@ defmodule AuthWeb.AuthController do
     end
   end
 
-  def session_data(person) do
+  def session_data(person, sid) do
     roles =
       if Map.has_key?(person, :roles) do
         RBAC.transform_role_list_to_string(person.roles)
@@ -520,14 +522,26 @@ defmodule AuthWeb.AuthController do
       status: person.status,
       email: person.email,
       roles: roles,
-      app_id: person.app_id
+      app_id: person.app_id,
+      sid: sid
     }
   end
 
-  def add_jwt_url_param(person, state, client_secret) do
-    jwt = AuthPlug.Token.generate_jwt!(session_data(person), client_secret)
+  def add_jwt_url_param(person, sid, state, client_secret) do
+    jwt = AuthPlug.Token.generate_jwt!(session_data(person, sid), client_secret)
 
     List.first(String.split(URI.decode(state), "?")) <>
       "?jwt=" <> jwt
+  end
+
+  @doc """
+  `logout/2` logs the person out of their session and destroys cookie.
+  """
+  def logout(conn, params) do
+    conn
+    # |> Auth.Session.end_session()
+    |> AuthPlug.logout()
+    |> put_flash(:info, "Successfully logged out.")
+    |> index(params)
   end
 end

@@ -7,8 +7,6 @@ defmodule Auth.UserAgent do
   import Ecto.Query, warn: false
   import Plug.Conn
   alias Auth.Repo
-  # https://stackoverflow.com/a/47501059/1148249
-  # alias __MODULE__
 
   schema "user_agents" do
     field :name, :string
@@ -53,6 +51,22 @@ defmodule Auth.UserAgent do
     assign(conn, :ua, make_ua_string(ua))
   end
 
+  @doc """
+  `get_user_agent_id/1` gets the User Agent from the `conn.assigns.ua`
+  or creates a new `UserAgent` record and returns its' `id`. 
+  """
+  def get_user_agent_id(conn) do
+    if Map.has_key?(conn.assigns, :ua) do
+      # user_agent string is available
+      List.first(String.split(conn.assigns.ua, "|"))
+    else
+      # no user_agent string in conn
+      ua = Auth.UserAgent.upsert(conn)
+      ua.id
+    end
+  end
+
+  # Extract the User Agent string from request headers
   defp get_user_agent_string(conn) do
     user_agent_header =
       Enum.filter(conn.req_headers, fn {k, _} ->
@@ -65,6 +79,7 @@ defmodule Auth.UserAgent do
     end
   end
 
+  # Extract the IP Address from Plug.Conn
   defp get_ip_address(conn) do
     Enum.join(Tuple.to_list(conn.remote_ip), ".")
   end

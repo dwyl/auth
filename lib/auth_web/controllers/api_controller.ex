@@ -48,4 +48,24 @@ defmodule AuthWeb.ApiController do
         json(conn, roles)
     end
   end
+
+  @doc """
+  `end_session/2` logs the person out of their session.
+  """
+  def end_session(conn, %{"client_id" => client_id, "session_id" => session_id}) do
+
+    case Auth.Apikey.decode_decrypt(client_id) do
+      {:error, _} ->
+        Auth.Log.error(conn, %{client_id: client_id})
+        AuthWeb.AuthController.unauthorized(conn)
+
+      # provided the client_id successfully decrypted, we can end the session:
+      {:ok, _app_id} ->
+        conn
+        # a REST API request will not have the conn.assigns.sid so set it here:
+        |> assign(:sid, session_id)
+        |> Auth.Session.end_session()
+        |> json(%{message: "session ended"})
+    end
+  end
 end

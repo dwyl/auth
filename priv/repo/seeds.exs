@@ -13,8 +13,7 @@ defmodule Auth.Seeds do
   import Ecto.Changeset
 
   def create_admin do
-    if is_nil(System.get_env("TRAVIS")) && is_nil(System.get_env("HEROKU")) &&
-         is_nil(System.get_env("GITHUB_TOKEN")) do
+    if is_nil(System.get_env("HEROKU")) && is_nil(System.get_env("GITHUB_TOKEN")) do
       load_env()
     end
 
@@ -42,6 +41,16 @@ defmodule Auth.Seeds do
     person
   end
 
+  # this is used exclusivvely in seeds
+  defp get_auth_url do
+    # see .env_sample for example
+    api_key = System.get_env("AUTH_API_KEY")
+
+    parts = String.split(api_key, "/");
+    # should return "dwylauth.herokuapp.com"
+    List.last(parts)
+  end
+
   def create_apikey_for_admin(person) do
     {:ok, app} =
       %{
@@ -64,7 +73,8 @@ defmodule Auth.Seeds do
       |> cast(update_attrs, [:client_id, :client_secret])
       |> Repo.update()
 
-    api_key = key.client_id <> "/" <> key.client_secret
+    api_key = key.client_id <> "/" <> key.client_secret <> "/" <> get_auth_url()
+
     # set the AUTH_API_KEY environment variable during test run:
     IO.inspect(Mix.env(), label: "Mix.env()")
     # IO.inspect(person)

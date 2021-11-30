@@ -1,5 +1,5 @@
 defmodule AuthWeb.AuthControllerTest do
-  use AuthWeb.ConnCase
+  use AuthWeb.ConnCase, async: true
   # @email System.get_env("ADMIN_EMAIL")
 
   @app_data %{
@@ -404,7 +404,7 @@ defmodule AuthWeb.AuthControllerTest do
   end
 
   test "password_create/2 create a new password", %{conn: conn} do
-    %{email: "anabela@mail.com", auth_provider: "email", givenName: "timmy"}
+    %{email: "anabela@mail.com", auth_provider: "email", givenName: "timmy", app_id: 1}
     |> Auth.Person.upsert_person()
 
     params = %{
@@ -432,7 +432,7 @@ defmodule AuthWeb.AuthControllerTest do
 
   test "verify_email/2 verify an email address", %{conn: conn} do
     person =
-      %{email: "anabela@mail.com", auth_provider: "email"}
+      %{email: "anabela@mail.com", auth_provider: "email", app_id: 1}
       |> Auth.Person.upsert_person()
 
     state =
@@ -458,7 +458,8 @@ defmodule AuthWeb.AuthControllerTest do
       email: "ana@mail.com",
       auth_provider: "email",
       status: 1,
-      password: "thiswillbehashed"
+      password: "thiswillbehashed",
+      app_id: 1
     }
 
     Auth.Person.upsert_person(data)
@@ -503,5 +504,10 @@ defmodule AuthWeb.AuthControllerTest do
 
     conn = post(conn, "/auth/password/verify", params)
     assert html_response(conn, 200) =~ "password is incorrect"
+  end
+
+  test "/logout of the auth app", %{conn: conn} do
+    conn2 = conn |> admin_login() |> get("/logout", %{})
+    assert html_response(conn2, 200) =~ "Successfully logged out."
   end
 end

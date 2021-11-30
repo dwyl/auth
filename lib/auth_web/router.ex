@@ -54,6 +54,8 @@ defmodule AuthWeb.Router do
     get "/apps/:id/resetapikey", AppController, :resetapikey
     resources "/apps", AppController
     # resources "/settings/apikeys", ApikeyController
+
+    get "/logout", AuthController, :logout
   end
 
   pipeline :api do
@@ -66,30 +68,33 @@ defmodule AuthWeb.Router do
 
     get "/approles/:client_id", ApiController, :approles
     get "/personroles/:person_id/:client_id", ApiController, :personroles
+    # get "/logout/:client_id", ApiController, :logout
+    get "/end_session/:client_id/:session_id", ApiController, :end_session
+
+    
   end
 
   # Added in Phoenix 1.6 ... Nice-to-have. Not tested.
   # coveralls-ignore-start
-  if Mix.env() in [:dev, :test] do
-    import Phoenix.LiveDashboard.Router
+  # if Mix.env() in [:dev, :test] do
+  #   import Phoenix.LiveDashboard.Router
 
-    scope "/" do
-      pipe_through :browser
-      live_dashboard "/dashboard", metrics: AuthWeb.Telemetry
-    end
-  end
-
+  #   scope "/" do
+  #     pipe_through :browser
+  #     live_dashboard "/dashboard", metrics: AuthWeb.Telemetry
+  #   end
+  # end
   # coveralls-ignore-stop
 
   # Enables the Swoosh mailbox preview in development.
   #
   # Note that preview only shows emails that were sent by the same
   # node running the Phoenix server.
-  if Mix.env() == :dev do
-    scope "/dev" do
-      pipe_through :browser
+  # if Mix.env() == :dev do
+  #   scope "/dev" do
+  #     pipe_through :browser
 
-      forward "/mailbox", Plug.Swoosh.MailboxPreview
-    end
-  end
+  #     forward "/mailbox", Plug.Swoosh.MailboxPreview
+  #   end
+  # end
 end

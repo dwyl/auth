@@ -50,13 +50,13 @@ defmodule Auth.Mixfile do
       {:phoenix_ecto, "~> 4.4"},
       {:ecto_sql, "~> 3.7.0"},
       {:postgrex, ">= 0.0.0"},
-      {:phoenix_html, "~> 3.0"},
+      {:phoenix_html, "~> 3.1.0"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
-      {:phoenix_live_view, "~> 0.16.4"},
+      {:phoenix_live_view, "~> 0.17.3"},
       {:floki, ">= 0.30.0", only: :test},
-      {:phoenix_live_dashboard, "~> 0.5"},
+      # {:phoenix_live_dashboard, "~> 0.6.1"},
       {:esbuild, "~> 0.3", runtime: Mix.env() == :dev},
-      {:swoosh, "~> 1.3"},
+      # {:swoosh, "~> 1.5.1"},
       {:telemetry_metrics, "~> 0.6"},
       {:telemetry_poller, "~> 1.0"},
       {:gettext, "~> 0.18.2"},
@@ -66,17 +66,22 @@ defmodule Auth.Mixfile do
       # Auth:
       # https://github.com/dwyl/elixir-auth-github
       {:elixir_auth_github, "~> 1.6.0"},
+
       # https://github.com/dwyl/elixir-auth-google
       {:elixir_auth_google, "~> 1.6.1"},
+
       # https://github.com/dwyl/auth_plug
       {:auth_plug, "~> 1.4.6"},
+
       # https://github.com/dwyl/rbac
       {:rbac, "~> 0.5.3"},
 
       # Field Validation and Encryption: github.com/dwyl/fields
       {:fields, "~> 2.8.2"},
+
       # Base58 Encodeing: https://github.com/dwyl/base58
       {:b58, "~>1.0.2"},
+      
       # Useful functions: https://github.com/dwyl/useful
       {:useful, "~> 0.4.0"},
 

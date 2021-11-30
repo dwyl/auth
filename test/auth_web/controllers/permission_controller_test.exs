@@ -1,5 +1,5 @@
 defmodule AuthWeb.PermissionControllerTest do
-  use AuthWeb.ConnCase
+  use AuthWeb.ConnCase, async: true
 
   alias Auth.Permission
 
