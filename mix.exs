@@ -81,7 +81,7 @@ defmodule Auth.Mixfile do
 
       # Base58 Encodeing: https://github.com/dwyl/base58
       {:b58, "~>1.0.2"},
-      
+
       # Useful functions: https://github.com/dwyl/useful
       {:useful, "~> 0.4.0"},
 
