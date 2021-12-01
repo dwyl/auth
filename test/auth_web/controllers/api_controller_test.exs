@@ -149,16 +149,17 @@ defmodule AuthWeb.ApiControllerTest do
     end
   end
 
-  test "GET /end_session (API)", %{conn: conn} do
+  test "POST /end_session (API)", %{conn: conn} do
     conn = conn |> admin_login()
-  
+
     client_id = AuthPlug.Token.client_id()
     session_id = conn.assigns.sid
     end_session_endpoint = "/end_session/#{client_id}/#{session_id}"
 
-    conn_ended = conn
+    conn_ended =
+      conn
       |> put_req_header("accept", "application/json")
-      |> get(end_session_endpoint)
+      |> post(end_session_endpoint)
 
     {:ok, json} = Jason.decode(conn_ended.resp_body)
     assert json == %{"message" => "session ended"}
@@ -168,22 +169,22 @@ defmodule AuthWeb.ApiControllerTest do
     assert session.end == session.updated_at
   end
 
-  test "attempt to GET /end_session (API) with invalid client_id", %{conn: conn} do
+  test "attempt to POST /end_session (API) with invalid client_id", %{conn: conn} do
     conn = conn |> admin_login()
-  
+
     # attempt the request with an invalid client_id:
     client_id = "invalid.client_id"
     session_id = conn.assigns.sid
     end_session_endpoint = "/end_session/#{client_id}/#{session_id}"
 
-    conn_failed = conn
+    conn_failed =
+      conn
       |> put_req_header("accept", "application/json")
-      |> get(end_session_endpoint)
+      |> post(end_session_endpoint)
 
     # expect 401 + error msg:
     assert conn_failed.status == 401
     {:ok, json} = Jason.decode(conn_failed.resp_body)
     assert Map.get(json, "msg") == "invalid AUTH_API_KEY/client_id please check"
-
   end
 end

@@ -4,7 +4,7 @@ defmodule Auth.Mixfile do
   def project do
     [
       app: :auth,
-      version: "1.6.1",
+      version: "1.6.2",
       elixir: "~> 1.12.3",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
@@ -71,7 +71,7 @@ defmodule Auth.Mixfile do
       {:elixir_auth_google, "~> 1.6.1"},
 
       # https://github.com/dwyl/auth_plug
-      {:auth_plug, "~> 1.4.6"},
+      {:auth_plug, "~> 1.4.7"},
 
       # https://github.com/dwyl/rbac
       {:rbac, "~> 0.5.3"},
@@ -81,7 +81,7 @@ defmodule Auth.Mixfile do
 
       # Base58 Encodeing: https://github.com/dwyl/base58
       {:b58, "~>1.0.2"},
-      
+
       # Useful functions: https://github.com/dwyl/useful
       {:useful, "~> 0.4.0"},
 
