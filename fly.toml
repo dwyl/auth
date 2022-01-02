@@ -1,0 +1,37 @@
+# fly.toml file generated
+
+app = "authprod"
+
+kill_signal = "SIGTERM"
+kill_timeout = 5
+
+[env]
+
+[deploy]
+  release_command = "/app/bin/authprod eval Auth.Release.migrate"
+
+[[services]]
+  # http_checks = []
+  internal_port = 4000
+  # processes = ["app"]
+  protocol = "tcp"
+  # script_checks = []
+
+  [services.concurrency]
+    hard_limit = 25
+    soft_limit = 20
+    # type = "connections"
+
+  [[services.ports]]
+    handlers = ["http"]
+    port = 80
+
+  [[services.ports]]
+    handlers = ["tls", "http"]
+    port = 443
+
+  [[services.tcp_checks]]
+    grace_period = "30s"
+    interval = "15s"
+    restart_limit = 6
+    timeout = "2s"
