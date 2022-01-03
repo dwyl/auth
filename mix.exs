@@ -4,7 +4,7 @@ defmodule Auth.Mixfile do
   def project do
     [
       app: :auth,
-      version: "1.6.2",
+      version: "1.6.5",
       elixir: "~> 1.12",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
@@ -46,20 +46,20 @@ defmodule Auth.Mixfile do
   defp deps do
     [
       # Phoenix core:
-      {:phoenix, "~> 1.6.2"},
+      {:phoenix, "~> 1.6.5"},
       {:phoenix_ecto, "~> 4.4"},
-      {:ecto_sql, "~> 3.7.0"},
-      {:postgrex, ">= 0.0.0"},
-      {:phoenix_html, "~> 3.1.0"},
-      {:phoenix_live_reload, "~> 1.2", only: :dev},
-      {:phoenix_live_view, "~> 0.17.3"},
-      {:floki, ">= 0.30.0", only: :test},
+      {:ecto_sql, "~> 3.7.1"},
+      {:postgrex, ">= 0.15.13"},
+      {:phoenix_html, "~> 3.2.0"},
+      {:phoenix_live_reload, "~> 1.3.3", only: :dev},
+      {:phoenix_live_view, "~> 0.17.5"},
+      {:floki, ">= 0.32.0", only: :test},
       # {:phoenix_live_dashboard, "~> 0.6.1"},
-      {:esbuild, "~> 0.3", runtime: Mix.env() == :dev},
+      {:esbuild, "~> 0.4", runtime: Mix.env() == :dev},
       # {:swoosh, "~> 1.5.1"},
-      {:telemetry_metrics, "~> 0.6"},
+      {:telemetry_metrics, "~> 0.6.1"},
       {:telemetry_poller, "~> 1.0"},
-      {:gettext, "~> 0.18.2"},
+      {:gettext, "~> 0.19.0"},
       {:jason, "~> 1.2.2"},
       {:plug_cowboy, "~> 2.5.2"},
 
@@ -68,7 +68,7 @@ defmodule Auth.Mixfile do
       {:elixir_auth_github, "~> 1.6.0"},
 
       # https://github.com/dwyl/elixir-auth-google
-      {:elixir_auth_google, "~> 1.6.1"},
+      {:elixir_auth_google, "~> 1.6.2"},
 
       # https://github.com/dwyl/auth_plug
       {:auth_plug, "~> 1.4.7"},
