@@ -25,8 +25,8 @@ ENV SECRET_KEY_BASE=nokey
 COPY mix.exs mix.lock ./
 COPY config config
 
-RUN mix deps.get --only prod && \
-    mix deps.compile
+RUN mix deps.get --only prod 
+RUN mix deps.compile
 
 # install npm dependencies
 # COPY assets/package.json assets/package-lock.json ./assets/
