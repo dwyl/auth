@@ -1,80 +1,92 @@
-###
-### Fist Stage - Building the Release
-###
-FROM hexpm/elixir:1.12.1-erlang-24.0.1-alpine-3.13.3 AS build
+# Find eligible builder and runner images on Docker Hub. We use Ubuntu/Debian instead of
+# Alpine to avoid DNS resolution issues in production.
+#
+# https://hub.docker.com/r/hexpm/elixir/tags?page=1&name=ubuntu
+# https://hub.docker.com/_/ubuntu?tab=tags
+#
+#
+# This file is based on these images:
+#
+#   - https://hub.docker.com/r/hexpm/elixir/tags - for the build image
+#   - https://hub.docker.com/_/debian?tab=tags&page=1&name=bullseye-20210902-slim - for the release image
+#   - https://pkgs.org/ - resource for finding needed packages
+#   - Ex: hexpm/elixir:1.12.3-erlang-24.1.5-debian-bullseye-20210902-slim
+#
+ARG BUILDER_IMAGE="hexpm/elixir:1.12.3-erlang-24.1.5-debian-bullseye-20210902-slim"
+ARG RUNNER_IMAGE="debian:bullseye-20210902-slim"
+
+FROM ${BUILDER_IMAGE} as builder
 
 # install build dependencies
-RUN apk add --no-cache build-base npm
+RUN apt-get update -y && apt-get install -y build-essential git \
+    && apt-get clean && rm -f /var/lib/apt/lists/*_*
 
 # prepare build dir
 WORKDIR /app
-
-# extend hex timeout
-ENV HEX_HTTP_TIMEOUT=20
 
 # install hex + rebar
 RUN mix local.hex --force && \
     mix local.rebar --force
 
-# set build ENV as prod
-ENV MIX_ENV=prod
-
-# set necessary ENV values for build/compile/deployment:
-ENV SECRET_KEY_BASE=$SECRET_KEY_BASE
-ENV DATABASE_URL=$DATABASE_URL
+# set build ENV
+ENV MIX_ENV="prod"
 ENV AUTH_API_KEY=$AUTH_API_KEY
-
-# Copy over the mix.exs and mix.lock files to load the dependencies. If those
-# files don't change, then we don't keep re-fetching and rebuilding the deps.
+# install mix dependencies
 COPY mix.exs mix.lock ./
-COPY config config
+RUN mix deps.get --only $MIX_ENV
+RUN mkdir config
 
-RUN mix deps.get --only prod 
+# copy compile-time config files before we compile dependencies
+# to ensure any relevant config change will trigger the dependencies
+# to be re-compiled.
+COPY config/config.exs config/${MIX_ENV}.exs config/
 RUN mix deps.compile
 
-# install npm dependencies
-# COPY assets/package.json assets/package-lock.json ./assets/
-# RUN npm --prefix ./assets ci --progress=false --no-audit --loglevel=error
-
 COPY priv priv
+
+# note: if your project uses a tool like https://purgecss.com/,
+# which customizes asset compilation based on what it finds in
+# your Elixir templates, you will need to move the asset compilation
+# step down so that `lib` is available.
 COPY assets assets
 
-# NOTE: If using TailwindCSS, it uses a special "purge" step and that requires
-# the code in `lib` to see what is being used. Uncomment that here before
-# running the npm deploy script if that's the case.
-# COPY lib lib
-
-# build assets
-# RUN npm run --prefix ./assets deploy
+# compile assets
 RUN mix assets.deploy
-RUN mix phx.digest
 
-# copy source here if not using TailwindCSS
+# Compile the release
 COPY lib lib
 
-# compile and build release
+RUN mix compile
+
+# Changes to config/runtime.exs don't require recompiling the code
+COPY config/runtime.exs config/
+
 COPY rel rel
-RUN mix do compile, release
+RUN mix release
 
-###
-### Second Stage - Setup the Runtime Environment
-###
+# start a new build stage so that the final image will only contain
+# the compiled release and other runtime necessities
+FROM ${RUNNER_IMAGE}
 
-# prepare release docker image
-FROM alpine:3.13.3 AS app
-RUN apk add --no-cache libstdc++ openssl ncurses-libs
+RUN apt-get update -y && apt-get install -y libstdc++6 openssl libncurses5 locales \
+  && apt-get clean && rm -f /var/lib/apt/lists/*_*
 
-WORKDIR /app
+# Set the locale
+RUN sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && locale-gen
 
-RUN chown nobody:nobody /app
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
 
-USER nobody:nobody
+WORKDIR "/app"
+RUN chown nobody /app
 
-COPY --from=build --chown=nobody:nobody /app/_build/prod/rel/auth ./
+# Only copy the final release from the build stage
+COPY --from=builder --chown=nobody:root /app/_build/prod/rel/auth ./
 
-ENV HOME=/app
-ENV MIX_ENV=prod
-# ENV SECRET_KEY_BASE=nokey
-ENV PORT=4000
+USER nobody
 
-CMD ["bin/auth", "start"]
+CMD /app/bin/server
+# Appended by flyctl
+ENV ECTO_IPV6 true
+ENV ERL_AFLAGS "-proto_dist inet6_tcp"
