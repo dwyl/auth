@@ -3,7 +3,7 @@ defmodule Auth.Release do
   Used for executing DB release tasks when run in production without Mix
   installed.
   """
-  @app :authprod
+  @app :auth
 
   def migrate do
     load_app()
