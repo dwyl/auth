@@ -5,7 +5,7 @@ defmodule Auth.Mixfile do
     [
       app: :auth,
       version: "1.6.2",
-      elixir: "~> 1.12.3",
+      elixir: "~> 1.12",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       test_coverage: [tool: ExCoveralls],
