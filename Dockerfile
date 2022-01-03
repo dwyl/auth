@@ -19,6 +19,7 @@ RUN mix local.hex --force && \
 # set build ENV as prod
 ENV MIX_ENV=prod
 ENV SECRET_KEY_BASE=nokey
+ENV DATABASE_URL=setbyenv
 
 # Copy over the mix.exs and mix.lock files to load the dependencies. If those
 # files don't change, then we don't keep re-fetching and rebuilding the deps.
