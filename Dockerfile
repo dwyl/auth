@@ -18,9 +18,11 @@ RUN mix local.hex --force && \
 
 # set build ENV as prod
 ENV MIX_ENV=prod
-ENV SECRET_KEY_BASE=nokey
-ENV DATABASE_URL=nokey
-ENV AUTH_API_KEY=nokey
+
+# set necessary ENV values for build/compile/deployment:
+ENV SECRET_KEY_BASE=$SECRET_KEY_BASE
+ENV DATABASE_URL=$DATABASE_URL
+ENV AUTH_API_KEY=$AUTH_API_KEY
 
 # Copy over the mix.exs and mix.lock files to load the dependencies. If those
 # files don't change, then we don't keep re-fetching and rebuilding the deps.
@@ -72,7 +74,7 @@ COPY --from=build --chown=nobody:nobody /app/_build/prod/rel/auth ./
 
 ENV HOME=/app
 ENV MIX_ENV=prod
-ENV SECRET_KEY_BASE=nokey
+# ENV SECRET_KEY_BASE=nokey
 ENV PORT=4000
 
 CMD ["bin/auth", "start"]
