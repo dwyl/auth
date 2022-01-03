@@ -103,7 +103,7 @@ have an **introductory tutorial**:
 ## 5 Minute 5 Step Setup
 
 > **Note** the App will **_not_ compile/work** 
-until you have the **required environment variables**.
+until you have the **required environment variables**. <br />
 You will see an error similar to: 
 [**issues/157**](https://github.com/dwyl/auth/issues/157).
 See the 3<sup>rd</sup> step below.
@@ -118,7 +118,7 @@ git clone git@github.com:dwyl/auth.git && cd auth
 ### 2. Install dependencies:
 
 ```sh
-mix deps.get && npm install --prefix assets
+mix deps.get
 ```
 
 ### 3. Environment Variables
