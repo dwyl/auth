@@ -19,8 +19,8 @@ RUN mix local.hex --force && \
 # set build ENV as prod
 ENV MIX_ENV=prod
 ENV SECRET_KEY_BASE=nokey
-ENV DATABASE_URL=setbyenv
-ENV AUTH_API_KEY=client_id/client_secret/auth.dwyl.com
+ENV DATABASE_URL=nokey
+ENV AUTH_API_KEY=nokey
 
 # Copy over the mix.exs and mix.lock files to load the dependencies. If those
 # files don't change, then we don't keep re-fetching and rebuilding the deps.
