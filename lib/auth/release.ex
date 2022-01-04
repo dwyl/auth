@@ -12,7 +12,8 @@ defmodule Auth.Release do
       {:ok, _, _} = Ecto.Migrator.with_repo(repo, &Ecto.Migrator.run(&1, :up, all: true))
     end
 
-    IO.inspect(File.cwd!(), label: "cwd")
+    # Run Seeds in Prod: https://github.com/dwyl/auth/issues/172#issuecomment-1005194147
+    Code.eval_file("priv/repo/seeds.exs")
   end
 
   def rollback(repo, version) do
