@@ -18,7 +18,7 @@ defmodule Auth.Release do
     filepath = "/app/priv/repo/seeds.exs"
     # relative_to = Path.relative_to(filepath, "/")
     IO.puts("Code.eval_file: #{filepath}")
-    Code.eval_file(filepath)
+    # Code.eval_file(filepath)
   end
 
   def rollback(repo, version) do
