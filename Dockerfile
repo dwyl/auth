@@ -63,6 +63,7 @@ COPY config/runtime.exs config/
 
 COPY rel rel
 RUN mix release
+RUN mix seeds
 
 # start a new build stage so that the final image will only contain
 # the compiled release and other runtime necessities
@@ -86,7 +87,6 @@ COPY --from=builder --chown=nobody:root /app/_build/prod/rel/auth ./
 
 USER nobody
 
-RUN mix seeds
 CMD /app/bin/server
 # Appended by flyctl
 ENV ECTO_IPV6 true
