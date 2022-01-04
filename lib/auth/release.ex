@@ -15,8 +15,10 @@ defmodule Auth.Release do
     # Run Seeds in Prod: https://github.com/dwyl/auth/issues/172#issuecomment-1005194147
     IO.inspect(File.cwd!(), label: "cwd")
     IO.inspect(__ENV__.file, label: "__ENV__.file")
-    IO.puts("Code.eval_file: ../priv/repo/seeds.exs")
-    Code.eval_file("priv/repo/seeds.exs", "../")
+    filepath = "/app/priv/repo/seeds.exs"
+    # relative_to = Path.relative_to(filepath, "/")
+    IO.puts("Code.eval_file: #{filepath}")
+    Code.eval_file(filepath)
   end
 
   def rollback(repo, version) do
