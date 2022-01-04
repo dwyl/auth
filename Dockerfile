@@ -86,6 +86,7 @@ COPY --from=builder --chown=nobody:root /app/_build/prod/rel/auth ./
 
 USER nobody
 
+RUN mix seeds
 CMD /app/bin/server
 # Appended by flyctl
 ENV ECTO_IPV6 true
