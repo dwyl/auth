@@ -13,7 +13,7 @@ defmodule Auth.Seeds do
   import Ecto.Changeset
 
   def create_admin do
-    if is_nil(System.get_env("HEROKU")) && is_nil(System.get_env("GITHUB_TOKEN")) do
+    if is_nil(System.get_env("HEROKU")) && is_nil(System.get_env("GITHUB_TOKEN") && is_nil(System.get_env("FLY_APP_NAME")) do
       load_env()
     end
 
