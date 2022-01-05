@@ -23,16 +23,16 @@ defmodule Auth.Release do
     # IO.inspect(relative_to, label: "relative_to")
     # IO.inspect(File.exists?(relative_to))
 
-    IO.inspect(File.ls!("/"), label: "File.ls!(/)")
-    IO.inspect(File.ls!("/app"), label: "File.ls!(/app)")
-    IO.puts(" - - - - - - - - - - - - - - - - - - - - - - - ")
-    IO.inspect(File.ls!("/app/lib"), label: "File.ls!(/app/lib)")
+    # IO.inspect(File.ls!("/"), label: "File.ls!(/)")
+    # IO.inspect(File.ls!("/app"), label: "File.ls!(/app)")
+    # IO.puts(" - - - - - - - - - - - - - - - - - - - - - - - ")
+    # IO.inspect(File.ls!("/app/lib"), label: "File.ls!(/app/lib)")
     # IO.inspect(File.ls!("/app/lib/auth-1.6.5"), label: "File.ls!(/app/lib/auth-1.6.5)")
     # wildcard = "/app/lib/auth-*"
     # found = Path.wildcard(wildcard)
     # IO.inspect(found, label: "found")
 
-    IO.puts(" - - - - - - - - - - - - - - - - - - - - - - - ")
+    # IO.puts(" - - - - - - - - - - - - - - - - - - - - - - - ")
     # IO.inspect(File.ls!("/app/bin"), label: "File.ls!(/app/bin)")
     # IO.inspect(File.exists?("/app/bin/auth"))
     # IO.inspect(File.ls!("/app/bin/auth"), label: "File.ls!(/app/bin/auth)")
