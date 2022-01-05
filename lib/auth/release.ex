@@ -16,8 +16,14 @@ defmodule Auth.Release do
     IO.inspect(File.cwd!(), label: "cwd")
     IO.inspect(File.ls!(File.cwd!()), label: "File.ls!(cwd)")
     IO.inspect(__ENV__.file, label: "__ENV__.file")
+    
+    IO.puts(" - - - - - - - - - - - - - - - - - - - - - - - ")
 
     IO.inspect(File.ls!("/app/lib/auth-1.6.5"), label: "File.ls!(/app/lib/auth-1.6.5)")
+
+    IO.inspect(File.ls!("/app/lib/auth-1.6.5/priv"), label: "File.ls!(/app/lib/auth-1.6.5/priv)")
+
+    IO.puts(" - - - - - - - - - - - - - - - - - - - - - - - ")
   end
 
   def rollback(repo, version) do
