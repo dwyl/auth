@@ -27,10 +27,10 @@ defmodule Auth.Release do
     IO.inspect(File.ls!("/app"), label: "File.ls!(/app)")
     IO.puts(" - - - - - - - - - - - - - - - - - - - - - - - ")
     IO.inspect(File.ls!("/app/lib"), label: "File.ls!(/app/lib)")
-
-    wildcard = "/app/lib/auth-*"
-    found = Path.wildcard(wildcard)
-    IO.inspect(found, label: "found")
+    IO.inspect(File.ls!("/app/lib/auth-1.6.5"), label: "File.ls!(/app/lib/auth-1.6.5)")
+    # wildcard = "/app/lib/auth-*"
+    # found = Path.wildcard(wildcard)
+    # IO.inspect(found, label: "found")
 
     IO.puts(" - - - - - - - - - - - - - - - - - - - - - - - ")
     IO.inspect(File.ls!("/app/bin"), label: "File.ls!(/app/bin)")
