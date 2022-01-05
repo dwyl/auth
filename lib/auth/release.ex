@@ -27,9 +27,11 @@ defmodule Auth.Release do
     IO.inspect(File.ls!("/app"), label: "File.ls!(/app)")
     IO.puts(" - - - - - - - - - - - - - - - - - - - - - - - ")
     IO.inspect(File.ls!("/app/lib"), label: "File.ls!(/app/lib)")
+
     wildcard = "/app/lib/auth-*"
     found = Path.wildcard(wildcard)
     IO.inspect(found, label: "found")
+
     IO.puts(" - - - - - - - - - - - - - - - - - - - - - - - ")
     IO.inspect(File.ls!("/app/bin"), label: "File.ls!(/app/bin)")
     IO.inspect(File.exists?("/app/bin/auth"))
@@ -37,7 +39,7 @@ defmodule Auth.Release do
     IO.puts(" - - - - - - - - - - - - - - - - - - - - - - - ")
     # IO.puts("Code.eval_file: #{filepath}")
     # Code.eval_file(filepath)
-    IO.inspect(System.get_env("AUTH_API_KEY"), label: "AUTH_API_KEY")
+    # IO.inspect(System.get_env("AUTH_API_KEY"), label: "AUTH_API_KEY")
   end
 
   def rollback(repo, version) do
