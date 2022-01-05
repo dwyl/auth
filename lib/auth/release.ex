@@ -17,16 +17,19 @@ defmodule Auth.Release do
     IO.inspect(File.ls!(File.cwd!()), label: "File.ls!(cwd)")
     IO.inspect(__ENV__.file, label: "__ENV__.file")
     filepath = "/app/auth/priv/repo/seeds.exs"
-    IO.inspect(File.exists?(filepath))
+    IO.inspect(File.exists?(filepath), label: "File.exists?(filepath)")
 
-    relative_to = Path.relative_to(filepath, "/")
-    IO.inspect(relative_to, label: "relative_to")
-    IO.inspect(File.exists?(relative_to))
+    # relative_to = Path.relative_to(filepath, "/")
+    # IO.inspect(relative_to, label: "relative_to")
+    # IO.inspect(File.exists?(relative_to))
 
     IO.inspect(File.ls!("/"), label: "File.ls!(/)")
     IO.inspect(File.ls!("/app"), label: "File.ls!(/app)")
     IO.puts(" - - - - - - - - - - - - - - - - - - - - - - - ")
     IO.inspect(File.ls!("/app/lib"), label: "File.ls!(/app/lib)")
+    wildcard = "/app/lib/auth-*"
+    found = Path.wildcard(wildcard)
+    IO.inspect(found, label: "found")
     IO.puts(" - - - - - - - - - - - - - - - - - - - - - - - ")
     IO.inspect(File.ls!("/app/bin"), label: "File.ls!(/app/bin)")
     IO.inspect(File.exists?("/app/bin/auth"))
