@@ -21,7 +21,7 @@ defmodule Auth.Release do
 
     relative_to = Path.relative_to(filepath, "/")
     IO.inspect(relative_to, label: "relative_to")
-
+    IO.inspect(File.exists?(relative_to))
 
     # IO.puts("Code.eval_file: #{filepath}")
     # Code.eval_file(filepath)
