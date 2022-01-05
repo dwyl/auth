@@ -23,6 +23,7 @@ defmodule Auth.Release do
     IO.inspect(relative_to, label: "relative_to")
     IO.inspect(File.exists?(relative_to))
 
+    IO.inspect(File.ls!("/"), label: "File.ls!(/)")
     # IO.puts("Code.eval_file: #{filepath}")
     # Code.eval_file(filepath)
   end
