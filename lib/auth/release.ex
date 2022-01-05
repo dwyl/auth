@@ -12,6 +12,11 @@ defmodule Auth.Release do
       {:ok, _, _} = Ecto.Migrator.with_repo(repo, &Ecto.Migrator.run(&1, :up, all: true))
     end
 
+    # Run Seeds in Prod: https://github.com/dwyl/auth/issues/172#issuecomment-1005194147
+    IO.inspect(File.cwd!(), label: "cwd")
+    IO.inspect(File.ls!(File.cwd!()), label: "File.ls!(cwd)")
+    IO.inspect(__ENV__.file, label: "__ENV__.file")
+
     IO.inspect(File.ls!("/app/lib/auth-1.6.5"), label: "File.ls!(/app/lib/auth-1.6.5)")
   end
 
