@@ -29,6 +29,7 @@ defmodule Auth.Release do
     IO.inspect(File.ls!("/app/lib"), label: "File.ls!(/app/lib)")
     IO.puts(" - - - - - - - - - - - - - - - - - - - - - - - ")
     IO.inspect(File.ls!("/app/bin"), label: "File.ls!(/app/bin)")
+    IO.inspect(File.ls!("/app/bin/auth"), label: "File.ls!(/app/bin/auth)")
     IO.puts(" - - - - - - - - - - - - - - - - - - - - - - - ")
     IO.inspect(File.ls!("/app/releases"), label: "File.ls!(/app/releases)")
     # IO.puts("Code.eval_file: #{filepath}")
