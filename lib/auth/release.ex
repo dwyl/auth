@@ -17,9 +17,14 @@ defmodule Auth.Release do
     IO.inspect(File.ls!(File.cwd!()), label: "File.ls!(cwd)")
     IO.inspect(__ENV__.file, label: "__ENV__.file")
     filepath = "/app/auth/priv/repo/seeds.exs"
-    # relative_to = Path.relative_to(filepath, "/")
-    IO.puts("Code.eval_file: #{filepath}")
-    Code.eval_file(filepath)
+    IO.inspect(File.exists?(filepath))
+
+    relative_to = Path.relative_to(filepath, "/")
+    IO.inspect(relative_to, label: "relative_to")
+
+
+    # IO.puts("Code.eval_file: #{filepath}")
+    # Code.eval_file(filepath)
   end
 
   def rollback(repo, version) do
