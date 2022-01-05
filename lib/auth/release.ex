@@ -33,6 +33,7 @@ defmodule Auth.Release do
     IO.puts(" - - - - - - - - - - - - - - - - - - - - - - - ")
     # IO.puts("Code.eval_file: #{filepath}")
     # Code.eval_file(filepath)
+    IO.inspect(System.get_env("AUTH_API_KEY"), label: "AUTH_API_KEY")
   end
 
   def rollback(repo, version) do
