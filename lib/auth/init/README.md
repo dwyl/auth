@@ -35,5 +35,18 @@ in the _main_
 means they have to go _somewhere_ ...
 that somewhere is right _here_!
 
+## Required Environment Variables for `Auth` App
+
+In order to initialize the **`Auth` Application**
++ `ADMIN_EMAIL` - the email address of the person who will
+administer the **`Auth` App**.
++ `AUTH_URL` - the base URL where the application will be hosted,
+e.g: `"auth.dwyl.com"` (exclude the protocol)
++ `SECRET_KEY_BASE` - the secret Phoenix uses to sign and encrypt important information.
+see:
+https://hexdocs.pm/phoenix/deployment.html#handling-of-your-application-secrets
++ `ENCRYPTION_KEYS` - a list of one or more encryption keys
+used to encrypt data in the database.
+see: `.env_sample` for example.
 
 

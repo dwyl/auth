@@ -34,7 +34,7 @@ defmodule AuthWeb.Router do
 
   pipeline :auth do
     plug(AuthPlug)
-  end
+    end
 
   scope "/", AuthWeb do
     pipe_through :browser

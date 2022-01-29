@@ -97,6 +97,25 @@ defmodule Auth.PeopleRoles do
   end
 
   @doc """
+  upsert/4 grants a role to the given person
+  app_id for app the person is granted the role for (always scoped to app!)
+  grantee_id is the person.id of the person being granted the role
+  granter_id is the id of the person (admin) granting the role
+  role_id is the role.id (int, e.g: 4) of th role being granted.
+  """
+  def upsert(app_id, grantee_id, granter_id, role_id) do
+
+    case get_roles_for_person_for_app(app_id, grantee_id) do
+      nil -> 
+        insert(app_id, grantee_id, granter_id, role_id)
+
+      roles ->
+        roles
+    end
+  end
+
+
+  @doc """
   revoke/3 grants a role to the given person
   revoker_id is the id of the person (admin) granting the role
   person_id is the person.id of the person being granted the role
