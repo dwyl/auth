@@ -11,8 +11,9 @@ defmodule Auth.Init do
   > The person.id for the Super Admin will own the remaining records
   so it needs to be created first. 
 
-  2. 
+  2. Create default records (Statuses & Roles)
 
+  3. Create the App and AUTH_API_KEY for the Auth App.
   """
 
   require Logger
@@ -27,13 +28,25 @@ defmodule Auth.Init do
     admin = Auth.Init.create_admin()
 
     Auth.Init.insert_statuses()
+    Auth.Init.create_default_roles()
     
-    Auth.Init.create_apikey_for_admin(admin)
+    api_key = Auth.Init.create_apikey_for_admin(admin)
+
+    # set the AUTH_API_KEY environment variable during test run:
+    # IO.inspect(Mix.env(), label: "Mix.env()")
+    # coveralls-ignore-start
+    case Mix.env() do
+      :test ->
+        Envar.set("AUTH_API_KEY", api_key)
+
+      _ ->
+        Logger.info("export AUTH_API_KEY=#{api_key}")
+    end
+    # coveralls-ignore-stop
     
     # Update status of Admin to "Verified"
     Auth.Person.verify_person_by_id(1)
     
-    Auth.Init.create_default_roles()
     # grant superadmin role to app owner:
     Auth.PeopleRoles.upsert(1, 1, 1, 1)
 
@@ -50,32 +63,19 @@ defmodule Auth.Init do
 
   def create_admin do
     email = Envar.get("ADMIN_EMAIL")
+    case Person.get_person_by_email(email) do
+      # Ignore if the Super Admin already exists:
+      # coveralls-ignore-start
+      nil ->
+        %Person{}
+        |> Person.changeset(%{email: email})
+        # |> put_assoc(:statuses, [%Status{text: "verified"}])
+        |> Repo.insert!()
+      # coveralls-ignore-stop
 
-    person =
-      case Person.get_person_by_email(email) do
-        # Ignore if the Super Admin already exists:
-        # coveralls-ignore-start
-        nil ->
-          %Person{}
-          |> Person.changeset(%{email: email})
-          # |> put_assoc(:statuses, [%Status{text: "verified"}])
-          |> Repo.insert!()
-        # coveralls-ignore-stop
-
-        person ->
-          person
-      end
-
-    # coveralls-ignore-start
-    if(Mix.env() == :test) do
-      # don't print noise during tests
-    else
-      IO.inspect(person.id, label: "seeds.exs person.id")
-      IO.puts("- - - - - - - - - - - - - - - - - - - - - - ")
+      person ->
+        person
     end
-    # coveralls-ignore-stop
-
-    person
   end
 
   def create_apikey_for_admin(person) do
@@ -100,23 +100,7 @@ defmodule Auth.Init do
       |> cast(update_attrs, [:client_id, :client_secret])
       |> Repo.update()
 
-    api_key = key.client_id <> "/" <> key.client_secret <> "/" <> get_auth_url()
-
-    # set the AUTH_API_KEY environment variable during test run:
-    IO.inspect(Mix.env(), label: "Mix.env()")
-    # IO.inspect(person)
-    # coveralls-ignore-start
-    case Mix.env() do
-      :test ->
-        Envar.set("AUTH_API_KEY", api_key)
-
-      :prod ->
-        Logger.info("export AUTH_API_KEY=#{api_key}")
-
-      _ ->
-        nil
-    end
-    # coveralls-ignore-stop
+    key.client_id <> "/" <> key.client_secret <> "/" <> get_auth_url()
   end
 
   # scripts for creating default roles and permissions
