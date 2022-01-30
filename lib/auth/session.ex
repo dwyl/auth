@@ -56,7 +56,6 @@ defmodule Auth.Session do
     assign(conn, :sid, session.id)
   end
 
-
   @doc """
   `get/1` retrieves the current session from DB 
   based on conn.assigns.person data.
@@ -64,16 +63,16 @@ defmodule Auth.Session do
   """
   def get(conn) do
     Repo.one(
-      from s in __MODULE__, 
-      where: s.app_id == ^conn.assigns.person.app_id
-      and
-      s.person_id == ^conn.assigns.person.id
-      and # match on UA in case person has multiple devices/sessions
-      s.user_agent_id == ^Auth.UserAgent.get_user_agent_id(conn)
-      and # only the sessions that haven't been "ended"
-      is_nil(s.end),
-      # sort by most recent in case there are older un-ended sessions:
-      order_by: [desc: :inserted_at]
+      from s in __MODULE__,
+        # match on UA in case person has multiple devices/sessions
+        #  only the sessions that haven't been "ended"
+        where:
+          s.app_id == ^conn.assigns.person.app_id and
+            s.person_id == ^conn.assigns.person.id and
+            s.user_agent_id == ^Auth.UserAgent.get_user_agent_id(conn) and
+            is_nil(s.end),
+        # sort by most recent in case there are older un-ended sessions:
+        order_by: [desc: :inserted_at]
     )
   end
 
@@ -83,7 +82,7 @@ defmodule Auth.Session do
   def get_by_id(conn) do
     Repo.one(
       from s in __MODULE__,
-      where: s.id == ^conn.assigns.sid
+        where: s.id == ^conn.assigns.sid
     )
   end
 
@@ -95,7 +94,6 @@ defmodule Auth.Session do
     |> changeset(%{end: DateTime.utc_now()})
     |> Repo.update!()
   end
-
 
   @doc """
   `end_session/1` update session to end it.

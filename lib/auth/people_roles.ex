@@ -108,6 +108,7 @@ defmodule Auth.PeopleRoles do
       # if there are no roles for the person, insert it:
       n when n in [nil, []] ->
         [insert(app_id, grantee_id, granter_id, role_id)]
+
       roles ->
         # if the role exists in the list of roles, return the list
         if Enum.find_value(roles, fn r -> r.id == role_id end) do
@@ -117,7 +118,6 @@ defmodule Auth.PeopleRoles do
         end
     end
   end
-
 
   @doc """
   revoke/3 grants a role to the given person

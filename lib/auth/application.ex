@@ -35,5 +35,6 @@ defmodule Auth.Application do
     AuthWeb.Endpoint.config_change(changed, removed)
     :ok
   end
+
   # coveralls-ignore-stop
 end

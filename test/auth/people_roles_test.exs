@@ -59,12 +59,11 @@ defmodule AuthWeb.PeopleRolesTest do
     # Insert another role for the person to test branch
     role2_id = 4
     Auth.PeopleRoles.upsert(app_id, grantee_id, granter_id, role2_id)
-    
+
     list = Auth.PeopleRoles.list_people_roles()
     retrieved = List.last(list)
     assert retrieved.role_id == role2_id
     assert retrieved.granter_id == granter_id
-
   end
 
   test "Auth.PeopleRoles.revoke/2 revokes a role" do

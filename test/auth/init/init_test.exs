@@ -6,5 +6,4 @@ defmodule Auth.InitTest do
       assert Auth.Init.main() == :ok
     end
   end
-  
 end

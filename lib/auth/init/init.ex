@@ -7,7 +7,7 @@ defmodule Auth.Init do
 
   1. Create the "Super Admin" person who owns the Auth App
   based on the `ADMIN_EMAIL` environment/config variable.
-  
+
   > The person.id (1) for the Super Admin 
   will own the remaining records so it needs to be created first. 
 
@@ -30,24 +30,25 @@ defmodule Auth.Init do
 
     Auth.Init.insert_statuses()
     Auth.Init.create_default_roles()
-    
+
     api_key = Auth.Init.create_apikey_for_admin(admin)
- 
+
     case Mix.env() do
       :test ->
         # set the AUTH_API_KEY environment variable during test run:
         Envar.set("AUTH_API_KEY", api_key)
+
       # ignore the next lines because we can't test them:
       # coveralls-ignore-start
       _ ->
         # Log the AUTH_API_KEY so it can be exported:
         Logger.info("export AUTH_API_KEY=#{api_key}")
-      # coveralls-ignore-stop
+        # coveralls-ignore-stop
     end
 
     # Update status of Admin to "verified"
     Auth.Person.verify_person_by_id(1)
-    
+
     # grant superadmin role to app owner:
     Auth.PeopleRoles.upsert(1, 1, 1, 1)
 
@@ -62,6 +63,7 @@ defmodule Auth.Init do
 
   def create_admin do
     email = Envar.get("ADMIN_EMAIL")
+
     case Person.get_person_by_email(email) do
       # Ignore if the Super Admin already exists:
       # coveralls-ignore-start
@@ -69,6 +71,7 @@ defmodule Auth.Init do
         %Person{}
         |> Person.changeset(%{email: email})
         |> Repo.insert!()
+
       # coveralls-ignore-stop
 
       person ->
