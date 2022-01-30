@@ -5,7 +5,7 @@ defmodule AuthTest do
   @moduledoc """
   Test helper functions :-)
   """
-  @admin_email System.get_env("ADMIN_EMAIL")
+  @admin_email Envar.get("ADMIN_EMAIL")
   @app_data %{
     "name" => "Example App",
     "url" => "https://www.example.com",
@@ -16,7 +16,7 @@ defmodule AuthTest do
   """
   def admin_login(conn) do
     person = Auth.Person.get_person_by_email(@admin_email)
-    conn = Auth.Session.start_session(conn, %{ person | app_id: 1})
+    conn = Auth.Session.start_session(conn, %{person | app_id: 1})
 
     data = %{
       id: person.id,
@@ -32,6 +32,7 @@ defmodule AuthTest do
 
   def non_admin_person() do
     rand = :rand.uniform(1_000_000)
+
     person = %{
       email: "alex+#{rand}@gmail.com",
       givenName: "Alexander McAwesome",
@@ -40,7 +41,7 @@ defmodule AuthTest do
       github_id: "19",
       picture: "https://avatars3.githubusercontent.com/u/10835816",
       status: 1,
-      app_id: 1,
+      app_id: 1
     }
 
     Auth.Person.upsert_person(person)

@@ -35,13 +35,13 @@ defmodule Auth.SessionTest do
   test "Auth.Session.update_session_end/1 updates the session record", %{conn: conn} do
     conn = non_admin_login(conn)
     session = Auth.Session.get(conn)
-    
+
     # Initially the session.end is nil (i.e. not yet ended)
     assert session.end == nil
 
     # End the Session:
     updated = Auth.Session.update_session_end(conn)
-    
+
     # Confirm the end value has been set.
     assert updated.end == updated.updated_at
   end
@@ -49,7 +49,7 @@ defmodule Auth.SessionTest do
   test "Auth.Session.end_session/1 terminates the session", %{conn: conn} do
     conn = conn |> non_admin_login()
     session = Auth.Session.get(conn)
-    # The Session is set on conn.assigns
+    #  The Session is set on conn.assigns
     assert session.id == conn.assigns.sid
 
     # Initially the session.end is nil (i.e. not yet ended)

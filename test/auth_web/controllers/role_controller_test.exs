@@ -291,6 +291,7 @@ defmodule AuthWeb.RoleControllerTest do
 
   test "GET /roles/revoke/:people_roles_id displays confirm prompt", %{conn: conn} do
     conn = admin_login(conn)
+    Auth.PeopleRoles.upsert(1, 1, 1, 1)
     conn = get(conn, Routes.role_path(conn, :revoke, 1))
     assert html_response(conn, 200) =~ "superadmin"
   end

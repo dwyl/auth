@@ -81,7 +81,7 @@ defmodule Auth.PeopleRoles do
   end
 
   @doc """
-  insert/4 grants a role to the given person
+  `insert/4` grants a role to the given person
   app_id for app the person is granted the role for (always scoped to app!)
   grantee_id is the person.id of the person being granted the role
   granter_id is the id of the person (admin) granting the role
@@ -97,7 +97,29 @@ defmodule Auth.PeopleRoles do
   end
 
   @doc """
-  revoke/3 grants a role to the given person
+  `upsert/4` grants a role (`role_id`) to the given person (`grantee_id`)
+  for the `app_id`.
+  `granter_id` is the id of the person (admin) granting the role.
+  
+  """
+  def upsert(app_id, grantee_id, granter_id, role_id) do
+    case get_roles_for_person_for_app(app_id, grantee_id) do
+      # if there are no roles for the person, insert it:
+      n when n in [nil, []] ->
+        [insert(app_id, grantee_id, granter_id, role_id)]
+      roles ->
+        # if the role exists in the list of roles, return the list
+        if Enum.find_value(roles, fn r -> r.id == role_id end) do
+          roles
+        else
+          [insert(app_id, grantee_id, granter_id, role_id)]
+        end
+    end
+  end
+
+
+  @doc """
+  `revoke/3` grants a role to the given person
   revoker_id is the id of the person (admin) granting the role
   person_id is the person.id of the person being granted the role
   role_id is the role.id (int, e.g: 4) of th role being granted.
