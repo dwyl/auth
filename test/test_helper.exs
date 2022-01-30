@@ -5,7 +5,7 @@ defmodule AuthTest do
   @moduledoc """
   Test helper functions :-)
   """
-  @admin_email System.get_env("ADMIN_EMAIL")
+  @admin_email Envar.get("ADMIN_EMAIL")
   @app_data %{
     "name" => "Example App",
     "url" => "https://www.example.com",

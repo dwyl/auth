@@ -104,13 +104,17 @@ defmodule Auth.PeopleRoles do
   role_id is the role.id (int, e.g: 4) of th role being granted.
   """
   def upsert(app_id, grantee_id, granter_id, role_id) do
-
     case get_roles_for_person_for_app(app_id, grantee_id) do
-      nil -> 
-        insert(app_id, grantee_id, granter_id, role_id)
-
+      # if there are no roles for the person, insert it:
+      n when n in [nil, []] ->
+        [insert(app_id, grantee_id, granter_id, role_id)]
       roles ->
-        roles
+        # if the role exists in the list of roles, return the list
+        if Enum.find_value(roles, fn r -> r.id == role_id end) do
+          roles
+        else
+          [insert(app_id, grantee_id, granter_id, role_id)]
+        end
     end
   end
 

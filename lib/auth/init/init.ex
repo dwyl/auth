@@ -53,22 +53,27 @@ defmodule Auth.Init do
 
     person =
       case Person.get_person_by_email(email) do
+        # Ignore if the Super Admin already exists:
+        # coveralls-ignore-start
         nil ->
           %Person{}
           |> Person.changeset(%{email: email})
           # |> put_assoc(:statuses, [%Status{text: "verified"}])
           |> Repo.insert!()
+        # coveralls-ignore-stop
 
         person ->
           person
       end
 
+    # coveralls-ignore-start
     if(Mix.env() == :test) do
       # don't print noise during tests
     else
       IO.inspect(person.id, label: "seeds.exs person.id")
       IO.puts("- - - - - - - - - - - - - - - - - - - - - - ")
     end
+    # coveralls-ignore-stop
 
     person
   end
@@ -100,6 +105,7 @@ defmodule Auth.Init do
     # set the AUTH_API_KEY environment variable during test run:
     IO.inspect(Mix.env(), label: "Mix.env()")
     # IO.inspect(person)
+    # coveralls-ignore-start
     case Mix.env() do
       :test ->
         Envar.set("AUTH_API_KEY", api_key)
@@ -110,12 +116,13 @@ defmodule Auth.Init do
       _ ->
         nil
     end
+    # coveralls-ignore-stop
   end
 
   # scripts for creating default roles and permissions
   def get_json(filepath) do
     path = File.cwd!() <> filepath
-    IO.inspect(path, label: "path")
+    # IO.inspect(path, label: "path")
     {:ok, data} = File.read(path)
     json = Jason.decode!(data)
     json

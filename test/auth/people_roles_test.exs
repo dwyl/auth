@@ -28,6 +28,45 @@ defmodule AuthWeb.PeopleRolesTest do
     assert pr.person_id == grantee.id
   end
 
+  test "Auth.PeopleRoles.upsert/4 when record doesn't exist" do
+    # create a new person:
+    person = AuthTest.non_admin_person()
+    app = AuthTest.create_app_for_person(person)
+    app_id = app.id
+    grantee_id = person.id
+    granter_id = 1
+    role_id = 5
+    # grant the "commenter" role (id: 5) to the new person:
+    Auth.PeopleRoles.upsert(app_id, grantee_id, granter_id, role_id)
+    # IO.inspect(pr, label: "39 pr:")
+
+    # # confirm people_roles record exists:
+    record = Auth.PeopleRoles.get_record(grantee_id, role_id)
+    # IO.inspect(record, label: "42 record")
+    assert record.person_id == grantee_id
+    assert record.granter_id == 1
+
+    # confirm person record has roles preloaded:
+    person_with_role = Auth.Person.get_person_by_id(grantee_id)
+    roles = RBAC.transform_role_list_to_string(person_with_role.roles)
+    assert roles =~ Integer.to_string(role_id)
+
+    # check the latest people_roles record:
+    list = Auth.PeopleRoles.list_people_roles()
+    pr = List.last(list)
+    assert pr.granter_id == granter_id
+
+    # Insert another role for the person to test branch
+    role2_id = 4
+    Auth.PeopleRoles.upsert(app_id, grantee_id, granter_id, role2_id)
+    
+    list = Auth.PeopleRoles.list_people_roles()
+    retrieved = List.last(list)
+    assert retrieved.role_id == role2_id
+    assert retrieved.granter_id == granter_id
+
+  end
+
   test "Auth.PeopleRoles.revoke/2 revokes a role" do
     app_id = 1
     # create a new person:
