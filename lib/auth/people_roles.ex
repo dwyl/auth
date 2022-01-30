@@ -97,7 +97,7 @@ defmodule Auth.PeopleRoles do
   end
 
   @doc """
-  upsert/4 grants a role to the given person
+  upsert/4 grants a role to the given person (grantee_id)
   app_id for app the person is granted the role for (always scoped to app!)
   grantee_id is the person.id of the person being granted the role
   granter_id is the id of the person (admin) granting the role
