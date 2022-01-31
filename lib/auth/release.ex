@@ -19,9 +19,7 @@ defmodule Auth.Release do
     
     IO.puts(" - - - - - - - - - - - - - - - - - - - - - - - ")
 
-    IO.inspect(File.ls!("/app/lib/auth-1.6.5"), label: "File.ls!(/app/lib/auth-1.6.5)")
-
-    IO.inspect(File.ls!("/app/lib/auth-1.6.5/priv"), label: "File.ls!(/app/lib/auth-1.6.5/priv)")
+    Auth.Init.main()
 
     IO.puts(" - - - - - - - - - - - - - - - - - - - - - - - ")
   end
