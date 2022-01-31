@@ -47,7 +47,7 @@ defmodule Auth.Init do
     end
 
     # Update status of Admin to "verified"
-    Auth.Person.verify_person_by_id(1)
+    Auth.Person.verify_person_by_id(admin.id)
 
     # grant superadmin role to app owner:
     Auth.PeopleRoles.upsert(1, 1, 1, 1)
