@@ -53,3 +53,8 @@ config :logger, level: :debug
 # Finally import the config/prod.secret.exs which loads secrets
 # and configuration from environment variables.
 # import_config "prod.secret.exs"
+
+# To run the Auth App as "prod" on localhost, you will need:
+# source .env_prod
+# MIX_ENV=prod mix ecto.setup
+# MIX_ENV=prod mix phx.server

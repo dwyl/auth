@@ -74,7 +74,7 @@ defmodule Auth.Mixfile do
       {:envar, "~> 1.0.4"},
 
       # https://github.com/dwyl/auth_plug
-      {:auth_plug, "~> 1.4.11 "},
+      {:auth_plug, "~> 1.4.11"},
 
       # https://github.com/dwyl/rbac
       {:rbac, "~> 0.5.3"},

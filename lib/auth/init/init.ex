@@ -31,8 +31,11 @@ defmodule Auth.Init do
     Auth.Init.insert_statuses()
     Auth.Init.create_default_roles()
 
-    api_key = Auth.Init.create_apikey_for_admin(admin)
+    # Update status of Admin to "verified"
+    Auth.Person.verify_person_by_id(1)
 
+    api_key = Auth.Init.create_apikey_for_admin(admin)
+    Logger.info("Mix.env(): #{Mix.env()}")
     case Mix.env() do
       :test ->
         # set the AUTH_API_KEY environment variable during test run:
@@ -45,10 +48,7 @@ defmodule Auth.Init do
         Logger.info("export AUTH_API_KEY=#{api_key}")
         # coveralls-ignore-stop
     end
-
-    # Update status of Admin to "verified"
-    Auth.Person.verify_person_by_id(1)
-
+    
     # grant superadmin role to app owner:
     Auth.PeopleRoles.upsert(1, 1, 1, 1)
 
@@ -63,6 +63,7 @@ defmodule Auth.Init do
 
   def create_admin do
     email = Envar.get("ADMIN_EMAIL")
+    Logger.debug("ADMIN_EMAIL:#{email}")
 
     case Person.get_person_by_email(email) do
       # Ignore if the Super Admin already exists:
@@ -91,15 +92,21 @@ defmodule Auth.Init do
       |> Auth.App.create_app()
 
     # If AUTH_API_KEY environment variable is already set, use it:
-    update_attrs = %{
-      "client_id" => AuthPlug.Token.client_id(),
-      "client_secret" => AuthPlug.Token.client_secret()
-    }
+    key = if Envar.is_set?("AUTH_API_KEY") do
+      update_attrs = %{
+        "client_id" => AuthPlug.Token.client_id(),
+        "client_secret" => AuthPlug.Token.client_secret()
+      }
 
-    {:ok, key} =
-      Auth.Apikey.get_apikey_by_app_id(app.id)
-      |> cast(update_attrs, [:client_id, :client_secret])
-      |> Repo.update()
+      {:ok, key} =
+        Auth.Apikey.get_apikey_by_app_id(app.id)
+        |> cast(update_attrs, [:client_id, :client_secret])
+        |> Repo.update()
+
+      key
+    else
+      List.last(app.apikeys)
+    end
 
     key.client_id <> "/" <> key.client_secret <> "/" <> get_auth_url()
   end
