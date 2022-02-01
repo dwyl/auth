@@ -51,7 +51,7 @@ defmodule Auth.LogTest do
 
     {:ok, app} = Auth.App.create_app(app_data)
     rand = :rand.uniform(1_000_000)
-    msg = "epic fail #{rand}"
+    msg = "Don't Panic #{rand} (this is expected...)"
     email = "fail@mail.co"
     # insert log entry:
     Auth.Log.error(conn, %{

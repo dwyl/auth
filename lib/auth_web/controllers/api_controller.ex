@@ -53,7 +53,6 @@ defmodule AuthWeb.ApiController do
   `end_session/2` logs the person out of their session.
   """
   def end_session(conn, %{"client_id" => client_id, "session_id" => session_id}) do
-
     case Auth.Apikey.decode_decrypt(client_id) do
       {:error, _} ->
         Auth.Log.error(conn, %{client_id: client_id})

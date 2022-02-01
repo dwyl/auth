@@ -12,7 +12,8 @@ config :auth, Auth.Repo,
 # you can enable the server option below.
 config :auth, AuthWeb.Endpoint,
   http: [port: 4002],
-  server: true # https://elixirforum.com/t/wallaby-with-phoenix-1-16-rc0/42352/9
+  #  https://elixirforum.com/t/wallaby-with-phoenix-1-16-rc0/42352/9
+  server: true
 
 # Print only warnings and errors during test
 config :logger, level: :warn
@@ -24,5 +25,5 @@ config :elixir_auth_google,
 
 config :auth_plug,
   api_key: System.get_env("AUTH_API_KEY"),
-    # "2PzB7PPnpuLsbWmWtXpGyI+kfSQSQ1zUW2Atz/+8PdZuSEJzHgzGnJWV35nTKRwx/authdev.herokuapp.com",
+  # "2PzB7PPnpuLsbWmWtXpGyI+kfSQSQ1zUW2Atz/+8PdZuSEJzHgzGnJWV35nTKRwx/authdev.herokuapp.com",
   httpoison_mock: true
