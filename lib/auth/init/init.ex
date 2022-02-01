@@ -36,6 +36,8 @@ defmodule Auth.Init do
 
     api_key = Auth.Init.create_apikey_for_admin(admin)
     Logger.info("Mix.env(): #{Mix.env()}")
+    mix_env = Envar.get("MIX_ENV")
+    IO.inspect("MIX_ENV: #{mix_env} Envar.get/1")
     case Mix.env() do
       :test ->
         # set the AUTH_API_KEY environment variable during test run:

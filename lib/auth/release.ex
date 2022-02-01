@@ -18,9 +18,7 @@ defmodule Auth.Release do
     # IO.inspect(__ENV__.file, label: "__ENV__.file")
     
     IO.puts(" - - - - - - - - - - - - - - - - - - - - - - - ")
-    mix_env = Envar.get("MIX_ENV")
-    IO.inspect("MIX_ENV: #{mix_env}")
-    
+    IO.inspect("attempting to run Auth.Init.main() ... ")
     Auth.Init.main()
 
     IO.puts(" - - - - - - - - - - - - - - - - - - - - - - - ")
