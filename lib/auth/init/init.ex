@@ -23,6 +23,7 @@ defmodule Auth.Init do
 
   def main do
     Logger.info("Initialising the Auth Database ...")
+    Auth.Application.start(:type, :args)
     # check required environment variables:
     Envar.is_set_all?(~w/ADMIN_EMAIL AUTH_URL ENCRYPTION_KEYS SECRET_KEY_BASE/)
 
@@ -35,11 +36,11 @@ defmodule Auth.Init do
     Auth.Person.verify_person_by_id(1)
 
     api_key = Auth.Init.create_apikey_for_admin(admin)
-    Logger.info("Mix.env(): #{Mix.env()}")
-    mix_env = Envar.get("MIX_ENV")
-    IO.inspect("MIX_ENV: #{mix_env} Envar.get/1")
-    case Mix.env() do
-      :test ->
+    # Logger.info("Mix.env(): #{Mix.env()}")
+    # mix_env = Envar.get("MIX_ENV")
+    # IO.inspect("MIX_ENV: #{mix_env} Envar.get/1")
+    case Envar.get("MIX_ENV") do
+      "test" ->
         # set the AUTH_API_KEY environment variable during test run:
         Envar.set("AUTH_API_KEY", api_key)
 
