@@ -14,11 +14,13 @@ defmodule Auth.Release do
 
     # Run Seeds in Prod: https://github.com/dwyl/auth/issues/172#issuecomment-1005194147
     IO.inspect(File.cwd!(), label: "cwd")
-    IO.inspect(File.ls!(File.cwd!()), label: "File.ls!(cwd)")
-    IO.inspect(__ENV__.file, label: "__ENV__.file")
+    # IO.inspect(File.ls!(File.cwd!()), label: "File.ls!(cwd)")
+    # IO.inspect(__ENV__.file, label: "__ENV__.file")
     
     IO.puts(" - - - - - - - - - - - - - - - - - - - - - - - ")
-
+    mix_env = Envar.get("MIX_ENV")
+    IO.inspect("MIX_ENV: #{mix_env}")
+    
     Auth.Init.main()
 
     IO.puts(" - - - - - - - - - - - - - - - - - - - - - - - ")

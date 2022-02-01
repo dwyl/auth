@@ -48,7 +48,7 @@ defmodule Auth.Init do
         Logger.info("export AUTH_API_KEY=#{api_key}")
         # coveralls-ignore-stop
     end
-    
+
     # grant superadmin role to app owner:
     Auth.PeopleRoles.upsert(1, 1, 1, 1)
 
