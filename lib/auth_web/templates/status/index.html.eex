@@ -11,12 +11,14 @@
     
 <%= for {key, value} <- @env do %>
   <tr class="bb b--moon-gray">
-    <td class=""><pre class="mono"><%= key %></pre></td>
+    <td class=""><pre class="mono bold"><%= key %></pre></td>
     <td class="center pl4"><img width="40px" src="/images/<%=value%>.png"></td>
   </tr>
 <% end %>
   </tbody>
 </table>
+
+<h2 class="w-80 mw5 mw7-ns center pt4"><code>init</code>: <%= @init %> </h2>
 
 
 <table class="w-80 mw5 mw7-ns center pt4">
@@ -30,7 +32,7 @@
     
 <%= for {key, value} <- @env_optional do %>
   <tr class="bb b--moon-gray">
-    <td class=""><pre class="mono"><%= key %></pre></td>
+    <td class=""><pre class="mono bold"><%= key %></pre></td>
     <td class="center pl4"><img width="40px" src="/images/<%=value%>.png"></td>
   </tr>
 <% end %>
