@@ -4,7 +4,7 @@ defmodule Auth.Status do
   alias Auth.Repo
   # https://stackoverflow.com/a/47501059/1148249
   alias __MODULE__
-  @admin_email Envar.get("ADMIN_EMAIL")
+  @admin_email System.get_env("ADMIN_EMAIL")
 
   schema "status" do
     field :text, :string
@@ -30,7 +30,7 @@ defmodule Auth.Status do
   end
 
   def upsert_status(attrs) do
-    case Auth.Repo.get_by(__MODULE__, text: Map.get(attrs, "text")) do
+    case Auth.Repo.get_by(__MODULE__, text: attrs.text) do
       # create status
       nil ->
         create_status(attrs, Auth.Person.get_person_by_email(@admin_email))

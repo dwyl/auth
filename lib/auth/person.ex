@@ -218,7 +218,7 @@ defmodule Auth.Person do
   end
 
   def get_status_verified do
-    status = Auth.Status.upsert_status(%{"text" => "verified"})
+    status = Auth.Status.upsert_status(%{text: "verified"})
     status.id
   end
 

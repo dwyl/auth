@@ -28,8 +28,8 @@ defmodule Auth.Init do
 
     admin = Auth.Init.create_admin()
 
-    Auth.Init.insert_statuses()
-    Auth.Init.create_default_roles()
+    Auth.InitStatuses.insert_statuses()
+    Auth.InitRoles.create_default_roles()
 
     # Update status of Admin to "verified"
     Auth.Person.verify_person_by_id(1)
