@@ -5,6 +5,7 @@ defmodule Auth.Status do
   # https://stackoverflow.com/a/47501059/1148249
   alias __MODULE__
   @admin_email System.get_env("ADMIN_EMAIL")
+  IO.inspect("status.ex:8 @admin_email:#{@admin_email}")
 
   schema "status" do
     field :text, :string

@@ -19,12 +19,10 @@ defmodule Auth.Init do
 
   require Logger
   import Ecto.Changeset
-  alias Auth.{Person, Role, Repo, Status}
+  alias Auth.{Person, Repo}
 
   def main do
     Logger.info("Initialising the Auth Database ...")
-    # check required environment variables:
-    Envar.is_set_all?(~w/ADMIN_EMAIL AUTH_URL ENCRYPTION_KEYS SECRET_KEY_BASE/)
 
     admin = Auth.Init.create_admin()
 
@@ -111,26 +109,5 @@ defmodule Auth.Init do
     end
 
     key.client_id <> "/" <> key.client_secret <> "/" <> get_auth_url()
-  end
-
-  # scripts for creating default roles and permissions
-  def get_json(filepath) do
-    path = File.cwd!() <> filepath
-    Logger.info("get_json(#{filepath}): #{path}")
-    {:ok, data} = File.read(path)
-    json = Jason.decode!(data)
-    json
-  end
-
-  def create_default_roles do
-    Enum.each(get_json("/lib/auth/init/default_roles.json"), fn role ->
-      Role.upsert_role(role)
-    end)
-  end
-
-  def insert_statuses do
-    Enum.each(get_json("/lib/auth/init/statuses.json"), fn status ->
-      Status.upsert_status(status)
-    end)
   end
 end
