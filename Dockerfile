@@ -30,6 +30,10 @@ RUN mix local.hex --force && \
 
 # set build ENV
 ENV MIX_ENV="prod"
+
+# copy the .env_sample file to read environment variable keys:
+COPY .env_sample ./
+
 ENV AUTH_API_KEY=$AUTH_API_KEY
 # install mix dependencies
 COPY mix.exs mix.lock ./

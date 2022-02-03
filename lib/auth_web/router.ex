@@ -30,6 +30,7 @@ defmodule AuthWeb.Router do
     post "/auth/password/verify", AuthController, :password_prompt
     # https://github.com/dwyl/ping
     get "/ping", PingController, :ping
+    get "/status", StatusController, :index
   end
 
   pipeline :auth do

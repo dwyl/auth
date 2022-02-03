@@ -275,6 +275,41 @@ Phoenix has a built-in mechanism for sessions:
 
 This project _uses_ and _extends_ it to support several 3rd party auth services.
 
+<br /><br />
+
+### Troubleshooting
+
+If you see the following error error 
+when visiting the status (_or any other page_):
+http://localhost:4000/status
+![image](https://user-images.githubusercontent.com/194400/152191803-e7127118-7107-40aa-aaa7-a4618726b689.png)
+
+You forgot to create and export the 
+`SECRET_KEY_BASE`
+environment variable.
+
+Create a [secret](https://hexdocs.pm/phoenix/Mix.Tasks.Phx.Gen.Secret.html)
+by running the following command in your terminal:
+
+```sh
+mix phx.gen.secret
+```
+
+Copy the output and export it, e.g:
+
+```sh
+export SECRET_KEY_BASE=mAfe8fGd3CgpiwKCnnulAhO2RjcSxuFlw6BGjBhRJCYo2Mthtmu/cdIvO3Mz1QU8
+```
+
+Where the long string 
+is whatever was generated above.
+Once the 
+`SECRET_KEY_BASE`
+environment variable is exported
+and you restart the app,
+it should work as expected.
+
+
 
 ## Background Reading
 

@@ -71,7 +71,7 @@ defmodule Auth.Mixfile do
       {:elixir_auth_google, "~> 1.6.2"},
 
       # Check/get Environment Variables: https://github.com/dwyl/envar
-      {:envar, "~> 1.0.4"},
+      {:envar, "~> 1.0.5"},
 
       # https://github.com/dwyl/auth_plug
       {:auth_plug, "~> 1.4.11"},

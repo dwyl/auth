@@ -23,7 +23,6 @@ defmodule Auth.Init do
 
   def main do
     Logger.info("Initialising the Auth Database ...")
-    Auth.Application.start(:type, :args)
     # check required environment variables:
     Envar.is_set_all?(~w/ADMIN_EMAIL AUTH_URL ENCRYPTION_KEYS SECRET_KEY_BASE/)
 
