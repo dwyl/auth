@@ -116,6 +116,7 @@ defmodule Auth.Init do
   # scripts for creating default roles and permissions
   def get_json(filepath) do
     path = File.cwd!() <> filepath
+    Logger.info("get_json(#{filepath}): #{path}")
     {:ok, data} = File.read(path)
     json = Jason.decode!(data)
     json
