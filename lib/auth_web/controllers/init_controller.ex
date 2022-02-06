@@ -7,7 +7,7 @@ defmodule AuthWeb.InitController do
   def index(conn, _params) do
 
     init = if Envar.is_set_all?(@env_required) do
-      check_app()
+      # check_app()
       Auth.Init.main()
     else
       "cannot be run until all the required environment variables are set"
@@ -29,8 +29,8 @@ defmodule AuthWeb.InitController do
     end)
   end
 
-  defp check_app() do
-    app = Auth.App.get_app!(1)
-    |> IO.inspect(label: "init_controller.ex:33 app:")
-  end
+  # defp check_app() do
+  #   Auth.App.get_app!(1)
+  #   |> 
+  # end
 end

@@ -24,16 +24,26 @@ defmodule Auth.Init do
   def main do
     Logger.info("Initialising the Auth Database ...")
 
-    admin = Auth.Init.create_admin()
+    # if the #1 App does not exist, create it:
+    api_key = case Auth.App.get_app!(1) do
+      nil -> 
+        admin = Auth.Init.create_admin()
 
-    Auth.InitStatuses.insert_statuses()
-    Auth.InitRoles.create_default_roles()
+        # Create Generic Roles & Statuses
+        Auth.InitStatuses.insert_statuses()
+        Auth.InitRoles.create_default_roles()
+    
+        # Update status of Admin to "verified"
+        Auth.Person.verify_person_by_id(1)
+        
+        # Create App and API Key for the admin:
+        Auth.Init.create_apikey_for_admin(admin)
 
-    # Update status of Admin to "verified"
-    Auth.Person.verify_person_by_id(1)
-
-    api_key = Auth.Init.create_apikey_for_admin(admin)
-    # Logger.info("Mix.env(): #{Mix.env()}")
+      app ->
+        key = List.last(app.apikeys)
+        key.client_id <> "/" <> key.client_secret <> "/" <> get_auth_url()
+        
+    end
     # mix_env = Envar.get("MIX_ENV")
     # IO.inspect("MIX_ENV: #{mix_env} Envar.get/1")
     case Envar.get("MIX_ENV") do
@@ -48,9 +58,6 @@ defmodule Auth.Init do
         Logger.info("export AUTH_API_KEY=#{api_key}")
         # coveralls-ignore-stop
     end
-
-    # grant superadmin role to app owner:
-    Auth.PeopleRoles.upsert(1, 1, 1, 1)
 
     :ok
   end
@@ -80,11 +87,7 @@ defmodule Auth.Init do
     end
   end
 
-  
-
   def create_apikey_for_admin(person) do
-
-
     {:ok, app} =
       %{
         "name" => "default system app",
@@ -94,6 +97,9 @@ defmodule Auth.Init do
         "status" => 3
       }
       |> Auth.App.create_app()
+
+    # Self-grant superadmin role to App "owner":
+    Auth.PeopleRoles.upsert(app.id, person.id, person.id, 1)
 
     # If AUTH_API_KEY environment variable is already set, use it:
     key = if Envar.is_set?("AUTH_API_KEY") do
