@@ -5,7 +5,7 @@ defmodule Auth.Repo.Migrations.CreatePermissions do
     create table(:permissions) do
       add :name, :string
       add :desc, :string
-      add :person_id, references(:people, on_delete: :nothing)
+      add :person_id, references(:people, on_delete: :delete_all)
 
       timestamps()
     end
