@@ -80,7 +80,11 @@ defmodule Auth.Init do
     end
   end
 
+  
+
   def create_apikey_for_admin(person) do
+
+
     {:ok, app} =
       %{
         "name" => "default system app",

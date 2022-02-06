@@ -1,4 +1,4 @@
-defmodule AuthWeb.StatusController do
+defmodule AuthWeb.InitController do
   use AuthWeb, :controller
 
   @env_required ~w/ADMIN_EMAIL AUTH_API_KEY AUTH_URL ENCRYPTION_KEYS SECRET_KEY_BASE/
@@ -7,6 +7,7 @@ defmodule AuthWeb.StatusController do
   def index(conn, _params) do
 
     init = if Envar.is_set_all?(@env_required) do
+      check_app()
       Auth.Init.main()
     else
       "cannot be run until all the required environment variables are set"
@@ -15,7 +16,7 @@ defmodule AuthWeb.StatusController do
     conn
     # |> assign(:env, check_env())
     |> render(:index,
-      layout: {AuthWeb.StatusView, "status_layout.html"}, 
+      layout: {AuthWeb.InitView, "init_layout.html"}, 
       env: check_env(@env_required),
       env_optional: check_env(@env_optional),
       init: init
@@ -26,5 +27,10 @@ defmodule AuthWeb.StatusController do
     Enum.reduce(keys, %{}, fn key, acc ->
       Map.put(acc, key, Envar.is_set?(key))
     end)
+  end
+
+  defp check_app() do
+    app = Auth.App.get_app!(1)
+    |> IO.inspect(label: "init_controller.ex:33 app:")
   end
 end
