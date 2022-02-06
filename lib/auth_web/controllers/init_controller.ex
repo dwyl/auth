@@ -1,7 +1,7 @@
 defmodule AuthWeb.InitController do
   use AuthWeb, :controller
 
-  @env_required ~w/ADMIN_EMAIL AUTH_API_KEY AUTH_URL ENCRYPTION_KEYS SECRET_KEY_BASE/
+  @env_required ~w/ADMIN_EMAIL AUTH_API_KEY AUTH_URL ENCRYPTION_KEYS SECRET_KEY_BASE AUTH_API_KEY/
   @env_optional ~w/EMAIL_APP_URL GITHUB_CLIENT_ID GITHUB_CLIENT_SECRET GOOGLE_CLIENT_ID GOOGLE_CLIENT_SECRET/
 
   def index(conn, _params) do
