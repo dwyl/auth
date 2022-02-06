@@ -352,4 +352,20 @@ defmodule Auth.Person do
       end
     end
   end
+
+  @doc """
+  Deletes a person.
+
+  ## Examples
+
+      iex> delete(person)
+      {:ok, %Role{}}
+
+      iex> delete(person)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete(person) do
+    Repo.delete(person)
+  end
 end

@@ -1,7 +1,7 @@
 defmodule Auth.InitRoles do
 
-  def create_default_roles do
-    roles =  [
+  def roles do
+    [
       %{
         name: "superadmin", 
         desc: "With great power comes great responsibility", 
@@ -59,8 +59,18 @@ defmodule Auth.InitRoles do
         permissions: "manage_own_apps, create_content, upload_images, edit_own_content, delete_own_content, invite_people"
       }
     ]
-    Enum.each(roles, fn role ->
+  end
+
+  def create_default_roles do
+    Enum.each(roles(), fn role ->
       Auth.Role.upsert_role(role)
     end)
   end
+
+  # def delete_default_roles do
+  #   Enum.each(roles(), fn role ->
+  #     role = Auth.Role.get_role!(role.id)
+  #     Auth.Role.delete_role(role)
+  #   end)
+  # end
 end

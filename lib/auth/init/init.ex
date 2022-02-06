@@ -74,13 +74,10 @@ defmodule Auth.Init do
 
     case Person.get_person_by_email(email) do
       # Ignore if the Super Admin already exists:
-      # coveralls-ignore-start
       nil ->
         %Person{}
         |> Person.changeset(%{email: email})
         |> Repo.insert!()
-
-      # coveralls-ignore-stop
 
       person ->
         person
@@ -116,8 +113,11 @@ defmodule Auth.Init do
         |> Repo.update()
 
       key
+      
+    # coveralls-ignore-start
     else
       List.last(app.apikeys)
+    # coveralls-ignore-stop
     end
 
     key.client_id <> "/" <> key.client_secret <> "/" <> get_auth_url()

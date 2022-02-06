@@ -1,7 +1,7 @@
 defmodule Auth.InitStatuses do
 
-  def insert_statuses do
-    statuses = [
+  def statuses do
+    [
       %{
         text: "verified", 
         id: "1",
@@ -103,8 +103,17 @@ defmodule Auth.InitStatuses do
         desc: "an unexpected condition was encountered"
       }
     ]
-    Enum.each(statuses, fn status ->
+  end
+
+  def insert_statuses do
+    Enum.each(statuses(), fn status ->
       Auth.Status.upsert_status(status)
     end)
   end
+
+  # def delete_statuses do
+  #   Enum.each(statuses(), fn status ->
+  #     Auth.Status.delete_status(status)
+  #   end)
+  # end
 end

@@ -43,4 +43,8 @@ defmodule Auth.Status do
   def list_statuses do
     Repo.all(__MODULE__)
   end
+
+  # def delete_status(status) do
+  #   Repo.delete(status)
+  # end
 end

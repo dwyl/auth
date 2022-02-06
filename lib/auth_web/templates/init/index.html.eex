@@ -24,9 +24,12 @@
 <table class="w-80 mt3 mw5 mw7-ns center">
   <thead>
     <tr class="bb b--silver">
-      <th class="tl pv3 f3 code">AUTH_API_KEY</th>
+      <th class="tl pv3 code">
+        <span class="f3">AUTH_API_KEY</span> <br />
+        <small>(AuthPlug.Token.api_key/1)</small>
+      </th>
       <th class="center pl6">
-        <img width=30px" src="/images/<%=@api_key_set%>.png" class="center pl4">
+        <img width=30px" src="/images/<%=@api_key_set%>.png" class="center pr3">
         </th>
     </tr>
   </thead>
