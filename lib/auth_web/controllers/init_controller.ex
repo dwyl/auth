@@ -19,7 +19,8 @@ defmodule AuthWeb.InitController do
       layout: {AuthWeb.InitView, "init_layout.html"}, 
       env: check_env(@env_required),
       env_optional: check_env(@env_optional),
-      init: init
+      init: init,
+      api_key_set: api_key_set?()
       )
   end
 
@@ -29,8 +30,15 @@ defmodule AuthWeb.InitController do
     end)
   end
 
-  # defp check_app() do
-  #   Auth.App.get_app!(1)
-  #   |> 
-  # end
+  defp api_key_set?() do
+    IO.puts("AuthPlug.Token.api_key() #{AuthPlug.Token.api_key()}")
+    case AuthPlug.Token.api_key() do
+      nil -> 
+        IO.puts("AuthPlug.Token.api_key() #{AuthPlug.Token.api_key()}")
+        false
+        
+      key ->
+        String.length(key) > 1
+    end
+  end
 end

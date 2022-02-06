@@ -12,6 +12,12 @@ defmodule AuthWeb.Router do
     plug :put_secure_browser_headers
   end
 
+  # No Auth
+  scope "/", AuthWeb do
+    pipe_through :browser
+    get "/init", InitController, :index
+  end
+
   pipeline :auth_optional do
     plug(AuthPlugOptional, %{})
   end
@@ -30,7 +36,6 @@ defmodule AuthWeb.Router do
     post "/auth/password/verify", AuthController, :password_prompt
     # https://github.com/dwyl/ping
     get "/ping", PingController, :ping
-    get "/init", InitController, :index
   end
 
   pipeline :auth do

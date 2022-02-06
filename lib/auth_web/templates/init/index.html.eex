@@ -1,4 +1,13 @@
-<h1 class="tc">Status</h1>
+<h1 class="tc">Initialization</h1>
+
+<h2 class="tc">
+  <code>init</code>: <%= @init %> </h2>
+<div class="tc bg-pink flex w-80">
+  <%# <div class="fl w-20 pa2 bg-dwyl-teal bg-orange fl"></div> %>
+  <code class="bg-red f2 dib center">AUTH_API_KEY</code>
+  <%# <div class="fl w-20 pa2 bg-dwyl-teal bg-orange fr"></div> %>
+  <img width=40px" src="/images/<%=@api_key_set%>.png" class="bg-green center">
+</div>
 
 <table class="w-80 mw5 mw7-ns center">
   <thead>
@@ -12,13 +21,11 @@
 <%= for {key, value} <- @env do %>
   <tr class="bb b--moon-gray">
     <td class=""><pre class="mono bold"><%= key %></pre></td>
-    <td class="center pl4"><img width="40px" src="/images/<%=value%>.png"></td>
+    <td class="center pl4"><img width="30px" src="/images/<%=value%>.png"></td>
   </tr>
 <% end %>
   </tbody>
 </table>
-
-<h2 class="w-80 mw5 mw7-ns center pt4"><code>init</code>: <%= @init %> </h2>
 
 
 <table class="w-80 mw5 mw7-ns center pt4">
@@ -33,7 +40,7 @@
 <%= for {key, value} <- @env_optional do %>
   <tr class="bb b--moon-gray">
     <td class=""><pre class="mono bold"><%= key %></pre></td>
-    <td class="center pl4"><img width="40px" src="/images/<%=value%>.png"></td>
+    <td class="center pl4"><img width="30px" src="/images/<%=value%>.png"></td>
   </tr>
 <% end %>
   </tbody>

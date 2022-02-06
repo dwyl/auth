@@ -103,11 +103,13 @@ defmodule Auth.Init do
 
     # If AUTH_API_KEY environment variable is already set, use it:
     key = if Envar.is_set?("AUTH_API_KEY") do
+
       update_attrs = %{
         "client_id" => AuthPlug.Token.client_id(),
         "client_secret" => AuthPlug.Token.client_secret()
       }
 
+      # Update value of client_id & client_secret in the DB to match Env.
       {:ok, key} =
         Auth.Apikey.get_apikey_by_app_id(app.id)
         |> cast(update_attrs, [:client_id, :client_secret])
