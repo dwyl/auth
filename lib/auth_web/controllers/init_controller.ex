@@ -21,7 +21,7 @@ defmodule AuthWeb.InitController do
       env_optional: check_env(@env_optional),
       init: init,
       api_key_set: api_key_set?()
-      )
+    )
   end
 
   defp check_env(keys) do

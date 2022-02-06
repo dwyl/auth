@@ -59,4 +59,7 @@ if config_env() == :prod do
   config :fields,
     encryption_keys: System.get_env("ENCRYPTION_KEYS"),
     secret_key_base: secret_key_base
+
+  config :auth_plug,
+    api_key: System.get_env("AUTH_API_KEY")
 end

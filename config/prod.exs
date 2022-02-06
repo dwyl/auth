@@ -58,6 +58,3 @@ config :logger, level: :debug
 # source .env_prod
 # MIX_ENV=prod mix ecto.setup
 # MIX_ENV=prod mix phx.server
-
-config :auth_plug,
-  api_key: System.get_env("AUTH_API_KEY")
