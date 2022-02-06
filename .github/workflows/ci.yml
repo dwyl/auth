@@ -43,6 +43,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         MIX_ENV: test
         AUTH_API_KEY: ${{ secrets.AUTH_API_KEY }}
+        AUTH_URL: dwylauth.herokuapp.com
         ADMIN_EMAIL: admin@dwylauth.com
         EMAIL_APP_URL: ${{ secrets.EMAIL_APP_URL }}
         ENCRYPTION_KEYS: ${{ secrets.ENCRYPTION_KEYS }}
