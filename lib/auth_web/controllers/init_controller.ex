@@ -10,7 +10,7 @@ defmodule AuthWeb.InitController do
       # check_app()
       Auth.Init.main()
     else
-      "cannot be run until all the required environment variables are set"
+      "cannot be run until all required environment variables are set"
     end
 
     conn

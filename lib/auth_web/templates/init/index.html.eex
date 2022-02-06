@@ -2,12 +2,6 @@
 
 <h2 class="tc">
   <code>init</code>: <%= @init %> </h2>
-<div class="tc bg-pink flex w-80">
-  <%# <div class="fl w-20 pa2 bg-dwyl-teal bg-orange fl"></div> %>
-  <code class="bg-red f2 dib center">AUTH_API_KEY</code>
-  <%# <div class="fl w-20 pa2 bg-dwyl-teal bg-orange fr"></div> %>
-  <img width=40px" src="/images/<%=@api_key_set%>.png" class="bg-green center">
-</div>
 
 <table class="w-80 mw5 mw7-ns center">
   <thead>
@@ -27,6 +21,16 @@
   </tbody>
 </table>
 
+<table class="w-80 mt3 mw5 mw7-ns center">
+  <thead>
+    <tr class="bb b--silver">
+      <th class="tl pv3 f3 code">AUTH_API_KEY</th>
+      <th class="center pl6">
+        <img width=30px" src="/images/<%=@api_key_set%>.png" class="center pl4">
+        </th>
+    </tr>
+  </thead>
+</table>
 
 <table class="w-80 mw5 mw7-ns center pt4">
   <thead>
