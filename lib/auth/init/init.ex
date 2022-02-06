@@ -34,7 +34,7 @@ defmodule Auth.Init do
         Auth.InitRoles.create_default_roles()
     
         # Update status of Admin to "verified"
-        Auth.Person.verify_person_by_id(1)
+        Auth.Person.verify_person_by_id(admin.id)
         
         # Create App and API Key for the admin:
         Auth.Init.create_apikey_for_admin(admin)
