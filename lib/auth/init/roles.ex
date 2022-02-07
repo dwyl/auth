@@ -66,11 +66,4 @@ defmodule Auth.InitRoles do
       Auth.Role.upsert_role(role)
     end)
   end
-
-  # def delete_default_roles do
-  #   Enum.each(roles(), fn role ->
-  #     role = Auth.Role.get_role!(role.id)
-  #     Auth.Role.delete_role(role)
-  #   end)
-  # end
 end

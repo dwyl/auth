@@ -44,8 +44,7 @@ defmodule Auth.Init do
         key.client_id <> "/" <> key.client_secret <> "/" <> get_auth_url()
         
     end
-    # mix_env = Envar.get("MIX_ENV")
-    # IO.inspect("MIX_ENV: #{mix_env} Envar.get/1")
+
     case Envar.get("MIX_ENV") do
       "test" ->
         # set the AUTH_API_KEY environment variable during test run:

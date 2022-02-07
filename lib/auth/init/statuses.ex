@@ -110,10 +110,4 @@ defmodule Auth.InitStatuses do
       Auth.Status.upsert_status(status)
     end)
   end
-
-  # def delete_statuses do
-  #   Enum.each(statuses(), fn status ->
-  #     Auth.Status.delete_status(status)
-  #   end)
-  # end
 end
