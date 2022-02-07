@@ -7,11 +7,10 @@ defmodule Auth.InitTest do
       assert Auth.Init.main() == :ok
     end
   
-    test "Delete Everything and init again!" do
+    test "Delete Everything and init again! (test branches)" do
       Envar.set("MIX_ENV", "test") 
       app = Auth.App.get_app!(1)
       Auth.App.delete_app(app)
-      email = Envar.get("ADMIN_EMAIL")
       person = Auth.Init.create_admin()
       Auth.Person.delete(person)
       

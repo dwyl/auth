@@ -23,6 +23,11 @@ config :elixir_auth_google,
   client_secret: "MHxv6-RGF5nheXnxh1b0LNDq",
   httpoison_mock: true
 
+config :elixir_auth_github,
+  client_id: "d6fca75c63daa014c187",
+  client_secret: "8eeb143935d1a505692aaef856db9b4da8245f3c",
+  httpoison_mock: true
+
 config :auth_plug,
   api_key: System.get_env("AUTH_API_KEY"),
   # "2PzB7PPnpuLsbWmWtXpGyI+kfSQSQ1zUW2Atz/+8PdZuSEJzHgzGnJWV35nTKRwx/authdev.herokuapp.com",
