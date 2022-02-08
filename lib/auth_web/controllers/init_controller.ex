@@ -34,7 +34,7 @@ defmodule AuthWeb.InitController do
     case AuthPlug.Token.api_key() do
       # coveralls-ignore-start
       nil -> 
-        IO.puts("AuthPlug.Token.api_key() #{AuthPlug.Token.api_key()}")
+        # IO.puts("AuthPlug.Token.api_key() #{AuthPlug.Token.api_key()}")
         false
       # coveralls-ignore-stop
         
