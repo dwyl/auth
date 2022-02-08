@@ -3,7 +3,7 @@ defmodule Auth.Repo.Migrations.AddPersonIdToTag do
 
   def change do
     alter table(:tags) do
-      add :person_id, references(:people, on_delete: :nothing)
+      add :person_id, references(:people, on_delete: :delete_all)
     end
   end
 end

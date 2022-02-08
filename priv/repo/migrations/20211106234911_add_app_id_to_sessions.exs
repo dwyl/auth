@@ -8,7 +8,7 @@ defmodule Auth.Repo.Migrations.AddAppIdToSessions do
       add :end, :naive_datetime
       # avoid tight coupling
       remove :person_id
-      add :person_id, references(:people, on_delete: :nothing)
+      add :person_id, references(:people, on_delete: :delete_all)
       add :user_agent_id, :integer
       # Don't want to risk leaking auth/refresh tokens in a breach
       # so just not going to store them even encrypted. 

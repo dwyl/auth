@@ -42,3 +42,6 @@ config :esbuild,
     cd: Path.expand("../assets", __DIR__),
     env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
   ]
+
+config :auth_plug,
+  api_key: System.get_env("AUTH_API_KEY")

@@ -67,7 +67,7 @@ defmodule Auth.App do
 
   ## Examples
 
-      iex> get_app!(123)
+      iex> Auth.App.get_app!(123)
       %App{}
 
       iex> get_app!(456)

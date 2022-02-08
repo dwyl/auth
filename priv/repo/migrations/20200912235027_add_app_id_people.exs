@@ -3,7 +3,7 @@ defmodule Auth.Repo.Migrations.AddAppIdPeople do
 
   def change do
     alter table(:people) do
-      add :app_id, references(:apps, on_delete: :nothing)
+      add :app_id, references(:apps, on_delete: :delete_all)
     end
   end
 end

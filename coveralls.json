@@ -5,6 +5,7 @@
   "skip_files": [
     "test/",
     "lib/auth/application.ex",
+    "lib/auth/release.ex",
     "lib/auth_web.ex",
     "lib/auth_web/views/error_helpers.ex",
     "lib/auth_web/channels/user_socket.ex",

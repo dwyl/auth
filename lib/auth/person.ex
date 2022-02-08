@@ -218,7 +218,7 @@ defmodule Auth.Person do
   end
 
   def get_status_verified do
-    status = Auth.Status.upsert_status(%{"text" => "verified"})
+    status = Auth.Status.upsert_status(%{text: "verified"})
     status.id
   end
 
@@ -351,5 +351,21 @@ defmodule Auth.Person do
         e
       end
     end
+  end
+
+  @doc """
+  Deletes a person.
+
+  ## Examples
+
+      iex> delete(person)
+      {:ok, %Role{}}
+
+      iex> delete(person)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete(person) do
+    Repo.delete(person)
   end
 end

@@ -5,7 +5,7 @@ defmodule Auth.Repo.Migrations.CreateRoles do
     create table(:roles) do
       add :name, :string
       add :desc, :string
-      add :person_id, references(:people, on_delete: :nothing)
+      add :person_id, references(:people, on_delete: :delete_all)
       add :app_id, references(:apps, on_delete: :nothing)
 
       timestamps()

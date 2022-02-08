@@ -1,0 +1,54 @@
+<h1 class="tc">Initialization</h1>
+
+<h2 class="tc">
+  <code>init</code>: <%= @init %> </h2>
+
+<table class="w-80 mw5 mw7-ns center">
+  <thead>
+    <tr class="bb b--silver">
+      <th class="tl pv3 f3">REQUIRED Environment Variable</th>
+      <th class="tl pv3 f3">Defined?</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+<%= for {key, value} <- @env do %>
+  <tr class="bb b--moon-gray">
+    <td class=""><pre class="mono bold"><%= key %></pre></td>
+    <td class="center pl4"><img width="30px" src="/images/<%=value%>.png"></td>
+  </tr>
+<% end %>
+  </tbody>
+</table>
+
+<table class="w-80 mt3 mw5 mw7-ns center">
+  <thead>
+    <tr class="bb b--silver">
+      <th class="tl pv3 code">
+        <span class="f3">AUTH_API_KEY</span> <br />
+        <small>(AuthPlug.Token.api_key/1)</small>
+      </th>
+      <th class="center pl6">
+        <img width=30px" src="/images/<%=@api_key_set%>.png" class="center pr3">
+        </th>
+    </tr>
+  </thead>
+</table>
+
+<table class="w-80 mw5 mw7-ns center pt4">
+  <thead>
+    <tr class="bb b--silver">
+      <th class="tl pv3 f3">OPTIONAL Environment Variable</th>
+      <th class="tl pv3 f3">Defined?</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+<%= for {key, value} <- @env_optional do %>
+  <tr class="bb b--moon-gray">
+    <td class=""><pre class="mono bold"><%= key %></pre></td>
+    <td class="center pl4"><img width="30px" src="/images/<%=value%>.png"></td>
+  </tr>
+<% end %>
+  </tbody>
+</table>
