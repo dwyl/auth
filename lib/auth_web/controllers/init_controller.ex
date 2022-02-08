@@ -31,7 +31,6 @@ defmodule AuthWeb.InitController do
   end
 
   defp api_key_set?() do
-    IO.puts("AuthPlug.Token.api_key() #{AuthPlug.Token.api_key()}")
     case AuthPlug.Token.api_key() do
       # coveralls-ignore-start
       nil -> 
