@@ -15,7 +15,7 @@
 <%= for {key, value} <- @env do %>
   <tr class="bb b--moon-gray">
     <td class=""><pre class="mono bold"><%= key %></pre></td>
-    <td class="center pl4"><img width="30px" src="/images/<%=value%>.png"></td>
+    <td class="center pl4"><img width="30px" src="<%= status_image(value) %>"></td>
   </tr>
 <% end %>
   </tbody>
@@ -29,7 +29,7 @@
         <small>(AuthPlug.Token.api_key/1)</small>
       </th>
       <th class="center pl6">
-        <img width=30px" src="/images/<%=@api_key_set%>.png" class="center pr3">
+        <img width=30px" src="<%= status_image(@api_key_set) %>" class="center pr3">
         </th>
     </tr>
   </thead>
@@ -47,7 +47,7 @@
 <%= for {key, value} <- @env_optional do %>
   <tr class="bb b--moon-gray">
     <td class=""><pre class="mono bold"><%= key %></pre></td>
-    <td class="center pl4"><img width="30px" src="/images/<%=value%>.png"></td>
+    <td class="center pl4"><img width="30px" src="<%= status_image(value) %>"></td>
   </tr>
 <% end %>
   </tbody>
