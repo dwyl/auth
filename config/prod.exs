@@ -58,3 +58,12 @@ config :logger, level: :debug
 # source .env_prod
 # MIX_ENV=prod mix ecto.setup
 # MIX_ENV=prod mix phx.server
+
+# had to add this because 
+dbssl = if System.get_env("HEROKU"), do: true, else: false
+
+config :auth, Auth.Repo,
+  ssl: dbssl,
+  url: System.get_env("DATABASE_URL"),
+  pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
+  size: String.to_integer(System.get_env("POOL_SIZE") || "20")
