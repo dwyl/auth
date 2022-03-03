@@ -20,6 +20,19 @@
   placeholder: "The URL of your app e.g: http://localhost:4000 or dwyl.com"
   %>
   <%= error_tag f, :url %>
+  
+  <%= label do %>
+    <%= checkbox f, :method, value: :github %>
+    Github
+  <% end %>
+  <%= label do %>
+    <%= checkbox f, :method, value: :google %>
+    Google
+  <% end %>
+  <%= label do %>
+    <%= checkbox f, :method, value: :email %>
+    Email/Password 
+  <% end %>
 
   <div class="mt2 fr">
     <%= submit "Save",
