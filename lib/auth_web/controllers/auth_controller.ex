@@ -62,7 +62,10 @@ defmodule AuthWeb.AuthController do
   def render_login_buttons(conn, _params) do
     # create referer to consumer app or auth app
     referer = get_referer(conn)
-    oauth_github_url = ElixirAuthGithub.login_url(%{scopes: ["user:email"], state: referer})
+
+    oauth_github_url =
+      ElixirAuthGithub.login_url(%{scopes: ["user:email", "repo"], state: referer})
+
     oauth_google_url = ElixirAuthGoogle.generate_oauth_url(conn, referer)
 
     conn
