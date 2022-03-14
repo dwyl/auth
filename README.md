@@ -201,6 +201,14 @@ Once the Phoenix App is compiled/running,
 you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
 
+### 6. Check application status
+
+Visit [`localhost:4000/init`](http://localhost:4000/init) to make sure that
+all the environment variables are properly defined:
+
+![image](https://user-images.githubusercontent.com/194400/152709372-6496b83d-4a8a-4a14-ba5f-f41645fe8c1c.png)
+
+
 <br />
 
 ### Dependencies
