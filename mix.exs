@@ -60,7 +60,7 @@ defmodule Auth.Mixfile do
       {:telemetry_metrics, "~> 0.6.1"},
       {:telemetry_poller, "~> 1.0"},
       {:gettext, "~> 0.19.0"},
-      {:jason, "~> 1.2.2"},
+      {:jason, "~> 1.3"},
       {:plug_cowboy, "~> 2.5.2"},
 
       # Auth:
@@ -74,10 +74,10 @@ defmodule Auth.Mixfile do
       {:envar, "~> 1.0.5"},
 
       # https://github.com/dwyl/auth_plug
-      {:auth_plug, "~> 1.4.11"},
+      {:auth_plug, "~> 1.4"},
 
       # https://github.com/dwyl/rbac
-      {:rbac, "~> 0.5.3"},
+      {:rbac, "~> 0.7"},
 
       # Field Validation and Encryption: github.com/dwyl/fields
       {:fields, "~> 2.8.2"},
@@ -98,7 +98,7 @@ defmodule Auth.Mixfile do
       {:stream_data, "~> 0.5.0", only: :test},
 
       # Create Documentation for publishing Hex.docs:
-      {:ex_doc, "~> 0.25.3", only: :dev},
+      {:ex_doc, "~> 0.28", only: :dev},
       {:credo, "~> 1.4", only: [:dev], runtime: false},
       {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
       {:sobelow, "~> 0.11.1", only: [:dev]}
