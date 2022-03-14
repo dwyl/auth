@@ -22,15 +22,15 @@
   <%= error_tag f, :url %>
   
   <%= label do %>
-    <%= checkbox f, :method, value: :github %>
+    <%= checkbox f, :github%>
     Github
   <% end %>
   <%= label do %>
-    <%= checkbox f, :method, value: :google %>
+    <%= checkbox f, :google%>
     Google
   <% end %>
   <%= label do %>
-    <%= checkbox f, :method, value: :email %>
+    <%= checkbox f, :email%>
     Email/Password 
   <% end %>
 
