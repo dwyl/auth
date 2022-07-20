@@ -86,7 +86,7 @@ defmodule Auth.Mixfile do
       {:b58, "~>1.0.2"},
 
       # Useful functions: https://github.com/dwyl/useful
-      {:useful, "~> 0.4.0"},
+      {:useful, "~> 1.0"},
 
       # Ping to Wake Heroku Instance: https://github.com/dwyl/ping
       {:ping, "~> 1.1.0"},
