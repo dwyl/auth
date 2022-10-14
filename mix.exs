@@ -4,7 +4,7 @@ defmodule Auth.Mixfile do
   def project do
     [
       app: :auth,
-      version: "1.6.6",
+      version: "1.6.7",
       elixir: "~> 1.12",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
@@ -101,7 +101,10 @@ defmodule Auth.Mixfile do
       {:ex_doc, "~> 0.28", only: :dev},
       {:credo, "~> 1.4", only: [:dev], runtime: false},
       {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
-      {:sobelow, "~> 0.11.1", only: [:dev]}
+      {:sobelow, "~> 0.11.1", only: [:dev]},
+
+      # Create ERDs https://github.com/fuelen/ecto_erd
+      {:ecto_erd, "~> 0.5", only: :dev},
     ]
   end
 
