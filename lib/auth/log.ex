@@ -115,23 +115,11 @@ defmodule Auth.Log do
 
   def stringify(map) when is_map(map) do
     map
+    # remove any metadata from Ecto or Structs:
     |> Map.delete(:__meta__)
     |> Map.delete(:__struct__)
     # avoid leaking personal data (person.email) in logs
     |> Map.delete(:email)
-    |> Useful.flatten_map()
-    |> Map.keys()
-    |> Enum.map(fn key ->
-      unless is_nil(Map.get(map, key)) do
-        "#{key}:#{Map.get(map, key)}"
-      end
-    end)
-    # Remove nil values
-    |> Enum.filter(&(!is_nil(&1)))
-    |> Enum.join(", ")
-  end
-
-  def stringify(map) when is_nil(map) do
-    "nil"
+    |> Useful.stringify_map()
   end
 end
