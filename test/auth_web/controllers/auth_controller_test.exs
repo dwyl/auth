@@ -512,4 +512,8 @@ defmodule AuthWeb.AuthControllerTest do
     conn2 = conn |> admin_login() |> get("/logout", %{})
     assert html_response(conn2, 200) =~ "Successfully logged out."
   end
+
+  test "client_id_is_current? nil path" do
+    assert AuthWeb.AuthController.client_id_is_current?(0, 1) == false
+  end
 end

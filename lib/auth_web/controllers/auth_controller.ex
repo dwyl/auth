@@ -96,7 +96,7 @@ defmodule AuthWeb.AuthController do
 
   # return true if the app_id is linked to the client_id otherwise false
   # Check if the api key hasn't been deleted
-  defp client_id_is_current?(app_id, client_id) do
+  def client_id_is_current?(app_id, client_id) do
     case Auth.Apikey.get_apikey_by_app_id(app_id) do
       nil ->
         false
