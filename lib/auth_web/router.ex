@@ -62,6 +62,9 @@ defmodule AuthWeb.Router do
     # resources "/settings/apikeys", ApikeyController
 
     get "/logout", AuthController, :logout
+
+    # Groups
+    live "/groups", GroupsLive
   end
 
   pipeline :api do
