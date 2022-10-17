@@ -26,7 +26,7 @@ The database Entity Relationship Diagram (ERD)
 had the following tables/relationships 
 before we added `groups`:
 
-
+![erd-before-groups](https://user-images.githubusercontent.com/194400/195663957-665e6064-32df-4366-89ed-c2dc109f79a6.png)
 
 
 # 10. Groups
@@ -50,6 +50,11 @@ as outlined in
 [**`#220`**](https://github.com/dwyl/auth/issues/220)
 
 ```sh
-mix phx.gen.schema Group groups name:binary description:binary 
+mix phx.gen.schema Group groups name:binary desc:binary kind:string
 ```
 
+Both `group.name` and `group.desc` (description)
+are considered personally identifiable or sensitive information
+hence using the `binary` type in the `gen.schema` command.
+They will be encrypted at rest using 
+[`Fields.Encrypted`](https://github.com/dwyl/fields).

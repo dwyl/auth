@@ -290,12 +290,14 @@ defmodule Auth.Person do
   @doc """
   `decrypt_email/1` accepts a `cyphertext` and attempts to Base58.decode
   followed by AES.decrypt it. If decode or decrypt fails, return 0 (zero).
+  No idea how to test the unhappy path for this. #HelpWanted!
   """
   def decrypt_email(cyphertext) do
     try do
       cyphertext |> Base58.decode() |> Fields.AES.decrypt()
     rescue
-      ArgumentError ->
+      # match all errors
+      _ ->
         0
     end
   end

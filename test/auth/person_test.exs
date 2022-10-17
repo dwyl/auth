@@ -21,4 +21,15 @@ defmodule Auth.PersonTest do
     updated_person = Person.get_person_by_id(person.id)
     assert updated_person.status == 1
   end
+
+  test "Auth.Person.decrypt_email/1" do
+    email = "alex@gmail.com"
+    encrypted = email |> Fields.AES.encrypt() |> Base58.encode()
+    decrypted = Person.decrypt_email(encrypted)
+    assert email == decrypted
+
+    # Unhappy ("rescue") path:
+    invalid_email = ""
+    assert Person.decrypt_email(invalid_email) == 0
+  end
 end
