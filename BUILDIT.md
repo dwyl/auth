@@ -37,16 +37,18 @@ to invite others
 to ***collaborate***.
 
 Our reasoning to include **`groups`**
-in the **`auth`** App is that 
-we _already_ store all **`people`** related
+in the **`auth`** App 
+is that it _already_ stores all **`people`** related
 (_personally identifiable_) data
-in **`auth`** therefore _grouping_ 
+in therefore _grouping_ 
 those **`people`** together makes logical sense.
-Therefore this is a **_generalised_ implementation**
+This is a **_generalised_ implementation**
 that can be used by **_any_ application**
 that requires collaboration/teamwork.
 
 ## 10.1 Create Schema
+
+First we need to create a new schema for storing the data.
 
 Run the folloiwng 
 [**`mix phx.gen.schema`**](https://hexdocs.pm/phoenix/Mix.Tasks.Phx.Gen.Schema.html)
@@ -55,7 +57,7 @@ as outlined in
 [**`#220`**](https://github.com/dwyl/auth/issues/220)
 
 ```sh
-mix phx.gen.schema Group groups name:binary desc:binary kind:string
+mix phx.gen.schema Group groups name:binary desc:binary kind:integer
 ```
 
 Both `group.name` and `group.desc` (description)
@@ -64,7 +66,46 @@ hence using the `binary` type in the `gen.schema` command.
 The data for these fields will be encrypted at rest using 
 [`Fields.Encrypted`](https://github.com/dwyl/fields).
 
-## 10.2 Create `LiveView` for `groups`
+The `group.kind` will be the way people _categorise_ 
+their various groups. It will be an `Enum` 
+and therefore the `integer` will be stored in the DB.
+
+
+## 10.2 _Test_ Groups Schema
+
+Having created the Groups Schema + Migration in the previous step,
+it created a new file: 
+`lib/auth/group.ex`
+
+If we run the coverage report with the command: `mix c`
+
+We see that there are no tests for the code in the `group.ex` file:
+
+```sh
+
+Randomized with seed 366521
+----------------
+COV    FILE                                        LINES RELEVANT   MISSED
+100.0% lib/auth.ex                                     9        0        0
+100.0% lib/auth/apikey.ex                            105       15        0
+100.0% lib/auth/app.ex                               158       17        0
+100.0% lib/auth/email.ex                              41        7        0
+  0.0% lib/auth/group.ex                              19        2        2   <-- This!
+100.0% lib/auth/init/init.ex                         124       26        0
+ ...
+100.0% lib/auth_web/views/layout_view.ex               3        0        0
+100.0% lib/auth_web/views/people_view.ex              35        7        0
+100.0% lib/auth_web/views/permission_view.ex           3        0        0
+100.0% lib/auth_web/views/role_view.ex                10        3        0
+[TOTAL]  99.3%
+----------------
+```
+
+That's what we are fixing now.
+
+
+
+## 10.3 Create `LiveView` for `groups`
 
 Create the `lib/auth_web/live` directory
 and the controller at `lib/auth_web/live/groups_live.ex`:
@@ -113,7 +154,7 @@ update the contents of the `<body>` to:
 </body>
 ```
 
-## 1.5 Update `router.ex`
+## 10.4 Update `router.ex`
 
 Now that you've created the necessary files,
 open the router
@@ -140,7 +181,7 @@ you should see the following:
 
 ![liveveiw-page-with-tailwind-style](https://user-images.githubusercontent.com/194400/176137805-34467c88-add2-487f-9593-931d0314df62.png)
 
-## 1.6 Update Tests
+## 10.5 Update Tests
 
 At this point we have made a few changes 
 that mean our automated test suite will no longer pass ... 
@@ -204,3 +245,10 @@ Finished in 0.1 seconds (0.08s async, 0.1s sync)
 
 Randomized with seed 796477
 ```
+
+
+
+
+## 10.6 Group _Members_
+
+Now that we have groups 

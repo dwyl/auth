@@ -116,13 +116,13 @@ defmodule Auth.Mixfile do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
+      "assets.deploy": ["esbuild default --minify", "phx.digest"],
       c: ["coveralls.html"],
       "ecto.setup": ["ecto.create --quiet", "ecto.migrate --quiet", "seeds"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       seeds: ["run priv/repo/seeds.exs"],
+      s: ["phx.server"],
       test: ["ecto.reset", "test"],
-      "assets.deploy": ["esbuild default --minify", "phx.digest"],
-      s: ["phx.server"]
     ]
   end
 

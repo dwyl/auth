@@ -27,6 +27,10 @@
      <li class="pl5 pl6-m di-l tl pb2-m">
        <a href="/roles" class="white link">Roles</a>
      </li>
+
+     <li class="pl5 pl6-m di-l tl pb2-m">
+       <a href="/groups" class="white link">Groups</a>
+     </li>
      <% end %>
 
      <%= if Map.has_key?(@conn.assigns, :person) do %>
