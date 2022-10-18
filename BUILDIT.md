@@ -7,11 +7,11 @@
 This is a log 
 of the steps taken 
 to build the **`auth`** Application. 🚀 <br />
-It took us _hours_ 
+It took us _weeks_ 
 to write it,
 but you can 
 [***speedrun***](https://en.wikipedia.org/wiki/Speedrun)
-it in **20 minutes**. 🏁
+it in **30 minutes**. 🏁
 
 </div>
 
@@ -24,7 +24,7 @@ version of **`auth`** so that we can _easily_ re-create them in the re-build.
 
 The database Entity Relationship Diagram (ERD)
 had the following tables/relationships 
-before we added `groups`:
+_before_ we added `groups`:
 
 ![erd-before-groups](https://user-images.githubusercontent.com/194400/195663957-665e6064-32df-4366-89ed-c2dc109f79a6.png)
 
@@ -42,9 +42,29 @@ is that it _already_ stores all **`people`** related
 (_personally identifiable_) data
 in therefore _grouping_ 
 those **`people`** together makes logical sense.
+
 This is a **_generalised_ implementation**
 that can be used by **_any_ application**
 that requires collaboration/teamwork.
+
+> **Note**: we are fully aware 
+> that having **`people`** and **`groups`**
+> in the **`auth`** App presents
+> both a _technical_ and UX/UI challenge.
+> It would be _much_ simpler from the _individual_
+> App's perspective to store `people` and `groups`
+> in the App's DB 
+> and _not_ have to connect to another App
+> to retrieve and manage them.
+> Luckily (for us) there is a **_widely_ accepted/practiced**
+> application architecture called
+> [***Microservices***](https://en.wikipedia.org/wiki/Microservices)
+> where this approach to logical
+> [**separation of concerns**](https://en.wikipedia.org/wiki/Separation_of_concerns)
+> is ***embraced***.
+> We _know_ this _initially_ introduces some complexity into our App architecture.
+> But we hope that by reading on you will see that it 
+> **_significantly_ simplifies** the "consuming" app.
 
 ## 10.1 Create Schema
 
@@ -57,7 +77,7 @@ as outlined in
 [**`#220`**](https://github.com/dwyl/auth/issues/220)
 
 ```sh
-mix phx.gen.schema Group groups name:binary desc:binary kind:integer
+mix phx.gen.schema Group groups name:binary desc:binary kind:integer 
 ```
 
 Both `group.name` and `group.desc` (description)
@@ -73,17 +93,17 @@ and therefore the `integer` will be stored in the DB.
 
 ## 10.2 _Test_ Groups Schema
 
-Having created the Groups Schema + Migration in the previous step,
-it created a new file: 
+Having created the `groups` schema & migration 
+in the previous step,
+a new file was created: 
 `lib/auth/group.ex`
 
 If we run the coverage report with the command: `mix c`
 
-We see that there are no tests for the code in the `group.ex` file:
+We see that there are 
+**no tests** for the code in the `group.ex` file:
 
 ```sh
-
-Randomized with seed 366521
 ----------------
 COV    FILE                                        LINES RELEVANT   MISSED
 100.0% lib/auth.ex                                     9        0        0
@@ -103,7 +123,95 @@ COV    FILE                                        LINES RELEVANT   MISSED
 
 That's what we are fixing now.
 
+Create a new file with the path:
+`test/auth/group_test.exs`
 
+Add the following code:
+
+```elixir
+defmodule Auth.GroupTest do
+  use Auth.DataCase, async: true
+
+  describe "Group Schema Tests" do
+    test "Auth.Group.create/1 creates a new group" do
+      group = %{
+        desc: "My test group",
+        name: "TestGroup",
+        kind: 1
+      }
+      assert {:ok, inserted_group} = Auth.Group.create(group)
+      assert inserted_group.name == group.name
+    end
+  end
+end
+```
+
+If you invoke this test:
+
+```sh
+mix test test/auth/group_test.exs
+```
+
+You will see it _fail_. 
+That's because the `Auth.Group.create/1` does not yet _exist_.
+Crete it in the 
+`lib/auth/group.ex`
+file:
+
+```elixir
+  @doc """
+  Creates a `group`.
+  """
+  def create(attrs) do
+    %Group{}
+    |> changeset(attrs)
+    |> Repo.insert()
+  end
+```
+
+Rememer to add the following aliases to the top of the file:
+```elixir
+  alias Auth.{Repo}
+  alias __MODULE__
+```
+That will give us access to the `Repo.insert/1` function
+and `alias __MODULE__` just means 
+"alias the _current_ file so that I can use it below".
+e.g: `%Group{}` the schema defined in this file.
+
+When you re-run the test:
+
+```sh
+mix test test/auth/group_test.exs
+```
+
+It should pass.
+
+If you re-run the tests with coverage:
+
+```sh
+mix c
+```
+
+You should see the coverage back up to 100%:
+
+```sh
+----------------
+COV    FILE                                        LINES RELEVANT   MISSED
+100.0% lib/auth.ex                                     9        0        0
+100.0% lib/auth/group.ex                              31        3        0 <-- 100%
+100.0% lib/auth/init/init.ex                         124       26        0
+... etc.
+[TOTAL] 100.0%
+----------------
+```
+
+There is still another schema 
+we need to create for `groups`,
+namely `group_members` 
+that will allow us to add `people` to a `group`.
+But let's build some UI _first_
+so that we can _see_ it coming to life!
 
 ## 10.3 Create `LiveView` for `groups`
 
@@ -158,28 +266,32 @@ update the contents of the `<body>` to:
 
 Now that you've created the necessary files,
 open the router
-`lib/auth_web/router.ex` 
-replace the default route `PageController` controller:
-
-```elixir
-get "/", PageController, :index
-```
-
-with our newly created `GroupsLive` controller:
+and add a new route `/groups` 
+pointing to our newly created `GroupsLive` controller
 
 
 ```elixir
 scope "/", AuthWeb do
   pipe_through :browser
+  pipe_through :auth
 
-  live "/groups", GroupsLive
+  # ... existing routes ...
+
+  live "/groups", GroupsLive # <-- New!
 end
 ```
 
 Now if you refresh the page 
 you should see the following:
 
+# TODO: Add Screenshot of Groups Live Page!
+
 ![liveveiw-page-with-tailwind-style](https://user-images.githubusercontent.com/194400/176137805-34467c88-add2-487f-9593-931d0314df62.png)
+
+
+
+<hr /> next ...
+
 
 ## 10.5 Update Tests
 
