@@ -46,9 +46,9 @@ defmodule Auth.Mixfile do
   defp deps do
     [
       # Phoenix core:
-      {:phoenix, "~> 1.6.5"},
+      {:phoenix, "~> 1.6.14"},
       {:phoenix_ecto, "~> 4.4"},
-      {:ecto_sql, "~> 3.7.1"},
+      {:ecto_sql, "~> 3.7"},
       {:postgrex, ">= 0.15.13"},
       {:phoenix_html, "~> 3.2.0"},
       {:phoenix_live_reload, "~> 1.3.3", only: :dev},
@@ -60,7 +60,7 @@ defmodule Auth.Mixfile do
       {:telemetry_metrics, "~> 0.6.1"},
       {:telemetry_poller, "~> 1.0"},
       {:gettext, "~> 0.19.0"},
-      {:jason, "~> 1.3"},
+      {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.5.2"},
 
       # Auth:
@@ -74,10 +74,10 @@ defmodule Auth.Mixfile do
       {:envar, "~> 1.0.5"},
 
       # https://github.com/dwyl/auth_plug
-      {:auth_plug, "~> 1.4"},
+      {:auth_plug, "~> 1.4.20"},
 
       # https://github.com/dwyl/rbac
-      {:rbac, "~> 0.7"},
+      {:rbac, "~> 1.0"},
 
       # Field Validation and Encryption: github.com/dwyl/fields
       {:fields, "~> 2.10.3"},
@@ -86,7 +86,7 @@ defmodule Auth.Mixfile do
       {:b58, "~>1.0.2"},
 
       # Useful functions: https://github.com/dwyl/useful
-      {:useful, "~> 0.4.0"},
+      {:useful, "~> 1.0.8"},
 
       # Ping to Wake Heroku Instance: https://github.com/dwyl/ping
       {:ping, "~> 1.1.0"},
