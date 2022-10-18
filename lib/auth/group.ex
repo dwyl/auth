@@ -1,7 +1,7 @@
 defmodule Auth.Group do
   use Ecto.Schema
-  alias Auth.{Repo}
   import Ecto.Changeset
+  alias Auth.{Repo}
   alias __MODULE__
 
   schema "groups" do
