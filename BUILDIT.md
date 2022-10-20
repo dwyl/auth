@@ -20,6 +20,16 @@ it in **30 minutes**. 🏁
 For now I'm just adding the parts that are being added to the "old"
 version of **`auth`** so that we can _easily_ re-create them in the re-build.
 
+
+## 1.6 Petal.build Components
+
+https://petal.build/components/
+
+# 1.7 `mix format`
+
+See: https://github.com/dwyl/mvp/issues/183
+
+
 # ERD `before` adding `groups`
 
 The database Entity Relationship Diagram (ERD)

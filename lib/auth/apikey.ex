@@ -28,6 +28,7 @@ defmodule Auth.Apikey do
     plaintext |> Fields.AES.encrypt() |> Base58.encode()
   end
 
+  @spec create_api_key(any) :: nonempty_binary
   @doc """
   `create_api_key/1` uses the `encrypt_encode/1` to create an API Key
   that is just two strings joined with a forwardslash ("/").
