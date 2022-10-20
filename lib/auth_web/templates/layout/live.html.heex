@@ -1,4 +1,20 @@
 <!-- LiveView Layout File -->
-<body>
+<.container class="my-10">
+  <.alert
+    color="info"
+    class="mb-5"
+    label={live_flash(@flash, :info)}
+    phx-click="lv:clear-flash"
+    phx-value-key="info"
+  />
+
+  <.alert
+    color="danger"
+    class="mb-5"
+    label={live_flash(@flash, :error)}
+    phx-click="lv:clear-flash"
+    phx-value-key="error"
+  />
+
   <%= @inner_content %>
-</body>
+</.container>

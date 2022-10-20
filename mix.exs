@@ -88,6 +88,13 @@ defmodule Auth.Mixfile do
       # Useful functions: https://github.com/dwyl/useful
       {:useful, "~> 1.0.8"},
 
+      # Tailwind CSS
+      # See: https://github.com/dwyl/learn-tailwind
+      {:tailwind, "~> 0.1", runtime: Mix.env() == :dev},
+
+      # https://petal.build/components
+      {:petal_components, "~> 0.18"},
+
       # Ping to Wake Heroku Instance: https://github.com/dwyl/ping
       {:ping, "~> 1.1.0"},
 
@@ -116,7 +123,11 @@ defmodule Auth.Mixfile do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
-      "assets.deploy": ["esbuild default --minify", "phx.digest"],
+      "assets.deploy": [
+        "tailwind default --minify",
+        "esbuild default --minify",
+        "phx.digest"
+      ],
       c: ["coveralls.html"],
       "ecto.setup": ["ecto.create --quiet", "ecto.migrate --quiet", "seeds"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],

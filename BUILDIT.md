@@ -15,17 +15,45 @@ it in **30 minutes**. 🏁
 
 </div>
 
-# TODO: fill-in the gaps during the [Rebuild `#207`](https://github.com/dwyl/auth/issues/207)
+- [Build Log 👩‍💻](#build-log-)
+- [TODO](#todo)
+- [1. Setup the `auth` App](#1-setup-the-auth-app)
+  - [1. Add Tailwind](#1-add-tailwind)
+  - [1.6 `Petal.build` Components](#16-petalbuild-components)
+  - [1.7 `mix format`](#17-mix-format)
+- [ERD `before` adding `groups`](#erd-before-adding-groups)
+- [10. Groups](#10-groups)
+  - [10.1 Create Schema](#101-create-schema)
+  - [10.2 _Test_ Groups Schema](#102-test-groups-schema)
+  - [10.3 Create `LiveView` for `groups`](#103-create-liveview-for-groups)
+  - [10.4 Update `router.ex`](#104-update-routerex)
+- [TODO: Add Screenshot of Groups Live Page!](#todo-add-screenshot-of-groups-live-page)
+  - [10.5 Update Tests](#105-update-tests)
+  - [10.6 Group _Members_](#106-group-members)
+
+<br />
+
+# TODO
+
+We will fill-in the gaps during the [Rebuild `#207`](https://github.com/dwyl/auth/issues/207)
 
 For now I'm just adding the parts that are being added to the "old"
 version of **`auth`** so that we can _easily_ re-create them in the re-build.
 
 
-## 1.6 Petal.build Components
+# 1. Setup the `auth` App
+
+## 1. Add Tailwind
+
+Follow the instructions in:
+https://github.com/dwyl/learn-tailwind#part-2-tailwind-in-phoenix
+
+
+## 1.6 `Petal.build` Components
 
 https://petal.build/components/
 
-# 1.7 `mix format`
+## 1.7 `mix format`
 
 See: https://github.com/dwyl/mvp/issues/183
 
