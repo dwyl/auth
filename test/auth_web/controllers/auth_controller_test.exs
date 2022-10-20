@@ -52,17 +52,15 @@ defmodule AuthWeb.AuthControllerTest do
     assert html_response(conn, 401) =~ "Sorry, client_id: #{client_id} is not valid"
   end
 
-  # If logged in in auth but consumer app attempt to login
+  # If logged into auth but consumer app attempt to login
   # with a referer and client id, display the login page
   test "index/2 while logged in app_id match", %{conn: conn} do
+    url = "/?referer=" <> URI.encode("http://localhost/admin") <>
+      "&auth_client_id=" <> AuthPlug.Token.client_id()
     conn =
       conn
       |> non_admin_login()
-      |> get(
-        "/?referer=" <>
-          URI.encode("http://localhost/admin") <>
-          "&auth_client_id=" <> AuthPlug.Token.client_id()
-      )
+      |> get(url)
 
     assert html_response(conn, 200) =~ "Please Sign in to Continue"
   end
