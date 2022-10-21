@@ -401,4 +401,86 @@ Randomized with seed 796477
 
 ## 10.6 Group _Members_
 
-Now that we have groups 
+Now that we have **`groups`**,
+we need a way to add **`people`** (members)
+to those **`groups`**.
+
+Run the following command in your terminal:
+
+```sh
+mix phx.gen.schema GroupPeople group_people group_id:references:groups person_id:references:people people_role_id:references:people_roles
+```
+
+That will create two files:
+
+`lib/auth/group_people.ex` 
+(schema)
+and 
+`priv/repo/migrations/20221021213907_create_group_people.exs` 
+(migration)
+
+For reference, this is the schema that is created:
+
+```elixir
+defmodule Auth.GroupPeople do
+  use Ecto.Schema
+  import Ecto.Changeset
+
+  schema "group_people" do
+
+    field :group_id, :id
+    field :person_id, :id
+    field :people_role_id, :id
+
+    timestamps()
+  end
+
+  @doc false
+  def changeset(group_people, attrs) do
+    group_people
+    |> cast(attrs, [])
+    |> validate_required([])
+  end
+end
+```
+
+This schema is enough for us to achieve _everything_ we need/want.
+By leveraging the previously created `roles` and `people_roles`
+tables we have a built-in full-featured **`RBAC`** for `groups`.
+
+> **Note**: If anything is unclear, 
+please keep reading for answers.
+The UI/UX below will show how simple yet powerful this schema is.
+But as always,
+if anything is _still_ confusing
+[***please ask questions***](https://github.com/dwyl/auth/issues/)
+they **benefit _everyone_**! 🙏
+
+Here's the migration:
+
+```elixir
+defmodule Auth.Repo.Migrations.CreateGroupPeople do
+  use Ecto.Migration
+
+  def change do
+    create table(:group_people) do
+      add :group_id, references(:groups, on_delete: :nothing)
+      add :person_id, references(:people, on_delete: :nothing)
+      add :people_role_id, references(:people_roles, on_delete: :nothing)
+
+      timestamps()
+    end
+
+    create index(:group_people, [:group_id])
+    create index(:group_people, [:person_id])
+    create index(:group_people, [:people_role_id])
+  end
+end
+```
+
+Run the migration:
+
+```sh
+mix ecto.migrate
+```
+
