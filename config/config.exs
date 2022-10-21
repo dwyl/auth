@@ -36,7 +36,7 @@ import_config "#{Mix.env()}.exs"
 # https://gist.github.com/chrismccord/2ab350f154235ad4a4d0f4de6decba7b
 # Configure esbuild (the version is required)
 config :esbuild,
-  version: "0.12.18",
+  version: "0.14.29",
   default: [
     args: ~w(js/app.js --bundle --target=es2016 --outdir=../priv/static/assets),
     cd: Path.expand("../assets", __DIR__),

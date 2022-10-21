@@ -1,20 +1,17 @@
-<!-- LiveView Layout File -->
-<.container class="my-10">
-  <.alert
-    color="info"
-    class="mb-5"
-    label={live_flash(@flash, :info)}
-    phx-click="lv:clear-flash"
-    phx-value-key="info"
-  />
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title><%= assigns[:page_title] || "Auth App" %></title>
+    <%= csrf_meta_tag() %>
+    <link rel="stylesheet" href={Routes.static_path(@socket, "/assets/app.css") } />
+  </head>
+  <body class="helvetica">
 
-  <.alert
-    color="danger"
-    class="mb-5"
-    label={live_flash(@flash, :error)}
-    phx-click="lv:clear-flash"
-    phx-value-key="error"
-  />
-
-  <%= @inner_content %>
-</.container>
+    <!-- LiveView Layout File -->
+      <%= @inner_content %>
+    <script type="text/javascript" src={ Routes.static_path(@socket, "/assets/app.js")}></script>
+  </body>
+</html>

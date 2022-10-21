@@ -20,9 +20,11 @@ config :auth, AuthWeb.Endpoint,
   debug_errors: true,
   code_reloader: true,
   check_origin: false,
+  secret_key_base: "aMh0TI5FqAjFd9Xa+kRAlNfq1OzVb6NmiciLcpgiuU9mpCYjc78L+5cPte+Bqo0m",
   watchers: [
     # Start the esbuild watcher by calling Esbuild.install_and_run(:default, args)
-    esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]}
+    esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]},
+    tailwind: {Tailwind, :install_and_run, [:default, ~w(--watch)]}
   ]
 
 # ## SSL Support
@@ -56,7 +58,8 @@ config :auth, AuthWeb.Endpoint,
       ~r"priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$",
       ~r"priv/gettext/.*(po)$",
       ~r"lib/auth_web/(live|views)/.*(ex)$",
-      ~r"lib/auth_web/templates/.*(eex)$"
+      ~r"lib/auth_web/templates/.*(eex)$",
+      ~r"lib/auth_web/live/.*(heex)$"
     ]
   ]
 
