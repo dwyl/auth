@@ -11,7 +11,14 @@ module.exports = {
     '../lib/*_web/**/*.*ex',
     "../deps/petal_components/**/*.*ex",
   ],
-  theme: {},
+  theme: {
+    extend: {
+      colors: {
+        primary: colors.blue,
+        secondary: colors.pink,
+      },
+    },
+  },
   plugins: [
     require('@tailwindcss/forms'),
     plugin(({addVariant}) => addVariant('phx-no-feedback', ['&.phx-no-feedback', '.phx-no-feedback &'])),

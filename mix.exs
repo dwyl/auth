@@ -14,7 +14,8 @@ defmodule Auth.Mixfile do
         coveralls: :test,
         "coveralls.detail": :test,
         "coveralls.post": :test,
-        "coveralls.html": :test
+        "coveralls.html": :test,
+        test: :test
       ],
       dialyzer: [plt_add_deps: :transitive],
       build_embedded: Mix.env() == :prod,

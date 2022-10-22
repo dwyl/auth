@@ -1,6 +1,6 @@
 defmodule Auth.Init do
   @moduledoc """
-  `Init` as its' name suggests initializes the Auth Application 
+  `Init` as its' name suggests initializes the Auth Application
   by creating the necessary records in the various tables.
 
   This is the sequence of steps that are followed to init the App:
@@ -8,8 +8,8 @@ defmodule Auth.Init do
   1. Create the "Super Admin" person who owns the Auth App
   based on the `ADMIN_EMAIL` environment/config variable.
 
-  > The person.id (1) for the Super Admin 
-  will own the remaining records so it needs to be created first. 
+  > The person.id (1) for the Super Admin
+  will own the remaining records so it needs to be created first.
 
   2. Create default records (Statuses & Roles)
 
@@ -26,23 +26,23 @@ defmodule Auth.Init do
 
     # if the #1 App does not exist, create it:
     api_key = case Auth.App.get_app!(1) do
-      nil -> 
+      nil ->
         admin = Auth.Init.create_admin()
 
         # Create Generic Roles & Statuses
         Auth.InitStatuses.insert_statuses()
         Auth.InitRoles.create_default_roles()
-    
+
         # Update status of Admin to "verified"
         Auth.Person.verify_person_by_id(admin.id)
-        
+
         # Create App and API Key for the admin:
         Auth.Init.create_apikey_for_admin(admin)
 
       app ->
         key = List.last(app.apikeys)
         key.client_id <> "/" <> key.client_secret <> "/" <> get_auth_url()
-        
+
     end
 
     case Envar.get("MIX_ENV") do
@@ -75,7 +75,7 @@ defmodule Auth.Init do
       # Ignore if the Super Admin already exists:
       nil ->
         %Person{}
-        |> Person.changeset(%{email: email})
+        |> Person.changeset(%{email: email, givenName: "Neo"})
         |> Repo.insert!()
 
       person ->
@@ -112,7 +112,7 @@ defmodule Auth.Init do
         |> Repo.update()
 
       key
-      
+
     # coveralls-ignore-start
     else
       List.last(app.apikeys)

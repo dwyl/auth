@@ -30,6 +30,8 @@ it in **30 minutes**. 🏁
 - [TODO: Add Screenshot of Groups Live Page!](#todo-add-screenshot-of-groups-live-page)
   - [10.5 Update Tests](#105-update-tests)
   - [10.6 Group _Members_](#106-group-members)
+  - [10.7 _Test_ `group_people.ex`](#107-test-group_peopleex)
+  - [10.8 Make `group_people_test.exs` pass](#108-make-group_people_testexs-pass)
 
 <br />
 
@@ -408,7 +410,7 @@ to those **`groups`**.
 Run the following command in your terminal:
 
 ```sh
-mix phx.gen.schema GroupPeople group_people group_id:references:groups person_id:references:people people_role_id:references:people_roles
+mix phx.gen.schema GroupPeople group_people group_id:references:groups people_role_id:references:people_roles
 ```
 
 That will create two files:
@@ -429,7 +431,6 @@ defmodule Auth.GroupPeople do
   schema "group_people" do
 
     field :group_id, :id
-    field :person_id, :id
     field :people_role_id, :id
 
     timestamps()
@@ -438,7 +439,7 @@ defmodule Auth.GroupPeople do
   @doc false
   def changeset(group_people, attrs) do
     group_people
-    |> cast(attrs, [])
+    |> cast(attrs, [:group_id, :people_role_id])
     |> validate_required([])
   end
 end
@@ -446,13 +447,15 @@ end
 
 This schema is enough for us to achieve _everything_ we need/want.
 By leveraging the previously created `roles` and `people_roles`
-tables we have a built-in full-featured **`RBAC`** for `groups`.
+tables we have a built-in full-featured 
+[**`RBAC`**](https://github.com/dwyl/auth/blob/main/role-based-access-control.md)
+for `groups`.
 
 > **Note**: If anything is unclear, 
 please keep reading for answers.
 The UI/UX below will show how simple yet powerful this schema is.
 But as always,
-if anything is _still_ confusing
+if anything is _still_ uncertain
 [***please ask questions***](https://github.com/dwyl/auth/issues/)
 they **benefit _everyone_**! 🙏
 
@@ -465,14 +468,12 @@ defmodule Auth.Repo.Migrations.CreateGroupPeople do
   def change do
     create table(:group_people) do
       add :group_id, references(:groups, on_delete: :nothing)
-      add :person_id, references(:people, on_delete: :nothing)
       add :people_role_id, references(:people_roles, on_delete: :nothing)
 
       timestamps()
     end
 
     create index(:group_people, [:group_id])
-    create index(:group_people, [:person_id])
     create index(:group_people, [:people_role_id])
   end
 end
@@ -484,3 +485,161 @@ Run the migration:
 mix ecto.migrate
 ```
 
+## 10.7 _Test_ `group_people.ex`
+
+Creating the `lib/auth/group_people.ex` schema,
+means it has no test coverage.
+
+If you run:
+
+```sh
+mix c
+```
+
+You will see something similar to:
+
+```sh
+----------------
+COV    FILE                                        LINES RELEVANT   MISSED
+100.0% lib/auth.ex                                     9        0        0
+100.0% lib/auth/group.ex                              31        3        0
+  0.0% lib/auth/group_people.ex                       20        2        2
+100.0% lib/auth/init/roles.ex                         69        3        0
+100.0% lib/auth/people_roles.ex                      136       12        0
+etc.
+
+[TOTAL]  99.3%
+----------------
+```
+
+`lib/auth/group_people.ex` has 0% coverage.
+Let's _fix_ that!
+
+
+Create a new file with the path:
+`test/auth/group_people_test.exs`
+
+Add the following test code:
+
+```elixir
+defmodule Auth.GroupPeopleTest do
+  use Auth.DataCase, async: true
+
+  describe "Group People Schema Tests" do
+    test "Auth.GroupPeople.create/1 creates a new group" do
+      # admin, app & role created by init. see: Auth.Init.main/0
+      app = Auth.App.get_app!(1)
+      admin = Auth.Person.get_person_by_id(1)
+      role = Auth.Role.get_role!(4)
+
+      # Create a random non-admin person we can add to the group:
+      alex = %{email: "alex_not_admin@gmail.com", givenName: "Alex",
+        auth_provider: "email", app_id: app.id}
+      grantee = Auth.Person.create_person(alex)
+      assert grantee.id > 1
+
+      # Create group
+      group = %{
+        desc: "Group with people",
+        name: "GroupName",
+        kind: 1,
+        app_id: app.id
+      }
+      assert {:ok, inserted_group} = Auth.Group.create(group)
+      assert inserted_group.name == group.name
+      assert inserted_group.app_id == app.id
+
+      # create person_role record: (referenced in group_people)
+      {:ok, person_role} = Auth.PeopleRoles.insert(app.id, grantee.id, admin.id, role.id)
+
+      group_person = %{
+        group_id: inserted_group.id,
+        people_role_id: person_role.id
+      }
+
+      # Insert the GroupPerson Record
+      {:ok, inserted_group_person} = Auth.GroupPeople.create(group_person)
+      assert inserted_group_person.group_id == inserted_group.id
+      assert inserted_group_person.people_role_id == person_role.id
+
+      # Insert Admin Role:
+      {:ok, admin_role} = Auth.PeopleRoles.insert(app.id, admin.id, admin.id, 2)
+
+      group_person_admin = %{
+        group_id: inserted_group.id,
+        people_role_id: admin_role.id
+      }
+
+      # Insert the GroupPerson Admin
+      {:ok, inserted_group_admin} = Auth.GroupPeople.create(group_person_admin)
+      assert inserted_group_admin.group_id == inserted_group.id
+      assert inserted_group_admin.people_role_id == admin_role.id
+
+      # Finally, let's confirm these two people are in the group:
+      group_people = Auth.GroupPeople.get_group_people(inserted_group.id)
+      assert Enum.count(group_people) == 2
+    end
+  end
+end
+```
+There's quite a lot going on here 
+mostly because of the linked schemas.
+Read through the steps with comments.
+
+
+If you attempt to run this test:
+
+```sh
+MIX_ENV=test mix test test/auth/group_people_test.exs
+```
+
+You will see it _fail_ because the 
+required functions do not exist _yet_.
+
+Let's create the functions to make the test pass.
+
+## 10.8 Make `group_people_test.exs` pass
+
+Let's create the two functions:
+`Auth.GroupPeople.create/1`
+and 
+`Auth.GroupPeople.get/1`
+
+```elixir
+  @doc """
+  Creates a `group_people` record (i.e. `people` that belong to a `group`).
+  """
+  def create(attrs) do
+    %GroupPeople{}
+    |> changeset(attrs)
+    |> Repo.insert()
+  end
+
+
+  @doc """
+  `get_group_people/1` returns the list of people in a group
+  """
+  def get_group_people(group_id) do
+    Repo.all(
+      from(gp in __MODULE__,
+        where: gp.group_id == ^group_id,
+        join: g in Auth.Group, on: g.id == gp.group_id,
+        join: pr in Auth.PeopleRoles, on: pr.id == gp.people_role_id,
+        where: is_nil(pr.revoked), # don't return people that have been revoked
+        join: p in Auth.Person, on: p.id == pr.person_id,
+        join: r in Auth.Role, on: r.id == pr.role_id,
+        select: {g.id, g.name, g.kind, pr.person_id, p.givenName, r.id, r.name, gp.inserted_at}
+      )
+    )
+  end
+```
+
+Please note: this is not the "final" version 
+of the 
+`get_group_people/1`
+function.
+Rather it's an _initial_ implementation
+that allows the test to pass.
+
+We will be modifying it - with tests - later when
+we know what we want to display in the UI/UX.

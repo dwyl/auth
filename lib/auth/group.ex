@@ -16,7 +16,7 @@ defmodule Auth.Group do
   @doc false
   def changeset(group, attrs) do
     group
-    |> cast(attrs, [:name, :desc, :kind])
+    |> cast(attrs, [:name, :desc, :kind, :app_id])
     |> validate_required([:name, :desc, :kind])
   end
 

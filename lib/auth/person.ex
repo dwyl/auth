@@ -39,9 +39,6 @@ defmodule Auth.Person do
   Default attributes validation for Person
   """
   def changeset(person, attrs) do
-    # IO.inspect(person, label: "changeset > person")
-    # IO.inspect(attrs, label: "changeset > attrs")
-    # IO.inspect(roles, label: "changeset > roles")
     person
     |> cast(attrs, [
       :id,
