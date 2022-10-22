@@ -13,7 +13,7 @@ defmodule Auth.PersonTest do
   end
 
   test "verify_person_by_id/1" do
-    alice = %{email: "alice@gmail.com", auth_provider: "email"}
+    alice = %{email: "alice@mail.com", auth_provider: "email"}
     person = Person.create_person(alice)
     assert is_nil(person.status)
 
