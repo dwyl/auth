@@ -1,7 +1,6 @@
 defmodule AuthWeb.GroupsLiveTest do
   use AuthWeb.ConnCase
   import Phoenix.LiveViewTest
-  # alias Phoenix.Socket.Broadcast
 
   test "disconnected and connected render", %{conn: conn} do
     conn = non_admin_login(conn)

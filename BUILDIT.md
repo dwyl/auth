@@ -21,14 +21,13 @@ it in **30 minutes**. 🏁
   - [1. Add Tailwind](#1-add-tailwind)
   - [1.6 `Petal.build` Components](#16-petalbuild-components)
   - [1.7 `mix format`](#17-mix-format)
-- [ERD `before` adding `groups`](#erd-before-adding-groups)
+- [ERD _`before`_ adding `groups`](#erd-before-adding-groups)
 - [10. Groups](#10-groups)
-  - [10.1 Create Schema](#101-create-schema)
+  - [10.1 Create `groups` Schema](#101-create-groups-schema)
   - [10.2 _Test_ Groups Schema](#102-test-groups-schema)
   - [10.3 Create `LiveView` for `groups`](#103-create-liveview-for-groups)
   - [10.4 Update `router.ex`](#104-update-routerex)
-- [TODO: Add Screenshot of Groups Live Page!](#todo-add-screenshot-of-groups-live-page)
-  - [10.5 Update Tests](#105-update-tests)
+  - [10.5 Create `groups_live_test.exs`](#105-create-groups_live_testexs)
   - [10.6 Group _Members_](#106-group-members)
   - [10.7 _Test_ `group_people.ex`](#107-test-group_peopleex)
   - [10.8 Make `group_people_test.exs` pass](#108-make-group_people_testexs-pass)
@@ -37,7 +36,8 @@ it in **30 minutes**. 🏁
 
 # TODO
 
-We will fill-in the gaps during the [Rebuild `#207`](https://github.com/dwyl/auth/issues/207)
+We will fill-in the gaps during the 
+[`mix phx.gen.auth` rebuild **`#207`**](https://github.com/dwyl/auth/issues/207)
 
 For now I'm just adding the parts that are being added to the "old"
 version of **`auth`** so that we can _easily_ re-create them in the re-build.
@@ -60,13 +60,23 @@ https://petal.build/components/
 See: https://github.com/dwyl/mvp/issues/183
 
 
-# ERD `before` adding `groups`
+<hr />
+
+
+
+
+
+<hr />
+
+
+# ERD _`before`_ adding `groups`
 
 The database Entity Relationship Diagram (ERD)
 had the following tables/relationships 
 _before_ we added `groups`:
 
 ![erd-before-groups](https://user-images.githubusercontent.com/194400/195663957-665e6064-32df-4366-89ed-c2dc109f79a6.png)
+
 
 
 # 10. Groups
@@ -106,7 +116,7 @@ that requires collaboration/teamwork.
 > But we hope that by reading on you will see that it 
 > **_significantly_ simplifies** the "consuming" app.
 
-## 10.1 Create Schema
+## 10.1 Create `groups` Schema
 
 First we need to create a new schema for storing the data.
 
@@ -147,16 +157,9 @@ We see that there are
 ----------------
 COV    FILE                                        LINES RELEVANT   MISSED
 100.0% lib/auth.ex                                     9        0        0
-100.0% lib/auth/apikey.ex                            105       15        0
-100.0% lib/auth/app.ex                               158       17        0
-100.0% lib/auth/email.ex                              41        7        0
   0.0% lib/auth/group.ex                              19        2        2   <-- This!
 100.0% lib/auth/init/init.ex                         124       26        0
- ...
-100.0% lib/auth_web/views/layout_view.ex               3        0        0
-100.0% lib/auth_web/views/people_view.ex              35        7        0
-100.0% lib/auth_web/views/permission_view.ex           3        0        0
-100.0% lib/auth_web/views/role_view.ex                10        3        0
+ ...etc...
 [TOTAL]  99.3%
 ----------------
 ```
@@ -186,14 +189,16 @@ defmodule Auth.GroupTest do
 end
 ```
 
-If you invoke this test:
+Invoke this test:
 
 ```sh
 mix test test/auth/group_test.exs
 ```
 
-You will see it _fail_. 
-That's because the `Auth.Group.create/1` does not yet _exist_.
+Watch it _fail_. 
+That's because the 
+`Auth.Group.create/1` 
+does not yet _exist_.
 Crete it in the 
 `lib/auth/group.ex`
 file:
@@ -278,37 +283,48 @@ end
 
 Next, create the
 **`lib/auth_web/live/groups_live.html.heex`**
-file 
-and add the following line of `HTML`:
+template file 
+and add the following lines of `HTML`:
 
 ```html
-<h1 class="">Groups LiveView!</h1>
+<h1 class="w-full text-center text-2xl text-white font-bold 
+    bg-gradient-to-r from-green-400 to-blue-500 p-4">
+  Groups LiveView!
+</h1>
 ```
 
 Finally, to make the **root layout** simpler, 
 open the 
 `lib/auth_web/templates/layout/live.html.heex`
 file and 
-update the contents of the `<body>` to:
+update the contents to:
 
 ```html
-<body>
-  <header>
-    <section class="container">
-      <h1>App Name Here</h1>
-    </section>
-  </header>
-  <%= @inner_content %>
-</body>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title><%= assigns[:page_title] || "Auth App" %></title>
+    <%= csrf_meta_tag() %>
+    <link rel="stylesheet" href={Routes.static_path(@socket, "/assets/app.css") } />
+  </head>
+  <body class="helvetica">
+
+    <!-- LiveView Layout File -->
+      <%= @inner_content %>
+    <script type="text/javascript" src={ Routes.static_path(@socket, "/assets/app.js")}></script>
+  </body>
+</html>
 ```
 
 ## 10.4 Update `router.ex`
 
-Now that you've created the necessary files,
+Now that the necessary files are in place,
 open the router
 and add a new route `/groups` 
-pointing to our newly created `GroupsLive` controller
-
+pointing to our newly created `GroupsLive` controller:
 
 ```elixir
 scope "/", AuthWeb do
@@ -321,84 +337,91 @@ scope "/", AuthWeb do
 end
 ```
 
-Now if you refresh the page 
-you should see the following:
-
-# TODO: Add Screenshot of Groups Live Page!
-
-![liveveiw-page-with-tailwind-style](https://user-images.githubusercontent.com/194400/176137805-34467c88-add2-487f-9593-931d0314df62.png)
-
-
-
-<hr /> next ...
-
-
-## 10.5 Update Tests
-
-At this point we have made a few changes 
-that mean our automated test suite will no longer pass ... 
-Run the tests in your command line with the following command:
+Once you've saved all the files,
+make sure you're running the `Phoenix` App:
 
 ```sh
-mix test
+mix s
 ```
+Visit:
+http://localhost:4000/groups
 
-You should see the tests fail:
+You should see the following:
 
-```sh
-..
+![groups-liveview](https://user-images.githubusercontent.com/194400/197360963-fedeccf7-a096-4a94-b95d-4457cae72f0b.png)
 
-  1) test GET / (AppWeb.PageControllerTest)
-     test/app_web/controllers/page_controller_test.exs:4
-     Assertion with =~ failed
-     code:  assert html_response(conn, 200) =~ "Hello TailWorld!"
-     left:  "<!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\">\n    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
-     <main class=\"container\">
-     <h1 class=\"text-6xl text-center\">LiveView App Page!</h1>\n</main></div>
-     </body>\n</html>"
-     right: "Hello TailWorld!"
-     stacktrace:
-       test/app_web/controllers/page_controller_test.exs:6: (test)
+Don't worry, all of this UI will be replaced shortly.
+This is just to confirm we have Tailwind and LiveView working.
 
-Finished in 0.1 seconds (0.06s async, 0.1s sync)
-3 tests, 1 failure
-```
+## 10.5 Create `groups_live_test.exs`
 
-Create a new directory: `test/app_web/live`
+Create a new directory: `test/auth_web/live`
 
 Then create the file: 
-`test/app_web/live/app_live_test.exs`
+`test/auth_web/live/groups_live_test.exs`
 
 With the following content:
 
 ```elixir
-defmodule AppWeb.AppLiveTest do
-  use AppWeb.ConnCase
+defmodule AuthWeb.GroupsLiveTest do
+  use AuthWeb.ConnCase
+  import Phoenix.LiveViewTest
 
-  test "GET /", %{conn: conn} do
-    conn = get(conn, "/")
-    assert html_response(conn, 200) =~ "LiveView App Page!"
+  test "disconnected and connected render", %{conn: conn} do
+    conn = non_admin_login(conn)
+    {:ok, page_live, disconnected_html} = live(conn, "/groups")
+    assert disconnected_html =~ "Groups"
+    assert render(page_live) =~ "Groups"
   end
 end
+
 ```
 
 Save the file 
-and re-run the tests: `mix test`
+and run the test: 
+
+```sh
+mix test test/auth_web/live/groups_live_test.exs
+```
 
 You should see output similar to the following:
 
 ```sh
-Generated app app
-The database for App.Repo has been dropped
-...
+.
+Finished in 0.5 seconds (0.00s async, 0.5s sync)
+1 test, 0 failures
 
-Finished in 0.1 seconds (0.08s async, 0.1s sync)
-3 tests, 0 failures
-
-Randomized with seed 796477
+Randomized with seed 825756
 ```
 
+Similarly, if you run the entire test suite with coverage:
 
+```sh
+mix c
+```
+
+You should see something similar to:
+
+```sh
+Finished in 16.4 seconds (16.1s async, 0.3s sync)
+1 property, 155 tests, 0 failures
+
+Randomized with seed 186681
+----------------
+COV    FILE                                        LINES RELEVANT   MISSED
+100.0% lib/auth.ex                                     9        0        0
+...
+100.0% lib/auth/group.ex                              31        3        0
+...
+100.0% lib/auth_web/live/groups_live.ex                7        1        0
+...
+100.0% lib/auth_web/router.ex                        106       26        0
+...
+[TOTAL] 100.0%
+----------------
+```
+
+**Note**: the `...` is just removing excess lines for brevity.
 
 
 ## 10.6 Group _Members_
@@ -445,11 +468,11 @@ defmodule Auth.GroupPeople do
 end
 ```
 
-This schema is enough for us to achieve _everything_ we need/want.
+This schema is _enough_ for us to achieve _everything_ we need/want.
 By leveraging the previously created `roles` and `people_roles`
 tables we have a built-in full-featured 
 [**`RBAC`**](https://github.com/dwyl/auth/blob/main/role-based-access-control.md)
-for `groups`.
+for **`groups`**.
 
 > **Note**: If anything is unclear, 
 please keep reading for answers.
@@ -459,7 +482,7 @@ if anything is _still_ uncertain
 [***please ask questions***](https://github.com/dwyl/auth/issues/)
 they **benefit _everyone_**! 🙏
 
-Here's the migration:
+The `...create_group_people.exs` migration:
 
 ```elixir
 defmodule Auth.Repo.Migrations.CreateGroupPeople do
@@ -506,13 +529,14 @@ COV    FILE                                        LINES RELEVANT   MISSED
   0.0% lib/auth/group_people.ex                       20        2        2
 100.0% lib/auth/init/roles.ex                         69        3        0
 100.0% lib/auth/people_roles.ex                      136       12        0
-etc.
+...etc.
 
 [TOTAL]  99.3%
 ----------------
 ```
 
-`lib/auth/group_people.ex` has 0% coverage.
+`lib/auth/group_people.ex` 
+has **0% coverage**.
 Let's _fix_ that!
 
 
@@ -582,10 +606,10 @@ defmodule Auth.GroupPeopleTest do
   end
 end
 ```
+
 There's quite a lot going on here 
 mostly because of the linked schemas.
 Read through the steps with comments.
-
 
 If you attempt to run this test:
 
@@ -643,3 +667,4 @@ that allows the test to pass.
 
 We will be modifying it - with tests - later when
 we know what we want to display in the UI/UX.
+
