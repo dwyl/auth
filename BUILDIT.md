@@ -18,17 +18,17 @@ it in **30 minutes**. 🏁
 - [Build Log 👩‍💻](#build-log-)
 - [TODO](#todo)
 - [1. Setup the `auth` App](#1-setup-the-auth-app)
-  - [1. Add Tailwind](#1-add-tailwind)
+  - [1.2 Add Tailwind](#12-add-tailwind)
   - [1.6 `Petal.build` Components](#16-petalbuild-components)
   - [1.7 `mix format`](#17-mix-format)
 - [ERD _`before`_ adding `groups`](#erd-before-adding-groups)
 - [10. Groups](#10-groups)
   - [10.1 Create `groups` Schema](#101-create-groups-schema)
-  - [10.2 _Test_ Groups Schema](#102-test-groups-schema)
+  - [10.2 _Test_ `groups` Schema](#102-test-groups-schema)
   - [10.3 Create `LiveView` for `groups`](#103-create-liveview-for-groups)
   - [10.4 Update `router.ex`](#104-update-routerex)
   - [10.5 Create `groups_live_test.exs`](#105-create-groups_live_testexs)
-  - [10.6 Group _Members_](#106-group-members)
+  - [10.6 Group _People_](#106-group-people)
   - [10.7 _Test_ `group_people.ex`](#107-test-group_peopleex)
   - [10.8 Make `group_people_test.exs` pass](#108-make-group_people_testexs-pass)
 
@@ -45,7 +45,7 @@ version of **`auth`** so that we can _easily_ re-create them in the re-build.
 
 # 1. Setup the `auth` App
 
-## 1. Add Tailwind
+## 1.2 Add Tailwind
 
 Follow the instructions in:
 https://github.com/dwyl/learn-tailwind#part-2-tailwind-in-phoenix
@@ -89,8 +89,8 @@ to ***collaborate***.
 Our reasoning to include **`groups`**
 in the **`auth`** App 
 is that it _already_ stores all **`people`** related
-(_personally identifiable_) data
-in therefore _grouping_ 
+(_personally identifiable_) data,
+therefore _grouping_ 
 those **`people`** together makes logical sense.
 
 This is a **_generalised_ implementation**
@@ -141,7 +141,7 @@ their various groups. It will be an `Enum`
 and therefore the `integer` will be stored in the DB.
 
 
-## 10.2 _Test_ Groups Schema
+## 10.2 _Test_ `groups` Schema
 
 Having created the `groups` schema & migration 
 in the previous step,
@@ -424,7 +424,7 @@ COV    FILE                                        LINES RELEVANT   MISSED
 **Note**: the `...` is just removing excess lines for brevity.
 
 
-## 10.6 Group _Members_
+## 10.6 Group _People_
 
 Now that we have **`groups`**,
 we need a way to add **`people`** (members)
@@ -667,4 +667,20 @@ that allows the test to pass.
 
 We will be modifying it - with tests - later when
 we know what we want to display in the UI/UX.
+
+
+## 10.9 Create `group` & Add `people` UI/UX
+
+Our intention with `auth` was to build 
+and experience that _always_ worked for us
+and did _not_ rely on `JavaScript`.
+Therefore historically it has been 
+**100% Server-side Rendered** 
+Model View Controller (MVC).
+
+For the `groups` UI/UX,
+we want to create the look and _feel_
+of a **_single_ page**
+because we expect this to be
+used in the context of our **Mobile-first `App`**.
 
