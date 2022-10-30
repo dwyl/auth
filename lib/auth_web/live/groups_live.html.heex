@@ -1,5 +1,67 @@
-<h1 class="w-full text-center text-2xl text-white font-bold 
-    bg-gradient-to-r from-green-400 to-blue-500 p-4">
-  <!-- <a class="float-left" href="/">back to the app</a> -->
-  Groups LiveView!
-</h1>
+<div class="text-center text-2xl text-white font-bold 
+    bg-emerald-400 p-4">
+  <div class="inline-flex items-center px-2 py-1 mr-2 h-9
+   text-gray-800 rounded-md"
+    phx-click="delete" phx-value-id={}>
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" 
+      viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" 
+      class="w-8 h-8 mr-2">
+      <path stroke-linecap="round" stroke-linejoin="round" 
+      d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+    </svg>
+    Groups
+  </div>
+</div>
+
+
+<!--  New Button Works just hiding it for now ...
+<button class="inline-flex items-center px-2 py-1 mr-2 h-9
+bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-md"
+  phx-click="delete" phx-value-id={}>
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" 
+      viewBox="0 0 24 24" 
+      stroke-width="1.5" stroke="currentColor" 
+      class="w-6 h-6 float-right">
+    <path stroke-linecap="round" stroke-linejoin="round" 
+      d="M12 4.5v15m7.5-7.5h-15" />
+  </svg>
+  New
+</button>
+-->
+
+<div class="px-1">
+<form phx-submit="create" 
+  class="w-full lg:w-3/4 lg:max-w-lg text-center mx-auto">
+
+  <div class="py-2 px-2 border-2 border-indigo-600">
+    <label>Group name:</label>
+    <input type="text" placeholder="short and descriptive" name="name">
+  </div>
+
+  <div class="py-2 px-2 border-2 border-red-600">
+    <label>Description:</label>
+    <input type="text" placeholder="more detail as needed" name="desc">
+  </div>
+
+    <div class="flex justify-end mr-1">
+      <button class="inline-flex items-center px-2 py-1 mt-1 h-9
+        bg-green-700 hover:bg-green-800 text-white rounded-md">
+        <svg xmlns="http://www.w3.org/2000/svg" 
+          class="h-5 w-5 mr-2" fill="none" 
+          viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+            d="M15 13l-3 3m0 0l-3-3m3 3V8m0 13a9 9 0 110-18 9 9 0 010 18z"
+          />
+        </svg>
+        Create
+      </button>
+    </div>
+
+
+  <p class="pt-3">
+  List the groups I am a member of,
+  or hide this section.
+  </p>
+
+  </form>
+</div>

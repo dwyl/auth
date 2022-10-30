@@ -31,6 +31,7 @@ it in **30 minutes**. 🏁
   - [10.6 Group _People_](#106-group-people)
   - [10.7 _Test_ `group_people.ex`](#107-test-group_peopleex)
   - [10.8 Make `group_people_test.exs` pass](#108-make-group_people_testexs-pass)
+    - [10.9.1 Add Font Awesome Icons](#1091-add-font-awesome-icons)
 
 <br />
 
@@ -351,7 +352,8 @@ You should see the following:
 ![groups-liveview](https://user-images.githubusercontent.com/194400/197360963-fedeccf7-a096-4a94-b95d-4457cae72f0b.png)
 
 Don't worry, all of this UI will be replaced shortly.
-This is just to confirm we have Tailwind and LiveView working.
+This is just to confirm we have 
+`Tailwind` and `LiveView` _working_.
 
 ## 10.5 Create `groups_live_test.exs`
 
@@ -683,4 +685,6 @@ we want to create the look and _feel_
 of a **_single_ page**
 because we expect this to be
 used in the context of our **Mobile-first `App`**.
+
+### 10.9.1 Add Font Awesome Icons
 

@@ -59,6 +59,14 @@ defmodule AuthWeb do
     end
   end
 
+  def component do
+    quote do
+      use Phoenix.Component
+
+      unquote(view_helpers())
+    end
+  end
+
   def router do
     quote do
       use Phoenix.Router
@@ -80,6 +88,7 @@ defmodule AuthWeb do
     quote do
       # Use all HTML functionality (forms, tags, etc)
       use Phoenix.HTML
+      import Phoenix.Component
       use PetalComponents
 
       # Import LiveView and .heex helpers (live_render, live_patch, <.form>, etc)
