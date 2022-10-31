@@ -29,6 +29,10 @@ defmodule Auth.GroupPeople do
   def create(attrs) do
     %GroupPeople{}
     |> changeset(attrs)
+    |> put_assoc(:granter_id, Auth.Person.get_person_by_id(attrs.granter_id))
+    # |> put_assoc(:group_id, Auth.Group.(attrs.grantee_id))
+    |> put_assoc(:person_id, Auth.Person.get_person_by_id(attrs.person_id))
+    |> put_assoc(:role_id, Auth.Role.get_role!(attrs.role_id))
     |> Repo.insert()
   end
 

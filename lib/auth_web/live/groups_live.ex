@@ -32,25 +32,23 @@ defmodule AuthWeb.GroupsLive do
     dbg(desc)
 
     # Create the Group
-    group = Auth.Group.create(%{
+    {:ok, group} = Auth.Group.create(%{
       name: name,
       desc: desc,
       app_id: app_id,
       kind: 1
     })
 
-    role = Auth.Role.get_role!(2)
-    {:ok, person_role} =
-      Auth.PeopleRoles.insert(app_id, person_id, person_id, role.id)
-
     group_person = %{
+      grantee_id: person_id,
       group_id: group.id,
-      people_role_id: person_role.id
+      person_id: person_id,
+      role_id: 2
     }
 
     # Insert the GroupPerson Record
-    {:ok, _inserted_group_person} = Auth.GroupPeople.create(group_person)
-
+    {:ok, inserted_group_person} = Auth.GroupPeople.create(group_person)
+    dbg(inserted_group_person)
 
   end
 

@@ -26,6 +26,7 @@ defmodule Auth.Group do
   def create(attrs) do
     %Group{}
     |> changeset(attrs)
+    |> put_assoc(:app, Auth.App.get_app!(attrs.app_id))
     |> Repo.insert()
   end
 end

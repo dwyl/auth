@@ -36,6 +36,7 @@ defmodule Auth.GroupPeopleTest do
       assert inserted_group_person.group_id == inserted_group.id
       assert inserted_group_person.person_id == grantee.id
 
+      # Insert the GroupPerson Admin
       group_person_admin = %{
         granter_id: admin.id,
         group_id: inserted_group.id,
@@ -43,7 +44,6 @@ defmodule Auth.GroupPeopleTest do
         role_id: 2
       }
 
-      # Insert the GroupPerson Admin
       {:ok, inserted_group_admin} = Auth.GroupPeople.create(group_person_admin)
       assert inserted_group_admin.group_id == inserted_group.id
       assert inserted_group_admin.person_id == admin.id
