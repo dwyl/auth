@@ -435,7 +435,7 @@ to those **`groups`**.
 Run the following command in your terminal:
 
 ```sh
-mix phx.gen.schema GroupPeople group_people group_id:references:groups people_role_id:references:people_roles
+mix phx.gen.schema GroupPeople group_people group_id:references:groups person_id:references:people role_id:references:roles
 ```
 
 That will create two files:

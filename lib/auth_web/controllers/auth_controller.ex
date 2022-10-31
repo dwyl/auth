@@ -1,6 +1,6 @@
 defmodule AuthWeb.AuthController do
   @moduledoc """
-  Defines AuthController and all functions for authenticaiton
+  Defines AuthController and all functions for authentication
   """
   use AuthWeb, :controller
   alias Auth.App
@@ -503,4 +503,6 @@ defmodule AuthWeb.AuthController do
     |> put_flash(:info, "Successfully logged out.")
     |> index(params)
   end
+
+
 end
