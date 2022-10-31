@@ -435,7 +435,7 @@ to those **`groups`**.
 Run the following command in your terminal:
 
 ```sh
-mix phx.gen.schema GroupPeople group_people group_id:references:groups person_id:references:people role_id:references:roles
+mix phx.gen.schema GroupPeople group_people group_id:references:groups person_id:references:people role_id:references:roles granter_id:references:people revoked:utc_datetime revoker_id:references:people
 ```
 
 That will create two files:
@@ -443,7 +443,7 @@ That will create two files:
 `lib/auth/group_people.ex` 
 (schema)
 and 
-`priv/repo/migrations/20221021213907_create_group_people.exs` 
+`priv/repo/migrations/20221021211337_create_group_people.exs` 
 (migration)
 
 For reference, this is the schema that is created:
@@ -456,7 +456,8 @@ defmodule Auth.GroupPeople do
   schema "group_people" do
 
     field :group_id, :id
-    field :people_role_id, :id
+    field :person_id, :id
+    field :role_id, :id
 
     timestamps()
   end
@@ -464,17 +465,18 @@ defmodule Auth.GroupPeople do
   @doc false
   def changeset(group_people, attrs) do
     group_people
-    |> cast(attrs, [:group_id, :people_role_id])
+    |> cast(attrs, [:group_id, :person_id, :role_id])
     |> validate_required([])
   end
 end
 ```
 
-This schema is _enough_ for us to achieve _everything_ we need/want.
-By leveraging the previously created `roles` and `people_roles`
-tables we have a built-in full-featured 
+This schema is _enough_ for us to achieve _everything_ we need/want. <br />
+By leveraging the previously created `roles` table
+we have a built-in full-featured 
 [**`RBAC`**](https://github.com/dwyl/auth/blob/main/role-based-access-control.md)
-for **`groups`**.
+for **`groups`** 
+if we _need_ it.
 
 > **Note**: If anything is unclear, 
 please keep reading for answers.
@@ -493,13 +495,15 @@ defmodule Auth.Repo.Migrations.CreateGroupPeople do
   def change do
     create table(:group_people) do
       add :group_id, references(:groups, on_delete: :nothing)
-      add :people_role_id, references(:people_roles, on_delete: :nothing)
+      add :person_id, references(:people, on_delete: :nothing)
+      add :role_id, references(:roles, on_delete: :nothing)
 
       timestamps()
     end
 
     create index(:group_people, [:group_id])
-    create index(:group_people, [:people_role_id])
+    create index(:group_people, [:person_id])
+    create index(:group_people, [:role_id])
   end
 end
 ```
@@ -576,11 +580,12 @@ defmodule Auth.GroupPeopleTest do
       assert inserted_group.app_id == app.id
 
       # create person_role record: (referenced in group_people)
-      {:ok, person_role} = Auth.PeopleRoles.insert(app.id, grantee.id, admin.id, role.id)
+      {:ok, person_role} = 
+        Auth.PeopleRoles.insert(app.id, grantee.id, admin.id, role.id)
 
       group_person = %{
         group_id: inserted_group.id,
-        people_role_id: person_role.id
+        person_id: person_role.id
       }
 
       # Insert the GroupPerson Record

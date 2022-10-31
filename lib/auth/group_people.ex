@@ -6,18 +6,21 @@ defmodule Auth.GroupPeople do
   alias __MODULE__
 
   schema "group_people" do
-
+    field :granter_id, :id
     field :group_id, :id
-    field :people_role_id, :id
+    field :person_id, :id
+    field :role_id, :id
+    # revoking only relevant when removing a person from a group
+    field :revoker_id, :id
+    field :revoked, :utc_datetime
 
     timestamps()
   end
 
-  @doc false
   def changeset(group_people, attrs) do
     group_people
-    |> cast(attrs, [:group_id, :people_role_id])
-    |> validate_required([])
+    |> cast(attrs, [:granter_id, :group_id, :person_id, :role_id, :revoker_id, :revoked])
+    |> validate_required([:group_id, :person_id])
   end
 
   @doc """
@@ -38,11 +41,10 @@ defmodule Auth.GroupPeople do
       from(gp in __MODULE__,
         where: gp.group_id == ^group_id,
         join: g in Auth.Group, on: g.id == gp.group_id,
-        join: pr in Auth.PeopleRoles, on: pr.id == gp.people_role_id,
-        where: is_nil(pr.revoked), # don't return people that have been revoked
-        join: p in Auth.Person, on: p.id == pr.person_id,
-        join: r in Auth.Role, on: r.id == pr.role_id,
-        select: {g.id, g.name, g.kind, pr.person_id, p.givenName, r.id, r.name, gp.inserted_at}
+        where: is_nil(gp.revoked), # don't return people that have been revoked
+        join: p in Auth.Person, on: p.id == gp.person_id,
+        join: r in Auth.Role, on: r.id == gp.role_id,
+        select: {g.id, g.name, g.kind, gp.person_id, p.givenName, r.id, r.name, gp.inserted_at}
       )
     )
   end
