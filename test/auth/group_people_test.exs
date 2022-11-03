@@ -7,12 +7,6 @@ defmodule Auth.GroupPeopleTest do
       app = Auth.App.get_app!(1)
       admin = Auth.Person.get_person_by_id(1)
 
-      # Create a random non-admin person we can add to the group:
-      alex = %{email: "alex_not_admin@gmail.com", givenName: "Alex",
-        auth_provider: "email", app_id: app.id}
-      grantee = Auth.Person.create_person(alex)
-      assert grantee.id > 1
-
       # Create group
       group = %{
         desc: "Group with people",
@@ -24,17 +18,23 @@ defmodule Auth.GroupPeopleTest do
       assert inserted_group.name == group.name
       assert inserted_group.app_id == app.id
 
+      # Create a random non-admin person we can add to the group:
+      alex = %{email: "alex_not_admin@gmail.com", givenName: "Alex",
+                auth_provider: "email", app_id: app.id}
+      non_admin = Auth.Person.create_person(alex)
+      assert non_admin.id > 1
+
       group_person = %{
         granter_id: admin.id,
         group_id: inserted_group.id,
-        person_id: grantee.id,
+        person_id: non_admin.id,
         role_id: 4
       }
 
       # Insert the GroupPerson Record
-      {:ok, inserted_group_person} = Auth.GroupPeople.create(group_person)
-      assert inserted_group_person.group_id == inserted_group.id
-      assert inserted_group_person.person_id == grantee.id
+      {:ok, gp} = Auth.GroupPeople.create(group_person)
+      assert gp.group_id == inserted_group.id
+      assert gp.person_id == non_admin.id
 
       # Insert the GroupPerson Admin
       group_person_admin = %{

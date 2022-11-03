@@ -2,14 +2,14 @@ defmodule Auth.GroupPeople do
   use Ecto.Schema
   import Ecto.Changeset
   import Ecto.Query
-  alias Auth.{Repo}
+  alias Auth.{Group, Person, Repo, Role}
   alias __MODULE__
 
   schema "group_people" do
-    field :granter_id, :id
-    field :group_id, :id
-    field :person_id, :id
-    field :role_id, :id
+    field :granter_id, :integer
+    belongs_to :group, Group
+    belongs_to :person, Person
+    belongs_to :role, Role
     # revoking only relevant when removing a person from a group
     field :revoker_id, :id
     field :revoked, :utc_datetime
@@ -17,22 +17,23 @@ defmodule Auth.GroupPeople do
     timestamps()
   end
 
-  def changeset(group_people, attrs) do
-    group_people
+  def changeset(attrs) do
+    %GroupPeople{}
     |> cast(attrs, [:granter_id, :group_id, :person_id, :role_id, :revoker_id, :revoked])
     |> validate_required([:group_id, :person_id])
+    # |> foreign_key_constraint(:person_id)
+
   end
 
   @doc """
   Creates a `group_people` record (i.e. `people` that belong to a `group`).
   """
   def create(attrs) do
-    %GroupPeople{}
-    |> changeset(attrs)
-    |> put_assoc(:granter_id, Auth.Person.get_person_by_id(attrs.granter_id))
-    # |> put_assoc(:group_id, Auth.Group.(attrs.grantee_id))
-    |> put_assoc(:person_id, Auth.Person.get_person_by_id(attrs.person_id))
-    |> put_assoc(:role_id, Auth.Role.get_role!(attrs.role_id))
+
+    changeset(attrs)
+    |> put_assoc(:group, Group.get_group_by_id(attrs.group_id))
+    |> put_assoc(:person, Person.get_person_by_id(attrs.person_id))
+    |> put_assoc(:role, Role.get_role!(attrs.role_id))
     |> Repo.insert()
   end
 

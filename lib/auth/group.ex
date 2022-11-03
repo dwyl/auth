@@ -29,4 +29,9 @@ defmodule Auth.Group do
     |> put_assoc(:app, Auth.App.get_app!(attrs.app_id))
     |> Repo.insert()
   end
+
+  def get_group_by_id(id) do
+    __MODULE__
+    |> Repo.get_by(id: id)
+  end
 end

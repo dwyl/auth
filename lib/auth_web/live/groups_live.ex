@@ -1,6 +1,6 @@
 defmodule AuthWeb.GroupsLive do
   use AuthWeb, :live_view
-  alias Phoenix.Socket.Broadcast
+  # alias Phoenix.Socket.Broadcast
   # run live auth on mount:
   on_mount AuthWeb.LiveAuthController
 
