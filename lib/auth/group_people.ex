@@ -49,7 +49,30 @@ defmodule Auth.GroupPeople do
         where: is_nil(gp.revoked), # don't return people that have been revoked
         join: p in Auth.Person, on: p.id == gp.person_id,
         join: r in Auth.Role, on: r.id == gp.role_id,
-        select: {g.id, g.name, g.kind, gp.person_id, p.givenName, r.id, r.name, gp.inserted_at}
+        select: {g.id, g.name, g.kind, gp.person_id, p.givenName, p.picture, r.id, r.name, gp.inserted_at}
+      )
+    )
+  end
+
+  @doc """
+  `list_groups_for_person` List the groups the person is a member of
+  """
+  def list_groups_for_person(person_id) do
+    Repo.all(
+      from(gp in Auth.GroupPeople,
+        where: gp.person_id == ^person_id,
+        join: g in Auth.Group, on: g.id == gp.group_id,
+        where: is_nil(gp.revoked), # don't return people that have been revoked
+        # join: p in Auth.Person, on: p.id == gp.person_id,
+        # join: r in Auth.Role, on: r.id == gp.role_id,
+        select: %{
+          id: g.id,
+          name: g.name,
+          desc: g.desc,
+          kind: g.kind,
+          inserted_at: g.inserted_at
+          # role_name: r.name
+        }
       )
     )
   end

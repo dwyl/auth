@@ -29,6 +29,8 @@ defmodule Auth.Person do
     # many_to_many :roles, Auth.Role, join_through: "people_roles"
     # has_many :roles, through: [:people_roles, :role]
     many_to_many :roles, Auth.Role, join_through: Auth.PeopleRoles
+    # Groups
+    many_to_many :groups, Auth.Group, join_through: Auth.GroupPeople
 
     has_many :statuses, Auth.Status
     # has_many :sessions, Auth.Session, on_delete: :delete_all
@@ -239,6 +241,7 @@ defmodule Auth.Person do
     |> Repo.get_by(id: id)
     |> Repo.preload(:roles)
     |> Repo.preload(:statuses)
+    # |> Repo.preload(:groups)
   end
 
   defp put_pass_hash(changeset) do

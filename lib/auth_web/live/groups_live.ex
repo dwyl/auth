@@ -8,7 +8,11 @@ defmodule AuthWeb.GroupsLive do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, socket}
+    # get person with their groups:
+    person_id = get_person_id(socket.assigns)
+    groups = Auth.GroupPeople.list_groups_for_person(person_id)
+    {:ok, assign(socket, groups: groups)}
+    # {:ok, socket}
   end
 
 
@@ -17,10 +21,12 @@ defmodule AuthWeb.GroupsLive do
 
   @impl true
   def handle_event("create", %{"name" => name, "desc" => desc}, socket) do
-
+    # person_id = get_person_id(socket.assigns)
     create_group(name, desc, socket)
     AuthWeb.Endpoint.broadcast(@topic, "update", :create)
-    {:noreply, socket}
+    person_id = get_person_id(socket.assigns)
+    groups = Auth.GroupPeople.list_groups_for_person(person_id)
+    {:noreply, assign(socket, groups: groups)}
   end
 
   defp create_group(name, desc, socket) do
@@ -48,7 +54,7 @@ defmodule AuthWeb.GroupsLive do
 
     # Insert the GroupPerson Record
     {:ok, inserted_group_person} = Auth.GroupPeople.create(group_person)
-    dbg(inserted_group_person)
+    # dbg(inserted_group_person)
 
   end
 

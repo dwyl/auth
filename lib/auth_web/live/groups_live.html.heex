@@ -1,7 +1,7 @@
 <div class="text-center text-2xl text-white font-bold 
-    bg-emerald-400 p-4">
+    bg-gray-800 p-4">
   <div class="inline-flex items-center px-2 py-1 mr-2 h-9
-   text-gray-800 rounded-md"
+   text-white rounded-md"
     phx-click="delete" phx-value-id={}>
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" 
       viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" 
@@ -29,16 +29,18 @@ bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-md"
 </button>
 -->
 
+
+
 <div class="px-1">
 <form phx-submit="create" 
   class="w-full lg:w-3/4 lg:max-w-lg text-center mx-auto">
 
-  <div class="py-2 px-2 border-2 border-indigo-600">
+  <div class="py-2 px-2">
     <label>Group name:</label>
     <input type="text" placeholder="short and descriptive" name="name">
   </div>
 
-  <div class="py-2 px-2 border-2 border-red-600">
+  <div class="py-2 px-2">
     <label>Description:</label>
     <input type="text" placeholder="more detail as needed" name="desc">
   </div>
@@ -56,12 +58,61 @@ bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-md"
         Create
       </button>
     </div>
-
-
-  <p class="pt-3">
-  List the groups I am a member of,
-  or hide this section.
-  </p>
-
   </form>
+
+<!-- tailwind-elements.com/docs/standard/components/tables/ -->
+<!-- only show groups table if there are groups for this person -->
+<%= if length(@groups) > 0 do %>
+<div class="flex flex-col">
+  <div class="overflow-x-auto sm:-mx-6 lg:-mx-8">
+    <div class="py-2 inline-block min-w-full sm:px-6 lg:px-8">
+      <div class="overflow-hidden">
+        <table class="min-w-full">
+          <thead class="bg-gray-800 text-white border-b min-w-full">
+            <tr class="text-white">
+              <th scope="col" class="text-sm font-mediumpx-6 py-4">
+                #
+              </th>
+              <th scope="col" class="text-sm font-medium px-6 py-4">
+                Name
+              </th>
+              <th scope="col" class="text-sm font-medium px-6 py-4">
+                Description
+              </th>
+              <th scope="col" class="text-sm font-medium px-6 py-4">
+                Kind
+              </th>
+              <th scope="col" class="text-sm font-medium px-6 py-4">
+                Created
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+          <%= for group <- @groups do %>
+            <tr class="bg-white border-b transition duration-300 ease-in-out hover:bg-gray-100">
+              <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                <%= group.id %>
+              </td>
+              <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                <%= group.name %>
+              </td>
+              <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                <%= group.desc %>
+              </td>
+              <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                <%= group.kind %>
+              </td>
+              <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                <%= group.inserted_at %>
+              </td>
+            </tr>
+          <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<% end %>
+
 </div>

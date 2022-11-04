@@ -1,6 +1,6 @@
 defmodule Auth.Group do
   use Ecto.Schema
-  import Ecto.Changeset
+  import Ecto.{Changeset, Query}
   alias Auth.{Repo}
   alias __MODULE__
 

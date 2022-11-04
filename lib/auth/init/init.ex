@@ -38,6 +38,8 @@ defmodule Auth.Init do
 
         # Create App and API Key for the admin:
         Auth.Init.create_apikey_for_admin(admin)
+        # Sample people for groups: #242
+        Auth.InitPeople.insert_sample_people()
 
       app ->
         key = List.last(app.apikeys)

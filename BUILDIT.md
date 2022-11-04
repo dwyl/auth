@@ -560,13 +560,6 @@ defmodule Auth.GroupPeopleTest do
       # admin, app & role created by init. see: Auth.Init.main/0
       app = Auth.App.get_app!(1)
       admin = Auth.Person.get_person_by_id(1)
-      role = Auth.Role.get_role!(4)
-
-      # Create a random non-admin person we can add to the group:
-      alex = %{email: "alex_not_admin@gmail.com", givenName: "Alex",
-        auth_provider: "email", app_id: app.id}
-      grantee = Auth.Person.create_person(alex)
-      assert grantee.id > 1
 
       # Create group
       group = %{
@@ -579,32 +572,35 @@ defmodule Auth.GroupPeopleTest do
       assert inserted_group.name == group.name
       assert inserted_group.app_id == app.id
 
-      # create person_role record: (referenced in group_people)
-      {:ok, person_role} = 
-        Auth.PeopleRoles.insert(app.id, grantee.id, admin.id, role.id)
+      # Create a random non-admin person we can add to the group:
+      person = %{email: "alex_not_admin@gmail.com", givenName: "Alex",
+                auth_provider: "email", app_id: app.id}
+      non_admin = Auth.Person.create_person(person)
+      assert non_admin.id > 1
 
       group_person = %{
+        granter_id: admin.id,
         group_id: inserted_group.id,
-        person_id: person_role.id
+        person_id: non_admin.id,
+        role_id: 4
       }
 
       # Insert the GroupPerson Record
-      {:ok, inserted_group_person} = Auth.GroupPeople.create(group_person)
-      assert inserted_group_person.group_id == inserted_group.id
-      assert inserted_group_person.people_role_id == person_role.id
-
-      # Insert Admin Role:
-      {:ok, admin_role} = Auth.PeopleRoles.insert(app.id, admin.id, admin.id, 2)
-
-      group_person_admin = %{
-        group_id: inserted_group.id,
-        people_role_id: admin_role.id
-      }
+      {:ok, gp} = Auth.GroupPeople.create(group_person)
+      assert gp.group_id == inserted_group.id
+      assert gp.person_id == non_admin.id
 
       # Insert the GroupPerson Admin
+      group_person_admin = %{
+        granter_id: admin.id,
+        group_id: inserted_group.id,
+        person_id: admin.id,
+        role_id: 2
+      }
+
       {:ok, inserted_group_admin} = Auth.GroupPeople.create(group_person_admin)
       assert inserted_group_admin.group_id == inserted_group.id
-      assert inserted_group_admin.people_role_id == admin_role.id
+      assert inserted_group_admin.person_id == admin.id
 
       # Finally, let's confirm these two people are in the group:
       group_people = Auth.GroupPeople.get_group_people(inserted_group.id)
