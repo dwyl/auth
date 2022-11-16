@@ -326,5 +326,3 @@ we recommend checkout out these great resources
 
 +   Auth Boss: <https://github.com/teesloane/Auth-Boss>
 +   Introduction to OAuth2: <https://www.digitalocean.com/community/tutorials/an-introduction-to-oauth-2>
-
-![wake-sleeping-heroku-app](https://dwylauth.herokuapp.com/ping)

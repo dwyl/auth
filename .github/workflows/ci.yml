@@ -9,7 +9,6 @@ on:
 jobs:
   build:
     name: Build and test
-    environment: dwylauth
     runs-on: ubuntu-latest
     services:
       postgres:

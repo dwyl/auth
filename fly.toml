@@ -1,5 +1,6 @@
-app = "authprod"
+# fly.toml file generated for authdemo on 2022-11-15T09:16:02Z
 
+app = "authdemo"
 kill_signal = "SIGTERM"
 kill_timeout = 5
 processes = []
@@ -8,7 +9,7 @@ processes = []
   release_command = "/app/bin/migrate"
 
 [env]
-  PHX_HOST = "authprod.fly.dev"
+  PHX_HOST = "authdemo.fly.dev"
   PORT = "8080"
 
 [experimental]
@@ -21,7 +22,6 @@ processes = []
   processes = ["app"]
   protocol = "tcp"
   script_checks = []
-
   [services.concurrency]
     hard_limit = 25
     soft_limit = 20
