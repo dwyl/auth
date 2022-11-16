@@ -1,7 +1,7 @@
 defmodule AuthWeb.InitController do
   use AuthWeb, :controller
 
-  @env_required ~w/ADMIN_EMAIL AUTH_API_KEY AUTH_URL ENCRYPTION_KEYS SECRET_KEY_BASE AUTH_API_KEY/
+  @env_required ~w/ADMIN_EMAIL AUTH_API_KEY AUTH_URL DATABASE_URL ENCRYPTION_KEYS SECRET_KEY_BASE AUTH_API_KEY/
   @env_optional ~w/EMAIL_APP_URL GITHUB_CLIENT_ID GITHUB_CLIENT_SECRET GOOGLE_CLIENT_ID GOOGLE_CLIENT_SECRET/
 
   def index(conn, _params) do
@@ -16,7 +16,7 @@ defmodule AuthWeb.InitController do
     conn
     # |> assign(:env, check_env())
     |> render(:index,
-      layout: {AuthWeb.InitView, "init_layout.html"}, 
+      layout: {AuthWeb.InitView, "init_layout.html"},
       env: check_env(@env_required),
       env_optional: check_env(@env_optional),
       init: init,
@@ -33,11 +33,11 @@ defmodule AuthWeb.InitController do
   defp api_key_set?() do
     case AuthPlug.Token.api_key() do
       # coveralls-ignore-start
-      nil -> 
+      nil ->
         # IO.puts("AuthPlug.Token.api_key() #{AuthPlug.Token.api_key()}")
         false
       # coveralls-ignore-stop
-        
+
       key ->
         String.length(key) > 1
     end
