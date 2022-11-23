@@ -121,6 +121,7 @@ defmodule Auth.Person do
   """
   def transform_github_profile_data_to_person(profile) do
     profile
+    |> dbg()
     |> Map.merge(%{
       username: profile.login,
       givenName: profile.name,
@@ -130,6 +131,7 @@ defmodule Auth.Person do
     })
     # avoid id conflict: https://github.com/dwyl/auth/issues/125
     |> Map.delete(:id)
+    |> dbg()
   end
 
   def create_github_person(profile) do
