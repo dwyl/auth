@@ -7,6 +7,7 @@
         <th>ID</th>
         <th>Image</th>
         <th>Name</th>
+        <th>Username</th>
         <th>Status</th>
         <th>Last Login</th>
         <th>Email</th>
@@ -22,6 +23,7 @@
         <td><a href="/people/<%= p.person_id %>" class="no-underline"><%= p.person_id %></a></td>
         <td><img width="64px" src="<%= p.picture %>" class="center db br2"/></td>
         <td><%= p.givenName %></td>
+        <td><%= p.username %></td>
         <td class="<%= p.status %>"><%= p.status %></td>
         <td><%= p.updated_at %></td>
         <%= if show_email(p, @app_ids) do%>
@@ -32,7 +34,7 @@
         <td><%= p.auth_provider %></td>
         <td><a href="/apps/<%= p.app_id %>" class="no-underline"><%= p.app_id %></a></td>
         <%= if show_email(p, @app_ids) do%>
-          <td class="<%= p.role %>"><%= p.role %></td>  
+          <td class="<%= p.role %>"><%= p.role %></td>
         <% end %>
       </tr>
   <% end %>
@@ -47,14 +49,14 @@
   .verified { background-color: #7bed9f;}
 </style>
 
-<!-- DataTables is an *optional* progressive enhancement 
+<!-- DataTables is an *optional* progressive enhancement
   that allows sorting and filtering data in-browser -->
-<script src="https://code.jquery.com/jquery-2.2.4.min.js" 
-integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" 
+<script src="https://code.jquery.com/jquery-2.2.4.min.js"
+integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
 crossorigin="anonymous"></script>
-<link rel="stylesheet" type="text/css" 
+<link rel="stylesheet" type="text/css"
 href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css">
-<script type="text/javascript" charset="utf8" 
+<script type="text/javascript" charset="utf8"
 src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js"></script>
 
 <script>
