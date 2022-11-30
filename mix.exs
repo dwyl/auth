@@ -51,7 +51,7 @@ defmodule Auth.Mixfile do
       {:ecto_sql, "~> 3.7.1"},
       {:postgrex, ">= 0.15.13"},
       {:phoenix_html, "~> 3.2.0"},
-      {:phoenix_live_reload, "~> 1.3.3", only: :dev},
+      {:phoenix_live_reload, "~> 1.4.1", only: :dev},
       {:phoenix_live_view, "~> 0.17.5"},
       {:floki, ">= 0.32.0", only: :test},
       # {:phoenix_live_dashboard, "~> 0.6.1"},
