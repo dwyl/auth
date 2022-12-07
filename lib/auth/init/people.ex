@@ -9,7 +9,8 @@ defmodule Auth.InitPeople do
         picture: "https://avatars.githubusercontent.com/u/4185328?v=4",
         auth_provider: "github",
         app_id: 1,
-        role: 2
+        role: 2,
+        username: "iteles"
       },
       %{
         givenName: "Nelson Correia",
@@ -17,7 +18,8 @@ defmodule Auth.InitPeople do
         id: "1002",
         picture: "https://avatars.githubusercontent.com/u/194400?v=4",
         auth_provider: "github",
-        app_id: 1
+        app_id: 1,
+        username: "nelsonic"
       },
       %{
         givenName: "Simon Labondance",
@@ -25,7 +27,8 @@ defmodule Auth.InitPeople do
         id: "1003",
         picture: "https://avatars.githubusercontent.com/u/6057298?v=4",
         auth_provider: "github",
-        app_id: 1
+        app_id: 1,
+        username: "SimonLab"
       },
       %{
         givenName: "Stephany Rios",
@@ -33,7 +36,8 @@ defmodule Auth.InitPeople do
         id: "1004",
         picture: "https://avatars.githubusercontent.com/u/91985721?v=4",
         auth_provider: "github",
-        app_id: 1
+        app_id: 1,
+        username: "Stephany"
       },
       %{
         givenName: "Luis Arteiro",
@@ -41,7 +45,8 @@ defmodule Auth.InitPeople do
         id: "1005",
         picture: "https://avatars.githubusercontent.com/u/17494745?v=4",
         auth_provider: "github",
-        app_id: 1
+        app_id: 1,
+        username: "LuchoTurtle"
       },
       %{
         givenName: "Oli Evans",
@@ -49,7 +54,8 @@ defmodule Auth.InitPeople do
         id: "1006",
         picture: "https://avatars.githubusercontent.com/u/58871?v=4",
         auth_provider: "github",
-        app_id: 1
+        app_id: 1,
+        username: "Olizilla"
       },
       %{
         givenName: "Alan Shaw",
@@ -57,7 +63,8 @@ defmodule Auth.InitPeople do
         id: "1007",
         picture: "https://avatars.githubusercontent.com/u/152863?v=4",
         auth_provider: "github",
-        app_id: 1
+        app_id: 1,
+        username: "alanshaw"
       },
       %{
         givenName: "Alex Potsides",
@@ -65,7 +72,8 @@ defmodule Auth.InitPeople do
         id: "1008",
         picture: "https://avatars.githubusercontent.com/u/665810?v=4",
         auth_provider: "github",
-        app_id: 1
+        app_id: 1,
+        username: "achingbrain"
       },
       %{
         givenName: "Amanda Huginkiss",
@@ -74,7 +82,8 @@ defmodule Auth.InitPeople do
         picture: "https://avatars.githubusercontent.com/u/5108244?v=4",
         auth_provider: "email",
         app_id: 1,
-        status: 1
+        status: 1,
+        username: "amandahuginkiss"
       },
       %{
         givenName: "Andrew McAwesome",
@@ -83,7 +92,8 @@ defmodule Auth.InitPeople do
         picture: "https://avatars.githubusercontent.com/u/46572910?v=4",
         auth_provider: "email",
         app_id: 1,
-        status: 1
+        status: 1,
+        username: "andy"
       },
       %{
         givenName: "Emmet Brickowski",
@@ -92,7 +102,8 @@ defmodule Auth.InitPeople do
         picture: "https://avatars.githubusercontent.com/u/10835816?v=4",
         auth_provider: "google",
         app_id: 1,
-        status: 1
+        status: 1,
+        username: "nkamc"
       },
       %{
         givenName: "Amélie McAwesome",
@@ -101,7 +112,8 @@ defmodule Auth.InitPeople do
         picture: "https://avatars.githubusercontent.com/u/22345430?v=4",
         auth_provider: "google",
         app_id: 1,
-        status: 1
+        status: 1,
+        username: "amelie"
       }
     ]
   end
