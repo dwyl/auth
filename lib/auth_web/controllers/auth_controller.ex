@@ -274,12 +274,13 @@ defmodule AuthWeb.AuthController do
               auth_provider: "email"
             })
 
-          Auth.Email.sendemail(%{
-            email: email,
-            template: "verify",
-            link: make_verify_link(conn, person, state),
-            subject: "Please Verify Your Email Address"
-          })
+          # Temp disabled until email transferred to Fly.io
+          # Auth.Email.sendemail(%{
+          #   email: email,
+          #   template: "verify",
+          #   link: make_verify_link(conn, person, state),
+          #   subject: "Please Verify Your Email Address"
+          # })
 
           person
         else

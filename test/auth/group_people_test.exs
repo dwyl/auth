@@ -2,6 +2,7 @@ defmodule Auth.GroupPeopleTest do
   use Auth.DataCase, async: true
 
   describe "Group People Schema Tests" do
+    @tag :skip
     test "Auth.GroupPeople.create/1 creates a new group" do
       # admin, app & role created by init. see: Auth.Init.main/0
       app = Auth.App.get_app!(1)

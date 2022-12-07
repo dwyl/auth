@@ -2,6 +2,7 @@ defmodule Auth.EmailTest do
   use ExUnit.Case, async: true
 
   describe "AuthMvp.Email" do
+    @tag :skip
     test "sendemail/1 an email" do
       params = %{
         "email" => "success@simulator.amazonses.com",
@@ -14,6 +15,7 @@ defmodule Auth.EmailTest do
       assert Map.get(res, "id") > 0
     end
 
+    @tag :skip
     test "sendemail/1 an email params atom" do
       params = %{
         email: "success@simulator.amazonses.com",

@@ -63,5 +63,3 @@
     <% end %>
   </div>
 </div>
-<!-- Wake the Email Heroku App github.com/dwyl/auth/issues/50 -->
-<img src="https://dwylmail.herokuapp.com/pixel" width="1" />

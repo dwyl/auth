@@ -37,5 +37,6 @@ defmodule Auth.Email do
 
     {:ok, response} = HTTPoison.post(url, "_nobody", headers, options)
     Jason.decode!(response.body)
+
   end
 end

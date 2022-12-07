@@ -37,9 +37,13 @@ defmodule Auth.Init do
         Auth.Person.verify_person_by_id(admin.id)
 
         # Create App and API Key for the admin:
-        Auth.Init.create_apikey_for_admin(admin)
+        api_key = Auth.Init.create_apikey_for_admin(admin)
+
         # Sample people for groups: #242
         Auth.InitPeople.insert_sample_people()
+
+        # return the api_key once everything is created:
+        api_key
 
       app ->
         key = List.last(app.apikeys)
@@ -71,7 +75,7 @@ defmodule Auth.Init do
 
   def create_admin do
     email = Envar.get("ADMIN_EMAIL")
-    Logger.debug("ADMIN_EMAIL:#{email}")
+    # Logger.debug("ADMIN_EMAIL:#{email}")
 
     case Person.get_person_by_email(email) do
       # Ignore if the Super Admin already exists:

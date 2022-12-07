@@ -1,4 +1,4 @@
-ExUnit.start()
+ExUnit.start(exclude: [:skip])
 Ecto.Adapters.SQL.Sandbox.mode(Auth.Repo, :manual)
 
 defmodule AuthTest do

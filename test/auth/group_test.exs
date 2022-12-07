@@ -13,6 +13,7 @@ defmodule Auth.GroupTest do
       assert inserted_group.name == group.name
     end
 
+    @tag :skip
     test "Auth.Group.list_groups_for_person/1 gets groups a person belongs to" do
       group = %{
         desc: "Group 1 desc",
