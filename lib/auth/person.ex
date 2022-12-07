@@ -251,7 +251,7 @@ defmodule Auth.Person do
     |> Repo.get_by(id: id)
     |> Repo.preload(:roles)
     |> Repo.preload(:statuses)
-    # |> Repo.preload(:groups)
+    |> Repo.preload(:groups)
   end
 
   defp put_pass_hash(changeset) do
