@@ -32,6 +32,7 @@ auth-*.tar
 # /config/prod.secret.exs
 .env
 .env_prod
+.env_demo
 
 .elixir_ls
 

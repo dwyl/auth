@@ -130,6 +130,7 @@ defmodule Auth.Person do
     })
     # avoid id conflict: https://github.com/dwyl/auth/issues/125
     |> Map.delete(:id)
+    |> dbg()
   end
 
   def create_github_person(profile) do

@@ -72,7 +72,7 @@ defmodule Auth.Mixfile do
       {:elixir_auth_google, "~> 1.6.2"},
 
       # Check/get Environment Variables: https://github.com/dwyl/envar
-      {:envar, "~> 1.0.5"},
+      {:envar, "~> 1.1.0"},
 
       # https://github.com/dwyl/auth_plug
       {:auth_plug, "~> 1.4.20"},
@@ -100,7 +100,7 @@ defmodule Auth.Mixfile do
       {:ping, "~> 1.1.0"},
 
       # Check test coverage
-      {:excoveralls, "~> 0.14.3", only: :test},
+      {:excoveralls, "~> 0.15.1", only: :test},
 
       #  Property based tests: github.com/dwyl/learn-property-based-testing
       {:stream_data, "~> 0.5.0", only: :test},

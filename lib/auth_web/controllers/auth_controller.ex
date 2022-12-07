@@ -477,6 +477,7 @@ defmodule AuthWeb.AuthController do
     %{
       auth_provider: person.auth_provider,
       givenName: person.givenName,
+      username: person.username,
       id: person.id,
       picture: person.picture,
       status: person.status,
