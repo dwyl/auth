@@ -23,7 +23,8 @@ defmodule AuthTest do
       email: person.email,
       auth_provider: person.auth_provider,
       app_id: 1,
-      sid: conn.assigns.sid
+      sid: conn.assigns.sid,
+      username: "admin"
     }
 
     # IO.inspect(person, label: "person")
@@ -41,7 +42,8 @@ defmodule AuthTest do
       github_id: "19",
       picture: "https://avatars3.githubusercontent.com/u/10835816",
       status: 1,
-      app_id: 1
+      app_id: 1,
+      username: "alex#{rand}"
     }
 
     Auth.Person.upsert_person(person)
@@ -59,7 +61,8 @@ defmodule AuthTest do
       picture: person.picture,
       status: 1,
       app_id: 1,
-      sid: conn.assigns.sid
+      sid: conn.assigns.sid,
+      username: person.username
     }
 
     AuthPlug.create_jwt_session(conn, data)

@@ -81,7 +81,7 @@ defmodule Auth.Init do
       # Ignore if the Super Admin already exists:
       nil ->
         %Person{}
-        |> Person.changeset(%{email: email, givenName: "Neo"})
+        |> Person.changeset(%{email: email, givenName: "Neo", username: "neo"})
         |> Repo.insert!()
 
       person ->

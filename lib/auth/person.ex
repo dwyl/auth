@@ -43,25 +43,25 @@ defmodule Auth.Person do
   def changeset(person, attrs) do
     person
     |> cast(attrs, [
-      :id,
-      :username,
+      :app_id,
+      :auth_provider,
       :email,
-      :givenName,
       :familyName,
-      :password,
-      :password_hash,
+      :github_id,
+      :givenName,
+      :id,
       :key_id,
       :locale,
+      :password,
+      :password_hash,
       :picture,
-      :username,
-      :auth_provider,
       :status,
-      :app_id,
-      :github_id
+      :username,
     ])
     |> validate_required([:email])
     |> put_email_hash()
     |> put_pass_hash()
+    |> put_username()
   end
 
   def create_person(person) do
@@ -130,7 +130,6 @@ defmodule Auth.Person do
     })
     # avoid id conflict: https://github.com/dwyl/auth/issues/125
     |> Map.delete(:id)
-    |> dbg()
   end
 
   def create_github_person(profile) do
@@ -216,6 +215,16 @@ defmodule Auth.Person do
   defp put_email_hash(changeset) do
     put_change(changeset, :email_hash, changeset.changes.email)
   end
+
+  defp put_username(changeset) do
+    if Map.has_key?(changeset.changes, :username) do
+      put_change(changeset, :username, changeset.changes.username)
+      put_change(changeset, :username_hash, changeset.changes.username)
+    else
+      changeset
+    end
+  end
+
 
   def get_status_verified do
     status = Auth.Status.upsert_status(%{text: "verified"})
@@ -311,7 +320,7 @@ defmodule Auth.Person do
   def get_list_of_people() do
     result = Repo.query!(query())
 
-    Enum.map(result.rows, fn [pid, aid, sid, s, n, pic, iat, e, aup, role] ->
+    Enum.map(result.rows, fn [pid, aid, sid, s, n, pic, iat, e, aup, role, un] ->
       %{
         app_id: aid,
         person_id: pid,
@@ -322,7 +331,8 @@ defmodule Auth.Person do
         picture: pic,
         email: decrypt(e),
         auth_provider: aup,
-        role: role
+        role: role,
+        username: un
       }
     end)
   end
@@ -333,7 +343,7 @@ defmodule Auth.Person do
     """
     SELECT DISTINCT ON (p.id) p.id, p.app_id, p.status,
     st.text as status, p."givenName", p.picture,
-    p.inserted_at, p.email, p.auth_provider, r.name
+    p.inserted_at, p.email, p.auth_provider, r.name, p.username
     FROM people AS p
     LEFT JOIN people_roles as pr on p.id = pr.person_id
     LEFT JOIN roles as r on pr.role_id = r.id
