@@ -308,8 +308,10 @@ defmodule AuthWeb.AuthControllerTest do
   end
 
   test "login_register_handler/2 UNVERIFIED and NO PASSWORD", %{conn: conn} do
+    rand = :rand.uniform(1_000_000)
     data = %{
-      email: "alice@gmail.com",
+      id: rand,
+      email: "alice#{rand}@gmail.com",
       auth_provider: "email"
     }
 
@@ -355,8 +357,9 @@ defmodule AuthWeb.AuthControllerTest do
   end
 
   test "login_register_handler/2 UNVERIFIED person with PWD", %{conn: conn} do
+    rand = :rand.uniform(1_000_000)
     data = %{
-      email: "alex@gmail.com",
+      email: "alex#{rand}@gmail.com",
       auth_provider: "email",
       password: "thiswillbehashed"
     }
@@ -380,11 +383,13 @@ defmodule AuthWeb.AuthControllerTest do
   end
 
   test "login_register_handler/2 has VERIFIED and PASSWORD", %{conn: conn} do
+    rand = :rand.uniform(1_000_000)
     data = %{
-      email: "ana@gmail.com",
       auth_provider: "email",
-      status: 1,
-      password: "thiswillbehashed"
+      email: "ana#{rand}@gmail.com",
+      id: rand,
+      password: "thiswillbehashed",
+      status: 1
     }
 
     person = Auth.Person.upsert_person(data)
@@ -404,12 +409,19 @@ defmodule AuthWeb.AuthControllerTest do
   end
 
   test "password_create/2 create a new password", %{conn: conn} do
-    %{email: "anabela@mail.com", auth_provider: "email", givenName: "timmy", app_id: 1}
+    rand = :rand.uniform(1_000_000)
+    %{
+      app_id: 1,
+      auth_provider: "email",
+      email: "anabela#{rand}@mail.com",
+      givenName: "timmy",
+      id: rand
+    }
     |> Auth.Person.upsert_person()
 
     params = %{
       "person" => %{
-        "email" => Auth.Apikey.encrypt_encode("anabela@mail.com"),
+        "email" => Auth.Apikey.encrypt_encode("anabela#{rand}@mail.com"),
         "password" => "thiswillbehashed"
       }
     }
@@ -431,8 +443,9 @@ defmodule AuthWeb.AuthControllerTest do
   end
 
   test "verify_email/2 verify an email address", %{conn: conn} do
+    rand = :rand.uniform(1_000_000)
     person =
-      %{email: "anabela@mail.com", auth_provider: "email", app_id: 1}
+      %{email: "anabela#{rand}@mail.com", auth_provider: "email", app_id: 1, id: rand}
       |> Auth.Person.upsert_person()
 
     state =

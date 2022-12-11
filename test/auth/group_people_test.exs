@@ -19,9 +19,10 @@ defmodule Auth.GroupPeopleTest do
       assert inserted_group.app_id == app.id
 
       # Create a random non-admin person we can add to the group:
-      alex = %{email: "alex_not_admin@gmail.com", givenName: "Alex",
-                auth_provider: "email", app_id: app.id}
-      non_admin = Auth.Person.create_person(alex)
+      # rand = :rand.uniform(1_000_000)
+      # alex = %{email: "alex_not_admin#{rand}@gmail.com", givenName: "Alex",
+      #           auth_provider: "email", app_id: app.id}
+      non_admin = non_admin_person()
       assert non_admin.id > 1
 
       group_person = %{

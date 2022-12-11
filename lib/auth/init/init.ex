@@ -74,19 +74,15 @@ defmodule Auth.Init do
   end
 
   def create_admin do
-    email = Envar.get("ADMIN_EMAIL")
-    # Logger.debug("ADMIN_EMAIL:#{email}")
-
-    case Person.get_person_by_email(email) do
-      # Ignore if the Super Admin already exists:
-      nil ->
-        %Person{}
-        |> Person.changeset(%{email: email, givenName: "Neo", username: "neo"})
-        |> Repo.insert!()
-
-      person ->
-        person
-    end
+    %Person{}
+    |> Person.changeset(%{
+      auth_provider: "email",
+      email: Envar.get("ADMIN_EMAIL"),
+      id: 1,
+      givenName: "Neo",
+      username: "neo",
+    })
+    |> Repo.insert!(on_conflict: :replace_all, conflict_target: :email_hash)
   end
 
   def create_apikey_for_admin(person) do

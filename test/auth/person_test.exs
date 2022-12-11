@@ -13,7 +13,8 @@ defmodule Auth.PersonTest do
   end
 
   test "verify_person_by_id/1" do
-    alice = %{email: "alice@mail.com", auth_provider: "email"}
+    rand = :rand.uniform(1_000_000)
+    alice = %{id: rand, email: "alice#{rand}@mail.com", auth_provider: "email"}
     person = Person.create_person(alice)
     assert is_nil(person.status)
 

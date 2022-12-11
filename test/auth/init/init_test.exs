@@ -13,7 +13,7 @@ defmodule Auth.InitTest do
       app = Auth.App.get_app!(1)
       Auth.App.delete_app(app)
       # Create then delete admin:
-      _person = Auth.Init.create_admin()
+      # person = Auth.Init.create_admin()
       # Auth.Person.delete(person)
 
       assert Auth.Init.main() == :ok

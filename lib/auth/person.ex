@@ -62,6 +62,7 @@ defmodule Auth.Person do
     |> put_email_hash()
     |> put_pass_hash()
     |> put_username()
+    |> unique_constraint(:email_hash)
   end
 
   def create_person(person) do

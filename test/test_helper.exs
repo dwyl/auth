@@ -35,11 +35,12 @@ defmodule AuthTest do
     rand = :rand.uniform(1_000_000)
 
     person = %{
+      id: rand,
       email: "alex+#{rand}@gmail.com",
       givenName: "Alexander McAwesome",
       auth_provider: "email",
       password: "thiswillbehashed",
-      github_id: "19",
+      github_id: "#{rand}",
       picture: "https://avatars3.githubusercontent.com/u/10835816",
       status: 1,
       app_id: 1,
