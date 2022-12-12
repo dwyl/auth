@@ -186,7 +186,6 @@ defmodule AuthWeb.AuthControllerTest do
     }
 
     conn2 = get(conn, "/auth/github/callback", data)
-
     assert html_response(conn2, 302) =~ baseurl
   end
 
@@ -241,8 +240,10 @@ defmodule AuthWeb.AuthControllerTest do
   end
 
   test "google_handler/2 show welcome (state=nil) > handler/3", %{conn: conn} do
+    rand = :rand.uniform(1_000_000)
     data = %{
-      email: "nelson@gmail.com",
+      email: "nelson#{rand}@gmail.com",
+      id: rand,
       givenName: "McTestin",
       picture: "https://youtu.be/naoknj1ebqI",
       auth_provider: "google"
@@ -291,10 +292,11 @@ defmodule AuthWeb.AuthControllerTest do
   end
 
   test "login_register_handler/2 with valid email", %{conn: conn} do
+    rand = :rand.uniform(1_000_000)
     conn =
       post(conn, "/auth/loginregister", %{
         "person" => %{
-          email: "jimmy@dwyl.com",
+          email: "jimmy#{rand}@dwyl.com",
           state:
             "www.example.com/" <>
               "&auth_client_id=" <> AuthPlug.Token.client_id()
@@ -359,6 +361,7 @@ defmodule AuthWeb.AuthControllerTest do
   test "login_register_handler/2 UNVERIFIED person with PWD", %{conn: conn} do
     rand = :rand.uniform(1_000_000)
     data = %{
+      id: rand,
       email: "alex#{rand}@gmail.com",
       auth_provider: "email",
       password: "thiswillbehashed"
@@ -467,8 +470,10 @@ defmodule AuthWeb.AuthControllerTest do
   end
 
   test "password_prompt/2 verify VALID password", %{conn: conn} do
+    rand = :rand.uniform(1_000_000)
     data = %{
-      email: "ana@mail.com",
+      id: rand,
+      email: "ana#{rand}@mail.com",
       auth_provider: "email",
       status: 1,
       password: "thiswillbehashed",
@@ -494,8 +499,10 @@ defmodule AuthWeb.AuthControllerTest do
   end
 
   test "password_prompt/2 verify INVALID password", %{conn: conn} do
+    rand = :rand.uniform(1_000_000)
     data = %{
-      email: "ana@mail.com",
+      email: "ana#{rand}@mail.com",
+      id: rand,
       auth_provider: "email",
       status: 1,
       password: "thiswillbehashed"

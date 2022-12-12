@@ -82,7 +82,7 @@ defmodule Auth.Init do
       givenName: "Neo",
       username: "neo",
     })
-    |> Repo.insert!(on_conflict: :replace_all, conflict_target: :email_hash)
+    |> Repo.insert!(on_conflict: :replace_all, conflict_target: :id)
   end
 
   def create_apikey_for_admin(person) do
