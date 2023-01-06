@@ -52,7 +52,7 @@ defmodule Auth.Mixfile do
       {:postgrex, ">= 0.15.13"},
       {:phoenix_html, "~> 3.2.0"},
       {:phoenix_live_reload, "~> 1.4.1", only: :dev},
-      {:phoenix_live_view, "~> 0.17.5"},
+      {:phoenix_live_view, "~> 0.18.4"},
       {:floki, ">= 0.32.0", only: :test},
       # {:phoenix_live_dashboard, "~> 0.6.1"},
       {:esbuild, "~> 0.4", runtime: Mix.env() == :dev},
