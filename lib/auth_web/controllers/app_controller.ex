@@ -12,22 +12,45 @@ defmodule AuthWeb.AppController do
   end
 
   def create(conn, %{"app" => app_params}) do
+    IO.inspect(app_params)
+
     attrs =
       Map.merge(app_params, %{
         "person_id" => conn.assigns.person.id,
         "status" => 3
       })
 
-    case App.create_app(attrs) do
-      {:ok, app} ->
-        conn
-        |> put_flash(:info, "App created successfully.")
-        |> redirect(to: Routes.app_path(conn, :show, app))
+    changeset = App.change_app(%App{})
+    render(conn, "new.html", changeset: changeset)
 
-      {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, "new.html", changeset: changeset)
-    end
+    #  case App.create_app(attrs) do
+    #     {:ok, app} ->
+    #       conn
+    #       |> put_flash(:info, "App created successfully.")
+    #       |> redirect(to: Routes.app_path(conn, :show, app))
+
+    #     {:error, %Ecto.Changeset{} = changeset} ->
+    #       render(conn, "new.html", changeset: changeset)
+    #   end
   end
+
+  # def create(conn, %{"app" => app_params}) do
+  #   attrs =
+  #     Map.merge(app_params, %{
+  #       "person_id" => conn.assigns.person.id,
+  #       "status" => 3
+  #     })
+
+  #   case App.create_app(attrs) do
+  #     {:ok, app} ->
+  #       conn
+  #       |> put_flash(:info, "App created successfully.")
+  #       |> redirect(to: Routes.app_path(conn, :show, app))
+
+  #     {:error, %Ecto.Changeset{} = changeset} ->
+  #       render(conn, "new.html", changeset: changeset)
+  #   end
+  # end
 
   def show(conn, %{"id" => id}) do
     app = App.get_app!(id)
