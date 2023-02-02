@@ -108,6 +108,14 @@ You will see an error similar to:
 [**issues/157**](https://github.com/dwyl/auth/issues/157).
 See the 3<sup>rd</sup> step below.
 
+> If you run `mix ecto.setup` in step 4 without the 
+required environment variables,
+even if you set them and try to run the command again,
+it will error.
+You will see this error in
+[**issues/266**](https://github.com/dwyl/auth/issues/266).
+Just delete the created database and run the command again.
+
 
 ### 1. Clone the project:
 
