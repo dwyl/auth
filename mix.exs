@@ -60,8 +60,10 @@ defmodule Auth.Mixfile do
       # {:swoosh, "~> 1.5.1"},
       {:telemetry_metrics, "~> 0.6.1"},
       {:telemetry_poller, "~> 1.0"},
-      {:gettext, "~> 0.19.0"},
-      {:jason, "~> 1.0"},
+
+      {:gettext, "~> 0.22.0"},
+      {:jason, "~> 1.3"},
+
       {:plug_cowboy, "~> 2.5.2"},
 
       # Auth:
