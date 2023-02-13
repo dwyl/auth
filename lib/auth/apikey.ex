@@ -29,15 +29,6 @@ defmodule Auth.Apikey do
   end
 
   @doc """
-  `create_api_key/1` uses the `encrypt_encode/1` to create an API Key
-  that is just two strings joined with a forwardslash ("/").
-  This allows us to use a *single* environment variable.
-  """
-  def create_api_key(id) do
-    encrypt_encode(id) <> "/" <> encrypt_encode(id)
-  end
-
-  @doc """
   `decode_decrypt/1` accepts a `key` and attempts to Base58.decode
   followed by AES.decrypt it. If decode or decrypt fails, return 0 (zero).
   """
@@ -49,10 +40,6 @@ defmodule Auth.Apikey do
       _ ->
         {:error, "invalid key"}
     end
-  end
-
-  def decrypt_api_key(key) do
-    key |> String.split("/") |> List.first() |> decode_decrypt()
   end
 
   def changeset(apikey, attrs) do

@@ -23,21 +23,6 @@ defmodule Auth.ApikeyTest do
       assert app_id == id
     end
 
-    test "create_api_key/1 creates an AUTH_API_KEY" do
-      app_id = 123_456_789
-      key = Auth.Apikey.create_api_key(app_id)
-      assert key =~ "/"
-      parts = String.split(key, "/")
-      assert Auth.Apikey.decode_decrypt(List.first(parts)) == {:ok, app_id}
-    end
-
-    test "decrypt_api_key/1 decrypts an AUTH_API_KEY" do
-      app_id = 1234
-      key = Auth.Apikey.create_api_key(app_id)
-      {:ok, decrypted} = Auth.Apikey.decrypt_api_key(key)
-      assert decrypted == app_id
-    end
-
     test "decode_decrypt/1 with invalid client_id" do
       valid_key = Auth.Apikey.encrypt_encode(1)
       {:ok, app_id} = Auth.Apikey.decode_decrypt(valid_key)

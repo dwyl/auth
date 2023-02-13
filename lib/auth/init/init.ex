@@ -25,25 +25,25 @@ defmodule Auth.Init do
     Logger.info("Initialising the Auth Database ...")
 
     # if the #1 App does not exist, create it:
-    api_key = case Auth.App.get_app!(1) do
-      nil -> 
-        admin = Auth.Init.create_admin()
+    api_key =
+      case Auth.App.get_app!(1) do
+        nil ->
+          admin = Auth.Init.create_admin()
 
-        # Create Generic Roles & Statuses
-        Auth.InitStatuses.insert_statuses()
-        Auth.InitRoles.create_default_roles()
-    
-        # Update status of Admin to "verified"
-        Auth.Person.verify_person_by_id(admin.id)
-        
-        # Create App and API Key for the admin:
-        Auth.Init.create_apikey_for_admin(admin)
+          # Create Generic Roles & Statuses
+          Auth.InitStatuses.insert_statuses()
+          Auth.InitRoles.create_default_roles()
 
-      app ->
-        key = List.last(app.apikeys)
-        key.client_id <> "/" <> key.client_secret <> "/" <> get_auth_url()
-        
-    end
+          # Update status of Admin to "verified"
+          Auth.Person.verify_person_by_id(admin.id)
+
+          # Create App and API Key for the admin:
+          Auth.Init.create_apikey_for_admin(admin)
+
+        app ->
+          key = List.last(app.apikeys)
+          key.client_id <> "/" <> key.client_secret <> "/" <> get_auth_url()
+      end
 
     case Envar.get("MIX_ENV") do
       "test" ->
@@ -98,26 +98,26 @@ defmodule Auth.Init do
     Auth.PeopleRoles.upsert(app.id, person.id, person.id, 1)
 
     # If AUTH_API_KEY environment variable is already set, use it:
-    key = if Envar.is_set?("AUTH_API_KEY") do
+    key =
+      if Envar.is_set?("AUTH_API_KEY") do
+        update_attrs = %{
+          "client_id" => AuthPlug.Token.client_id(),
+          "client_secret" => AuthPlug.Token.client_secret()
+        }
 
-      update_attrs = %{
-        "client_id" => AuthPlug.Token.client_id(),
-        "client_secret" => AuthPlug.Token.client_secret()
-      }
+        # Update value of client_id & client_secret in the DB to match Env.
+        {:ok, key} =
+          Auth.Apikey.get_apikey_by_app_id(app.id)
+          |> cast(update_attrs, [:client_id, :client_secret])
+          |> Repo.update()
 
-      # Update value of client_id & client_secret in the DB to match Env.
-      {:ok, key} =
-        Auth.Apikey.get_apikey_by_app_id(app.id)
-        |> cast(update_attrs, [:client_id, :client_secret])
-        |> Repo.update()
+        key
 
-      key
-      
-    # coveralls-ignore-start
-    else
-      List.last(app.apikeys)
-    # coveralls-ignore-stop
-    end
+        # coveralls-ignore-start
+      else
+        List.last(app.apikeys)
+        # coveralls-ignore-stop
+      end
 
     key.client_id <> "/" <> key.client_secret <> "/" <> get_auth_url()
   end

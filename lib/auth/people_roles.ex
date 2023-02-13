@@ -100,13 +100,14 @@ defmodule Auth.PeopleRoles do
   `upsert/4` grants a role (`role_id`) to the given person (`grantee_id`)
   for the `app_id`.
   `granter_id` is the id of the person (admin) granting the role.
-  
+
   """
   def upsert(app_id, grantee_id, granter_id, role_id) do
     case get_roles_for_person_for_app(app_id, grantee_id) do
       # if there are no roles for the person, insert it:
       n when n in [nil, []] ->
         [insert(app_id, grantee_id, granter_id, role_id)]
+
       roles ->
         # if the role exists in the list of roles, return the list
         if Enum.find_value(roles, fn r -> r.id == role_id end) do
@@ -116,7 +117,6 @@ defmodule Auth.PeopleRoles do
         end
     end
   end
-
 
   @doc """
   `revoke/3` grants a role to the given person
