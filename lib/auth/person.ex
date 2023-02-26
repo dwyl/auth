@@ -321,10 +321,15 @@ defmodule Auth.Person do
   def get_list_of_people() do
     result = Repo.query!(query())
 
+<<<<<<< HEAD
     Enum.map(result.rows, fn [pid, aid, sid, s, n, pic, iat, e, aup, role, un] ->
+=======
+    Enum.map(result.rows, fn [pid, aid, uname, sid, s, n, pic, iat, e, aup, role] ->
+>>>>>>> 920d016 (add username to Auth.Person.get_list_of_people/1 for #248)
       %{
         app_id: aid,
         person_id: pid,
+        username: uname,
         status: s,
         status_id: sid,
         updated_at: NaiveDateTime.truncate(iat, :second),
@@ -342,7 +347,7 @@ defmodule Auth.Person do
   # writing the raw SQL was much faster/simpler than using Ecto.
   defp query() do
     """
-    SELECT DISTINCT ON (p.id) p.id, p.app_id, p.status,
+    SELECT DISTINCT ON (p.id) p.id, p.app_id, p.username, p.status,
     st.text as status, p."givenName", p.picture,
     p.inserted_at, p.email, p.auth_provider, r.name, p.username
     FROM people AS p

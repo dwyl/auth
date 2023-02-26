@@ -32,4 +32,8 @@ defmodule AuthWeb.PeopleView do
       :string.titlecase(str)
     end
   end
+
+  def map_has_key?(map, key) do
+    Map.has_key?(map, key)
+  end
 end

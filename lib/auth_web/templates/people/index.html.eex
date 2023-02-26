@@ -18,12 +18,13 @@
     </thead>
     <tbody>
   <%= for {p, idx} <- Enum.with_index(@people) do %>
+
       <tr class="hover-bg-light-gray
         <%= if rem(idx,2) == 0 do %> bb b--moon-gray bg-light-gray <% end %>">
         <td><a href="/people/<%= p.person_id %>" class="no-underline"><%= p.person_id %></a></td>
         <td><img width="64px" src="<%= p.picture %>" class="center db br2"/></td>
         <td><%= p.givenName %></td>
-        <td><%= p.username %></td>
+        <td><%= if map_has_key?(p, :username) do%> <%= p.username %> <% end %></td>
         <td class="<%= p.status %>"><%= p.status %></td>
         <td><%= p.updated_at %></td>
         <%= if show_email(p, @app_ids) do%>
