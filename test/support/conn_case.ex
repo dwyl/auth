@@ -35,4 +35,30 @@ defmodule AuthWeb.ConnCase do
     Auth.DataCase.setup_sandbox(tags)
     {:ok, conn: Phoenix.ConnTest.build_conn()}
   end
+
+  @doc """
+  Setup helper that registers and logs in people.
+
+      setup :register_and_log_in_person
+
+  It stores an updated connection and a registered person in the
+  test context.
+  """
+  def register_and_log_in_person(%{conn: conn}) do
+    person = Auth.AccountsFixtures.person_fixture()
+    %{conn: log_in_person(conn, person), person: person}
+  end
+
+  @doc """
+  Logs the given `person` into the `conn`.
+
+  It returns an updated `conn`.
+  """
+  def log_in_person(conn, person) do
+    token = Auth.Accounts.generate_person_session_token(person)
+
+    conn
+    |> Phoenix.ConnTest.init_test_session(%{})
+    |> Plug.Conn.put_session(:person_token, token)
+  end
 end
