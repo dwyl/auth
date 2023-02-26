@@ -17,7 +17,8 @@ defmodule Auth.MixProject do
         "coveralls.detail": :test,
         "coveralls.post": :test,
         "coveralls.html": :test,
-        test: :test
+        test: :test,
+        t: :test
       ]
     ]
   end
@@ -87,7 +88,8 @@ defmodule Auth.MixProject do
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       s: ["phx.server"],
       setup: ["deps.get", "ecto.setup", "assets.setup", "assets.build"],
-      test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"]
+      t: ["test"],
+      test: ["ecto.setup --quiet", "ecto.migrate --quiet", "test"]
     ]
   end
 end

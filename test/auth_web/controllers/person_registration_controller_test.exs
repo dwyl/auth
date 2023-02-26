@@ -8,8 +8,8 @@ defmodule AuthWeb.PersonRegistrationControllerTest do
       conn = get(conn, ~p"/people/register")
       response = html_response(conn, 200)
       assert response =~ "Register"
-      assert response =~ ~p"/users/log_in"
-      assert response =~ ~p"/users/register"
+      assert response =~ ~p"/people/log_in"
+      assert response =~ ~p"/people/register"
     end
 
     test "redirects if already logged in", %{conn: conn} do
@@ -36,8 +36,8 @@ defmodule AuthWeb.PersonRegistrationControllerTest do
       conn = get(conn, ~p"/")
       response = html_response(conn, 200)
       assert response =~ email
-      assert response =~ ~p"/users/settings"
-      assert response =~ ~p"/users/log_out"
+      assert response =~ ~p"/people/settings"
+      assert response =~ ~p"/people/log_out"
     end
 
     test "render errors for invalid data", %{conn: conn} do

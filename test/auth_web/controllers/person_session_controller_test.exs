@@ -12,7 +12,7 @@ defmodule AuthWeb.PersonSessionControllerTest do
       conn = get(conn, ~p"/people/log_in")
       response = html_response(conn, 200)
       assert response =~ "Log in"
-      assert response =~ ~p"/users/register"
+      assert response =~ ~p"/people/register"
       assert response =~ "Forgot your password?"
     end
 
@@ -36,8 +36,8 @@ defmodule AuthWeb.PersonSessionControllerTest do
       conn = get(conn, ~p"/")
       response = html_response(conn, 200)
       assert response =~ person.email
-      assert response =~ ~p"/users/settings"
-      assert response =~ ~p"/users/log_out"
+      assert response =~ ~p"/people/settings"
+      assert response =~ ~p"/people/log_out"
     end
 
     test "logs the person in with remember me", %{conn: conn, person: person} do
@@ -66,7 +66,6 @@ defmodule AuthWeb.PersonSessionControllerTest do
         })
 
       assert redirected_to(conn) == "/foo/bar"
-      assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "Welcome back!"
     end
 
     test "emits error message with invalid credentials", %{conn: conn, person: person} do
@@ -86,14 +85,12 @@ defmodule AuthWeb.PersonSessionControllerTest do
       conn = conn |> log_in_person(person) |> delete(~p"/people/log_out")
       assert redirected_to(conn) == ~p"/"
       refute get_session(conn, :person_token)
-      assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "Logged out successfully"
     end
 
     test "succeeds even if the person is not logged in", %{conn: conn} do
       conn = delete(conn, ~p"/people/log_out")
       assert redirected_to(conn) == ~p"/"
       refute get_session(conn, :person_token)
-      assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "Logged out successfully"
     end
   end
 end

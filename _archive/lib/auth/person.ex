@@ -111,7 +111,7 @@ defmodule Auth.Person do
       login: "alex",
       name: "Alex McAwesome",
       type: "User",
-      url: "https://api.github.com/users/alex"
+      url: "https://api.github.com/people/alex"
     })
     %{
       "email" => "nelson@gmail.com",
