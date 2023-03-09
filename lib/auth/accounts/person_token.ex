@@ -17,6 +17,8 @@ defmodule Auth.Accounts.PersonToken do
     field :token, :binary
     field :context, :string
     field :sent_to, :string
+    # field :sent_to, Fields.EmailEncrypted
+    # field :email_hash, Fields.EmailHash
     belongs_to :person, Auth.Accounts.Person
 
     timestamps(updated_at: false)
@@ -107,29 +109,29 @@ defmodule Auth.Accounts.PersonToken do
   for resetting the password. For verifying requests to change the email,
   see `verify_change_email_token_query/2`.
   """
-  def verify_email_token_query(token, context) do
-    case Base.url_decode64(token, padding: false) do
-      {:ok, decoded_token} ->
-        hashed_token = :crypto.hash(@hash_algorithm, decoded_token)
-        days = days_for_context(context)
+  # def verify_email_token_query(token, context) do
+  #   case Base.url_decode64(token, padding: false) do
+  #     {:ok, decoded_token} ->
+  #       hashed_token = :crypto.hash(@hash_algorithm, decoded_token)
+  #       days = days_for_context(context)
 
-        query =
-          from token in token_and_context_query(hashed_token, context),
-            join: person in assoc(token, :person),
-            where: token.inserted_at > ago(^days, "day") and token.sent_to == person.email,
-            select: person
+  #       query =
+  #         from token in token_and_context_query(hashed_token, context),
+  #           join: person in assoc(token, :person),
+  #           where: token.inserted_at > ago(^days, "day") and token.sent_to == person.email,
+  #           select: person
 
-        {:ok, query}
-      # phx.gen.auth boilerplate code not yet covered by tests ...
-      # coveralls-ignore-start
-      :error ->
-        :error
-      # coveralls-ignore-stop
-    end
-  end
+  #       {:ok, query}
+  #     # phx.gen.auth boilerplate code not yet covered by tests ...
+  #     # coveralls-ignore-start
+  #     :error ->
+  #       :error
+  #     # coveralls-ignore-stop
+  #   end
+  # end
 
-  defp days_for_context("confirm"), do: @confirm_validity_in_days
-  defp days_for_context("reset_password"), do: @reset_password_validity_in_days
+  # defp days_for_context("confirm"), do: @confirm_validity_in_days
+  # defp days_for_context("reset_password"), do: @reset_password_validity_in_days
 
   @doc """
   Checks if the token is valid and returns its underlying lookup query.

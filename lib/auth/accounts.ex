@@ -23,7 +23,7 @@ defmodule Auth.Accounts do
 
   """
   def get_person_by_email(email) when is_binary(email) do
-    Repo.get_by(Person, email: email)
+    Repo.get_by(Person, email_hash: email)
   end
 
   @doc """
@@ -40,7 +40,7 @@ defmodule Auth.Accounts do
   """
   def get_person_by_email_and_password(email, password)
       when is_binary(email) and is_binary(password) do
-    person = Repo.get_by(Person, email: email)
+    person = Repo.get_by(Person, email_hash: email)
     if Person.valid_password?(person, password), do: person
   end
 
@@ -267,27 +267,27 @@ defmodule Auth.Accounts do
     end
   end
 
-  @doc """
-  Confirms a person by the given token.
+  # @doc """
+  # Confirms a person by the given token.
 
-  If the token matches, the person account is marked as confirmed
-  and the token is deleted.
-  """
-  def confirm_person(token) do
-    with {:ok, query} <- PersonToken.verify_email_token_query(token, "confirm"),
-         %Person{} = person <- Repo.one(query),
-         {:ok, %{person: person}} <- Repo.transaction(confirm_person_multi(person)) do
-      {:ok, person}
-    else
-      _ -> :error
-    end
-  end
+  # If the token matches, the person account is marked as confirmed
+  # and the token is deleted.
+  # """
+  # def confirm_person(token) do
+  #   with {:ok, query} <- PersonToken.verify_email_token_query(token, "confirm"),
+  #        %Person{} = person <- Repo.one(query),
+  #        {:ok, %{person: person}} <- Repo.transaction(confirm_person_multi(person)) do
+  #     {:ok, person}
+  #   else
+  #     _ -> :error
+  #   end
+  # end
 
-  defp confirm_person_multi(person) do
-    Ecto.Multi.new()
-    |> Ecto.Multi.update(:person, Person.confirm_changeset(person))
-    |> Ecto.Multi.delete_all(:tokens, PersonToken.person_and_contexts_query(person, ["confirm"]))
-  end
+  # defp confirm_person_multi(person) do
+  #   Ecto.Multi.new()
+  #   |> Ecto.Multi.update(:person, Person.confirm_changeset(person))
+  #   |> Ecto.Multi.delete_all(:tokens, PersonToken.person_and_contexts_query(person, ["confirm"]))
+  # end
 
   ## Reset password
 
@@ -307,26 +307,26 @@ defmodule Auth.Accounts do
     PersonNotifier.deliver_reset_password_instructions(person, reset_password_url_fun.(encoded_token))
   end
 
-  @doc """
-  Gets the person by reset password token.
+  # @doc """
+  # Gets the person by reset password token.
 
-  ## Examples
+  # ## Examples
 
-      iex> get_person_by_reset_password_token("validtoken")
-      %Person{}
+  #     iex> get_person_by_reset_password_token("validtoken")
+  #     %Person{}
 
-      iex> get_person_by_reset_password_token("invalidtoken")
-      nil
+  #     iex> get_person_by_reset_password_token("invalidtoken")
+  #     nil
 
-  """
-  def get_person_by_reset_password_token(token) do
-    with {:ok, query} <- PersonToken.verify_email_token_query(token, "reset_password"),
-         %Person{} = person <- Repo.one(query) do
-      person
-    else
-      _ -> nil
-    end
-  end
+  # """
+  # def get_person_by_reset_password_token(token) do
+  #   with {:ok, query} <- PersonToken.verify_email_token_query(token, "reset_password"),
+  #        %Person{} = person <- Repo.one(query) do
+  #     person
+  #   else
+  #     _ -> nil
+  #   end
+  # end
 
   @doc """
   Resets the person password.

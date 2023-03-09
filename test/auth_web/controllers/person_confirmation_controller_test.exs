@@ -75,48 +75,48 @@ defmodule AuthWeb.PersonConfirmationControllerTest do
     end
   end
 
-  describe "POST /people/confirm/:token" do
-    test "confirms the given token once", %{conn: conn, person: person} do
-      token =
-        extract_person_token(fn url ->
-          Accounts.deliver_person_confirmation_instructions(person, url)
-        end)
+  # describe "POST /people/confirm/:token" do
+  #   test "confirms the given token once", %{conn: conn, person: person} do
+  #     token =
+  #       extract_person_token(fn url ->
+  #         Accounts.deliver_person_confirmation_instructions(person, url)
+  #       end)
 
-      conn = post(conn, ~p"/people/confirm/#{token}")
-      assert redirected_to(conn) == ~p"/"
+  #     conn = post(conn, ~p"/people/confirm/#{token}")
+  #     assert redirected_to(conn) == ~p"/"
 
-      assert Phoenix.Flash.get(conn.assigns.flash, :info) =~
-               "Person confirmed successfully"
+  #     assert Phoenix.Flash.get(conn.assigns.flash, :info) =~
+  #              "Person confirmed successfully"
 
-      assert Accounts.get_person!(person.id).confirmed_at
-      refute get_session(conn, :person_token)
-      assert Repo.all(Accounts.PersonToken) == []
+  #     assert Accounts.get_person!(person.id).confirmed_at
+  #     refute get_session(conn, :person_token)
+  #     assert Repo.all(Accounts.PersonToken) == []
 
-      # When not logged in
-      conn = post(conn, ~p"/people/confirm/#{token}")
-      assert redirected_to(conn) == ~p"/"
+  #     # When not logged in
+  #     conn = post(conn, ~p"/people/confirm/#{token}")
+  #     assert redirected_to(conn) == ~p"/"
 
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~
-               "Person confirmation link is invalid or it has expired"
+  #     assert Phoenix.Flash.get(conn.assigns.flash, :error) =~
+  #              "Person confirmation link is invalid or it has expired"
 
-      # When logged in
-      conn =
-        build_conn()
-        |> log_in_person(person)
-        |> post(~p"/people/confirm/#{token}")
+  #     # When logged in
+  #     conn =
+  #       build_conn()
+  #       |> log_in_person(person)
+  #       |> post(~p"/people/confirm/#{token}")
 
-      assert redirected_to(conn) == ~p"/"
-      refute Phoenix.Flash.get(conn.assigns.flash, :error)
-    end
+  #     assert redirected_to(conn) == ~p"/"
+  #     refute Phoenix.Flash.get(conn.assigns.flash, :error)
+  #   end
 
-    test "does not confirm email with invalid token", %{conn: conn, person: person} do
-      conn = post(conn, ~p"/people/confirm/oops")
-      assert redirected_to(conn) == ~p"/"
+  #   test "does not confirm email with invalid token", %{conn: conn, person: person} do
+  #     conn = post(conn, ~p"/people/confirm/oops")
+  #     assert redirected_to(conn) == ~p"/"
 
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~
-               "Person confirmation link is invalid or it has expired"
+  #     assert Phoenix.Flash.get(conn.assigns.flash, :error) =~
+  #              "Person confirmation link is invalid or it has expired"
 
-      refute Accounts.get_person!(person.id).confirmed_at
-    end
-  end
+  #     refute Accounts.get_person!(person.id).confirmed_at
+  #   end
+  # end
 end

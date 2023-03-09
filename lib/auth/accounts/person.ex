@@ -3,10 +3,11 @@ defmodule Auth.Accounts.Person do
   import Ecto.Changeset
 
   schema "people" do
-    field :email, :string
+    field :confirmed_at, :naive_datetime
+    field :email, Fields.EmailEncrypted
+    field :email_hash, Fields.EmailHash
     field :password, :string, virtual: true, redact: true
     field :hashed_password, :string, redact: true
-    field :confirmed_at, :naive_datetime
 
     timestamps()
   end
@@ -41,11 +42,23 @@ defmodule Auth.Accounts.Person do
     |> validate_password(opts)
   end
 
+  defp put_email_hash(changeset) when not is_nil(changeset.changes.email) do
+    # dbg(changeset)
+    put_change(changeset, :email_hash, String.downcase(changeset.changes.email))
+  end
+
+  defp put_email_hash(changeset) do
+    # dbg(changeset)
+    changeset
+  end
+
+
   defp validate_email(changeset, opts) do
     changeset
     |> validate_required([:email])
     |> validate_format(:email, ~r/^[^\s]+@[^\s]+$/, message: "must have the @ sign and no spaces")
     |> validate_length(:email, max: 160)
+    |> put_email_hash()
     |> maybe_validate_unique_email(opts)
   end
 
@@ -80,8 +93,8 @@ defmodule Auth.Accounts.Person do
   defp maybe_validate_unique_email(changeset, opts) do
     if Keyword.get(opts, :validate_email, true) do
       changeset
-      |> unsafe_validate_unique(:email, Auth.Repo)
-      |> unique_constraint(:email)
+      |> unsafe_validate_unique(:email_hash, Auth.Repo)
+      |> unique_constraint(:email_hash)
     else
       changeset
     end

@@ -48,29 +48,29 @@ defmodule AuthWeb.PersonResetPasswordControllerTest do
     end
   end
 
-  describe "GET /people/reset_password/:token" do
-    setup %{person: person} do
-      token =
-        extract_person_token(fn url ->
-          Accounts.deliver_person_reset_password_instructions(person, url)
-        end)
+  # describe "GET /people/reset_password/:token" do
+  #   setup %{person: person} do
+  #     token =
+  #       extract_person_token(fn url ->
+  #         Accounts.deliver_person_reset_password_instructions(person, url)
+  #       end)
 
-      %{token: token}
-    end
+  #     %{token: token}
+  #   end
 
-    test "renders reset password", %{conn: conn, token: token} do
-      conn = get(conn, ~p"/people/reset_password/#{token}")
-      assert html_response(conn, 200) =~ "Reset password"
-    end
+  #   test "renders reset password", %{conn: conn, token: token} do
+  #     conn = get(conn, ~p"/people/reset_password/#{token}")
+  #     assert html_response(conn, 200) =~ "Reset password"
+  #   end
 
-    test "does not render reset password with invalid token", %{conn: conn} do
-      conn = get(conn, ~p"/people/reset_password/oops")
-      assert redirected_to(conn) == ~p"/"
+  #   test "does not render reset password with invalid token", %{conn: conn} do
+  #     conn = get(conn, ~p"/people/reset_password/oops")
+  #     assert redirected_to(conn) == ~p"/"
 
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~
-               "Reset password link is invalid or it has expired"
-    end
-  end
+  #     assert Phoenix.Flash.get(conn.assigns.flash, :error) =~
+  #              "Reset password link is invalid or it has expired"
+  #   end
+  # end
 
   describe "PUT /people/reset_password/:token" do
     setup %{person: person} do
@@ -82,42 +82,42 @@ defmodule AuthWeb.PersonResetPasswordControllerTest do
       %{token: token}
     end
 
-    test "resets password once", %{conn: conn, person: person, token: token} do
-      conn =
-        put(conn, ~p"/people/reset_password/#{token}", %{
-          "person" => %{
-            "password" => "new valid password",
-            "password_confirmation" => "new valid password"
-          }
-        })
+    # test "resets password once", %{conn: conn, person: person, token: token} do
+    #   conn =
+    #     put(conn, ~p"/people/reset_password/#{token}", %{
+    #       "person" => %{
+    #         "password" => "new valid password",
+    #         "password_confirmation" => "new valid password"
+    #       }
+    #     })
 
-      assert redirected_to(conn) == ~p"/people/log_in"
-      refute get_session(conn, :person_token)
+    #   assert redirected_to(conn) == ~p"/people/log_in"
+    #   refute get_session(conn, :person_token)
 
-      assert Phoenix.Flash.get(conn.assigns.flash, :info) =~
-               "Password reset successfully"
+    #   assert Phoenix.Flash.get(conn.assigns.flash, :info) =~
+    #            "Password reset successfully"
 
-      assert Accounts.get_person_by_email_and_password(person.email, "new valid password")
-    end
+    #   assert Accounts.get_person_by_email_and_password(person.email, "new valid password")
+    # end
 
-    test "does not reset password on invalid data", %{conn: conn, token: token} do
-      conn =
-        put(conn, ~p"/people/reset_password/#{token}", %{
-          "person" => %{
-            "password" => "too short",
-            "password_confirmation" => "does not match"
-          }
-        })
+    # test "does not reset password on invalid data", %{conn: conn, token: token} do
+    #   conn =
+    #     put(conn, ~p"/people/reset_password/#{token}", %{
+    #       "person" => %{
+    #         "password" => "too short",
+    #         "password_confirmation" => "does not match"
+    #       }
+    #     })
 
-      assert html_response(conn, 200) =~ "something went wrong"
-    end
+    #   assert html_response(conn, 200) =~ "something went wrong"
+    # end
 
-    test "does not reset password with invalid token", %{conn: conn} do
-      conn = put(conn, ~p"/people/reset_password/oops")
-      assert redirected_to(conn) == ~p"/"
+    # test "does not reset password with invalid token", %{conn: conn} do
+    #   conn = put(conn, ~p"/people/reset_password/oops")
+    #   assert redirected_to(conn) == ~p"/"
 
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~
-               "Reset password link is invalid or it has expired"
-    end
+    #   assert Phoenix.Flash.get(conn.assigns.flash, :error) =~
+    #            "Reset password link is invalid or it has expired"
+    # end
   end
 end

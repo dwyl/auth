@@ -57,8 +57,8 @@ defmodule AuthWeb.Router do
     post "/people/log_in", PersonSessionController, :create
     get "/people/reset_password", PersonResetPasswordController, :new
     post "/people/reset_password", PersonResetPasswordController, :create
-    get "/people/reset_password/:token", PersonResetPasswordController, :edit
-    put "/people/reset_password/:token", PersonResetPasswordController, :update
+    # get "/people/reset_password/:token", PersonResetPasswordController, :edit
+    # put "/people/reset_password/:token", PersonResetPasswordController, :update
   end
 
   scope "/", AuthWeb do
@@ -76,6 +76,6 @@ defmodule AuthWeb.Router do
     get "/people/confirm", PersonConfirmationController, :new
     post "/people/confirm", PersonConfirmationController, :create
     get "/people/confirm/:token", PersonConfirmationController, :edit
-    post "/people/confirm/:token", PersonConfirmationController, :update
+    # post "/people/confirm/:token", PersonConfirmationController, :update
   end
 end

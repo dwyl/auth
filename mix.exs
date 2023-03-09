@@ -4,7 +4,7 @@ defmodule Auth.MixProject do
   def project do
     [
       app: :auth,
-      version: "0.1.0",
+      version: "2.0.0",
       elixir: "~> 1.14",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
@@ -66,6 +66,10 @@ defmodule Auth.MixProject do
       {:gettext, "~> 0.20"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
+
+      # Field Validation and Encryption: github.com/dwyl/fields
+      {:fields, "~> 2.10.3"},
+
 
       # Check test coverage: github.com/parroty/excoveralls
       {:excoveralls, "~> 0.14.3", only: :test},
