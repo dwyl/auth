@@ -6,15 +6,12 @@ defmodule AuthWeb.Endpoint do
   # Set :encryption_salt if you would also like to encrypt it.
   @session_options [
     store: :cookie,
-    key: "_app_key",
-    signing_salt: "Fir8x4nA"
+    key: "_auth_key",
+    signing_salt: "uUDcCOxF",
+    same_site: "Lax"
   ]
 
   socket "/live", Phoenix.LiveView.Socket, websocket: [connect_info: [session: @session_options]]
-
-  # socket "/socket", AuthWeb.UserSocket,
-  #   websocket: true,
-  #   longpoll: false
 
   # Serve at "/" the static files from "priv/static" directory.
   #
@@ -24,7 +21,7 @@ defmodule AuthWeb.Endpoint do
     at: "/",
     from: :auth,
     gzip: false,
-    only: ~w(assets fonts images favicon.ico robots.txt)
+    only: AuthWeb.static_paths()
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.
@@ -35,9 +32,9 @@ defmodule AuthWeb.Endpoint do
     plug Phoenix.Ecto.CheckRepoStatus, otp_app: :auth
   end
 
-  # plug Phoenix.LiveDashboard.RequestLogger,
-  #   param_key: "request_logger",
-  #   cookie_key: "request_logger"
+  plug Phoenix.LiveDashboard.RequestLogger,
+    param_key: "request_logger",
+    cookie_key: "request_logger"
 
   plug Plug.RequestId
   plug Plug.Telemetry, event_prefix: [:phoenix, :endpoint]

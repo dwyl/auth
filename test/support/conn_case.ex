@@ -19,32 +19,46 @@ defmodule AuthWeb.ConnCase do
 
   using do
     quote do
+      # The default endpoint for testing
+      @endpoint AuthWeb.Endpoint
+
+      use AuthWeb, :verified_routes
+
       # Import conveniences for testing with connections
       import Plug.Conn
       import Phoenix.ConnTest
-      # AuthTest is defined in test_helpers.exs
-      # as per https://stackoverflow.com/a/58902158/1148249
-      import AuthTest
-      alias AuthWeb.Router.Helpers, as: Routes
-
-      # The default endpoint for testing
-      @endpoint AuthWeb.Endpoint
+      import AuthWeb.ConnCase
     end
   end
 
   setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(Auth.Repo)
+    Auth.DataCase.setup_sandbox(tags)
+    {:ok, conn: Phoenix.ConnTest.build_conn()}
+  end
 
-    unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(Auth.Repo, {:shared, self()})
-    end
+  @doc """
+  Setup helper that registers and logs in people.
 
-    conn = Phoenix.ConnTest.init_test_session(Phoenix.ConnTest.build_conn(), %{})
+      setup :register_and_log_in_person
 
-    # invoke Plug.Test.init_test_session/2 to setup the test session
-    # before attempting to set a JWT. see:
-    # https://github.com/dwyl/auth/issues/83#issuecomment-660052222
+  It stores an updated connection and a registered person in the
+  test context.
+  """
+  def register_and_log_in_person(%{conn: conn}) do
+    person = Auth.AccountsFixtures.person_fixture()
+    %{conn: log_in_person(conn, person), person: person}
+  end
 
-    {:ok, conn: conn}
+  @doc """
+  Logs the given `person` into the `conn`.
+
+  It returns an updated `conn`.
+  """
+  def log_in_person(conn, person) do
+    token = Auth.Accounts.generate_person_session_token(person)
+
+    conn
+    |> Phoenix.ConnTest.init_test_session(%{})
+    |> Plug.Conn.put_session(:person_token, token)
   end
 end

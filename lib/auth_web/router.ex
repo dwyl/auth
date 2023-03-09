@@ -1,103 +1,81 @@
 defmodule AuthWeb.Router do
-  @moduledoc """
-  Defines Web Application Router pipelines and routes
-  """
   use AuthWeb, :router
+
+  import AuthWeb.PersonAuth
 
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
-    plug :fetch_flash
+    plug :fetch_live_flash
+    plug :put_root_layout, {AuthWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
+    plug :fetch_current_person
   end
 
-  # No Auth
-  scope "/", AuthWeb do
-    pipe_through :browser
-    get "/init", InitController, :index
-  end
-
-  pipeline :auth_optional do
-    plug(AuthPlugOptional, %{})
-  end
+  # uncomment when needed
+  # pipeline :api do
+  #   plug :accepts, ["json"]
+  # end
 
   scope "/", AuthWeb do
     pipe_through :browser
-    pipe_through :auth_optional
 
-    get "/", AuthController, :index
-    get "/auth/github/callback", AuthController, :github_handler
-    get "/auth/google/callback", AuthController, :google_handler
-    get "/auth/verify", AuthController, :verify_email
-    post "/auth/loginregister", AuthController, :login_register_handler
-    # get "/auth/password/new", AuthController, :password_input
-    post "/auth/password/create", AuthController, :password_create
-    post "/auth/password/verify", AuthController, :password_prompt
-    # https://github.com/dwyl/ping
-    get "/ping", PingController, :ping
-  end
-
-  pipeline :auth do
-    plug(AuthPlug)
-  end
-
-  scope "/", AuthWeb do
-    pipe_through :browser
-    pipe_through :auth
-
-    get "/people", PeopleController, :index
-    get "/people/:person_id", PeopleController, :show
-    get "/profile", AuthController, :admin
-
-    get "/roles/grant", RoleController, :grant
-    post "/roles/grant", RoleController, :grant
-    get "/roles/revoke/:people_roles_id", RoleController, :revoke
-    post "/roles/revoke/:people_roles_id", RoleController, :revoke
-    resources "/roles", RoleController
-
-    resources "/permissions", PermissionController
-    get "/apps/:id/resetapikey", AppController, :resetapikey
-    resources "/apps", AppController
-    # resources "/settings/apikeys", ApikeyController
-
-    get "/logout", AuthController, :logout
-  end
-
-  pipeline :api do
-    plug :accepts, ["json"]
+    get "/", PageController, :home
   end
 
   # Other scopes may use custom stacks.
-  scope "/", AuthWeb do
-    pipe_through :api
+  # scope "/api", AuthWeb do
+  #   pipe_through :api
+  # end
 
-    get "/approles/:client_id", ApiController, :approles
-    get "/personroles/:person_id/:client_id", ApiController, :personroles
-    post "/end_session/:client_id/:session_id", ApiController, :end_session
+  # Enable LiveDashboard and Swoosh mailbox preview in development
+  if Application.compile_env(:auth, :dev_routes) do
+    # If you want to use the LiveDashboard in production, you should put
+    # it behind authentication and allow only admins to access it.
+    # If your application does not have an admins-only section yet,
+    # you can use Plug.BasicAuth to set up some basic authentication
+    # as long as you are also using SSL (which you should anyway).
+    import Phoenix.LiveDashboard.Router
+
+    scope "/dev" do
+      pipe_through :browser
+
+      live_dashboard "/dashboard", metrics: AuthWeb.Telemetry
+      forward "/mailbox", Plug.Swoosh.MailboxPreview
+    end
   end
 
-  # Added in Phoenix 1.6 ... Nice-to-have. Not tested.
-  # coveralls-ignore-start
-  # if Mix.env() in [:dev, :test] do
-  #   import Phoenix.LiveDashboard.Router
+  ## Authentication routes
 
-  #   scope "/" do
-  #     pipe_through :browser
-  #     live_dashboard "/dashboard", metrics: AuthWeb.Telemetry
-  #   end
-  # end
-  # coveralls-ignore-stop
+  scope "/", AuthWeb do
+    pipe_through [:browser, :redirect_if_person_is_authenticated]
 
-  # Enables the Swoosh mailbox preview in development.
-  #
-  # Note that preview only shows emails that were sent by the same
-  # node running the Phoenix server.
-  # if Mix.env() == :dev do
-  #   scope "/dev" do
-  #     pipe_through :browser
+    get "/people/register", PersonRegistrationController, :new
+    post "/people/register", PersonRegistrationController, :create
+    get "/people/log_in", PersonSessionController, :new
+    post "/people/log_in", PersonSessionController, :create
+    get "/people/reset_password", PersonResetPasswordController, :new
+    post "/people/reset_password", PersonResetPasswordController, :create
+    # get "/people/reset_password/:token", PersonResetPasswordController, :edit
+    # put "/people/reset_password/:token", PersonResetPasswordController, :update
+  end
 
-  #     forward "/mailbox", Plug.Swoosh.MailboxPreview
-  #   end
-  # end
+  scope "/", AuthWeb do
+    pipe_through [:browser, :require_authenticated_person]
+
+    get "/people/settings", PersonSettingsController, :edit
+    put "/people/settings", PersonSettingsController, :update
+    get "/people/settings/confirm_email/:token", PersonSettingsController, :confirm_email
+  end
+
+  scope "/", AuthWeb do
+    pipe_through [:browser]
+
+    delete "/people/log_out", PersonSessionController, :delete
+    get "/people/confirm", PersonConfirmationController, :new
+    post "/people/confirm", PersonConfirmationController, :create
+    get "/people/confirm/:token", PersonConfirmationController, :edit
+    # post "/people/confirm/:token", PersonConfirmationController, :update
+  end
 end

@@ -1,0 +1,67 @@
+<section class="w-100 center ph3 tc">
+  <h1> People Authenticated with Auth</h1>
+
+  <table class="w-100 center ph3 tc" id="table">
+    <thead>
+      <tr class="tl">
+        <th>ID</th>
+        <th>Image</th>
+        <th>Name</th>
+        <th>Username</th>
+        <th>Status</th>
+        <th>Last Login</th>
+        <th>Email</th>
+        <th>Auth Provider</th>
+        <th>App ID</th>
+        <th>Roles</th>
+      </tr>
+    </thead>
+    <tbody>
+  <%= for {p, idx} <- Enum.with_index(@people) do %>
+
+      <tr class="hover-bg-light-gray
+        <%= if rem(idx,2) == 0 do %> bb b--moon-gray bg-light-gray <% end %>">
+        <td><a href="/people/<%= p.person_id %>" class="no-underline"><%= p.person_id %></a></td>
+        <td><img width="64px" src="<%= p.picture %>" class="center db br2"/></td>
+        <td><%= p.givenName %></td>
+        <td><%= if map_has_key?(p, :username) do%> <%= p.username %> <% end %></td>
+        <td class="<%= p.status %>"><%= p.status %></td>
+        <td><%= p.updated_at %></td>
+        <%= if show_email(p, @app_ids) do%>
+          <td><%= p.email %></td>
+        <% else %>
+         <td></td>
+        <% end %>
+        <td><%= p.auth_provider %></td>
+        <td><a href="/apps/<%= p.app_id %>" class="no-underline"><%= p.app_id %></a></td>
+        <%= if show_email(p, @app_ids) do%>
+          <td class="<%= p.role %>"><%= p.role %></td>
+        <% end %>
+      </tr>
+  <% end %>
+    </tbody>
+  </table>
+</section>
+
+<style>
+  .creator { background-color: #1abc9c; }
+  .subscriber { background-color: #00d2d3; }
+  .superadmin { background-color: #ffa502; }
+  .verified { background-color: #7bed9f;}
+</style>
+
+<!-- DataTables is an *optional* progressive enhancement
+  that allows sorting and filtering data in-browser -->
+<script src="https://code.jquery.com/jquery-2.2.4.min.js"
+integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+crossorigin="anonymous"></script>
+<link rel="stylesheet" type="text/css"
+href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css">
+<script type="text/javascript" charset="utf8"
+src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js"></script>
+
+<script>
+  $(document).ready(function () {
+      $('#table').DataTable();
+  });
+</script>

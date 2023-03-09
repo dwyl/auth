@@ -172,7 +172,7 @@ mix ecto.gen.migration create_people_roles
 ```
 
 Open the migration file that was just created, e.g: 
-[`/Users/n/code/auth/priv/repo/migrations/20200723154847_create_people_roles.exs`](https://github.com/dwyl/auth/blob/ef4261d09a702c4003cd84f30dabe630b47922d2/priv/repo/migrations/20200723154847_create_people_roles.exs)
+[`/people/n/code/auth/priv/repo/migrations/20200723154847_create_people_roles.exs`](https://github.com/dwyl/auth/blob/ef4261d09a702c4003cd84f30dabe630b47922d2/priv/repo/migrations/20200723154847_create_people_roles.exs)
 
 
 Replace the contents of the file with the following code:

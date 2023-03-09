@@ -1,2 +1,11 @@
-Envar.is_set_all?(~w/ADMIN_EMAIL ENCRYPTION_KEYS SECRET_KEY_BASE/)
-Auth.Init.main()
+# Script for populating the database. You can run it as:
+#
+#     mix run priv/repo/seeds.exs
+#
+# Inside the script, you can read and write to any of your
+# repositories directly:
+#
+#     Auth.Repo.insert!(%Auth.SomeSchema{})
+#
+# We recommend using the bang functions (`insert!`, `update!`
+# and so on) as they will fail if something goes wrong.

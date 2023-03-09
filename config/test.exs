@@ -1,34 +1,36 @@
 import Config
 
+# Only in tests, remove the complexity from the password hashing algorithm
+config :bcrypt_elixir, :log_rounds, 1
+
 # Configure your database
+#
+# The MIX_TEST_PARTITION environment variable can be used
+# to provide built-in test partitioning in CI environment.
+# Run `mix help test` for more information.
 config :auth, Auth.Repo,
   username: "postgres",
   password: "postgres",
-  database: "auth_test",
   hostname: "localhost",
-  pool: Ecto.Adapters.SQL.Sandbox
+  database: "auth_test#{System.get_env("MIX_TEST_PARTITION")}",
+  pool: Ecto.Adapters.SQL.Sandbox,
+  pool_size: 10
 
 # We don't run a server during test. If one is required,
 # you can enable the server option below.
 config :auth, AuthWeb.Endpoint,
-  http: [port: 4002],
-  #  https://elixirforum.com/t/wallaby-with-phoenix-1-16-rc0/42352/9
-  server: true
+  http: [ip: {127, 0, 0, 1}, port: 4002],
+  secret_key_base: "0HdQzCrwmMdbJm1mbFy40/oN0RAhvazIyV9m4aD+WCrrwz2zdXTn9LKmpAgFW1ls",
+  server: false
+
+# In test we don't send emails.
+config :auth, Auth.Mailer, adapter: Swoosh.Adapters.Test
+
+# Disable swoosh api client as it is only required for production adapters.
+config :swoosh, :api_client, false
 
 # Print only warnings and errors during test
-config :logger, level: :warn
+config :logger, level: :warning
 
-config :elixir_auth_google,
-  client_id: "631770888008-6n0oruvsm16kbkqg6u76p5cv5kfkcekt.apps.googleusercontent.com",
-  client_secret: "MHxv6-RGF5nheXnxh1b0LNDq",
-  httpoison_mock: true
-
-config :elixir_auth_github,
-  client_id: "d6fca75c63daa014c187",
-  client_secret: "8eeb143935d1a505692aaef856db9b4da8245f3c",
-  httpoison_mock: true
-
-config :auth_plug,
-  api_key: System.get_env("AUTH_API_KEY"),
-  # "2PzB7PPnpuLsbWmWtXpGyI+kfSQSQ1zUW2Atz/+8PdZuSEJzHgzGnJWV35nTKRwx/authdev.herokuapp.com",
-  httpoison_mock: true
+# Initialize plugs at runtime for faster test compilation
+config :phoenix, :plug_init_mode, :runtime

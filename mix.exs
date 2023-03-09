@@ -1,28 +1,25 @@
-defmodule Auth.Mixfile do
+defmodule Auth.MixProject do
   use Mix.Project
 
   def project do
     [
       app: :auth,
-      version: "1.6.6",
-      elixir: "~> 1.12",
+      version: "2.0.0",
+      elixir: "~> 1.14",
       elixirc_paths: elixirc_paths(Mix.env()),
-      compilers: [:phoenix, :gettext] ++ Mix.compilers(),
+      start_permanent: Mix.env() == :prod,
+      aliases: aliases(),
+      deps: deps(),
       test_coverage: [tool: ExCoveralls],
       preferred_cli_env: [
         c: :test,
         coveralls: :test,
         "coveralls.detail": :test,
         "coveralls.post": :test,
-        "coveralls.html": :test
-      ],
-      dialyzer: [plt_add_deps: :transitive],
-      build_embedded: Mix.env() == :prod,
-      start_permanent: Mix.env() == :prod,
-      aliases: aliases(),
-      deps: deps(),
-      package: package(),
-      description: "Turnkey Auth Auth Application"
+        "coveralls.html": :test,
+        test: :test,
+        t: :test
+      ]
     ]
   end
 
@@ -45,90 +42,58 @@ defmodule Auth.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      # Phoenix core:
-      {:phoenix, "~> 1.6.5"},
+      {:bcrypt_elixir, "~> 3.0"},
+      {:phoenix, "~> 1.7.0"},
       {:phoenix_ecto, "~> 4.4"},
-      {:ecto_sql, "~> 3.7.1"},
-      {:postgrex, ">= 0.15.13"},
-      {:phoenix_html, "~> 3.2.0"},
-      {:phoenix_live_reload, "~> 1.4.1", only: :dev},
-      {:phoenix_live_view, "~> 0.17.5"},
-      {:floki, ">= 0.32.0", only: :test},
-      # {:phoenix_live_dashboard, "~> 0.6.1"},
-      {:esbuild, "~> 0.4", runtime: Mix.env() == :dev},
-      # {:swoosh, "~> 1.5.1"},
-      {:telemetry_metrics, "~> 0.6.1"},
+      {:ecto_sql, "~> 3.6"},
+      {:postgrex, ">= 0.0.0"},
+      {:phoenix_html, "~> 3.3"},
+      {:phoenix_live_reload, "~> 1.2", only: :dev},
+
+      # See: github.com/dwyl/phoenix-liveview-counter-tutorial
+      {:phoenix_live_view, "~> 0.18.16"},
+      {:heroicons, "~> 0.5"},
+      {:floki, ">= 0.30.0", only: :test},
+      {:phoenix_live_dashboard, "~> 0.7.2"},
+      {:esbuild, "~> 0.5", runtime: Mix.env() == :dev},
+
+      # See: github.com/dwyl/learn-tailwind
+      {:tailwind, "~> 0.1.8", runtime: Mix.env() == :dev},
+      {:swoosh, "~> 1.3"},
+      {:finch, "~> 0.13"},
+      {:telemetry_metrics, "~> 0.6"},
       {:telemetry_poller, "~> 1.0"},
-      {:gettext, "~> 0.22.0"},
-      {:jason, "~> 1.3"},
-      {:plug_cowboy, "~> 2.5.2"},
-
-      # Auth:
-      # https://github.com/dwyl/elixir-auth-github
-      {:elixir_auth_github, "~> 1.6.1"},
-
-      # https://github.com/dwyl/elixir-auth-google
-      {:elixir_auth_google, "~> 1.6.2"},
-
-      # Check/get Environment Variables: https://github.com/dwyl/envar
-      {:envar, "~> 1.1.0"},
-
-      # https://github.com/dwyl/auth_plug
-      {:auth_plug, "~> 1.4"},
-
-      # https://github.com/dwyl/rbac
-      {:rbac, "~> 0.7"},
+      {:gettext, "~> 0.20"},
+      {:jason, "~> 1.2"},
+      {:plug_cowboy, "~> 2.5"},
 
       # Field Validation and Encryption: github.com/dwyl/fields
-      {:fields, "~> 2.8.2"},
+      {:fields, "~> 2.10.3"},
 
-      # Base58 Encodeing: https://github.com/dwyl/base58
-      {:b58, "~>1.0.2"},
 
-      # Useful functions: https://github.com/dwyl/useful
-      {:useful, "~> 0.4.0"},
-
-      # Ping to Wake Heroku Instance: https://github.com/dwyl/ping
-      {:ping, "~> 1.1.0"},
-
-      # Check test coverage
-      {:excoveralls, "~> 0.15.1", only: :test},
-
-      #  Property based tests: github.com/dwyl/learn-property-based-testing
-      {:stream_data, "~> 0.5.0", only: :test},
-
-      # Create Documentation for publishing Hex.docs:
-      {:ex_doc, "~> 0.28", only: :dev},
-      {:credo, "~> 1.4", only: [:dev], runtime: false},
-      {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
-      {:sobelow, "~> 0.11.1", only: [:dev]}
+      # Check test coverage: github.com/parroty/excoveralls
+      {:excoveralls, "~> 0.14.3", only: :test},
     ]
   end
 
   # Aliases are shortcuts or tasks specific to the current project.
-  # For example, to create, migrate and run the seeds file at once:
+  # For example, to install project dependencies and perform other setup tasks, run:
   #
-  #     $ mix ecto.setup
+  #     $ mix setup
   #
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
+      "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
+      "assets.build": ["tailwind default", "esbuild default"],
+      "assets.deploy": ["tailwind default --minify", "esbuild default --minify", "phx.digest"],
       c: ["coveralls.html"],
-      "ecto.setup": ["ecto.create --quiet", "ecto.migrate --quiet", "seeds"],
+      "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
-      seeds: ["run priv/repo/seeds.exs"],
-      test: ["ecto.reset", "test"],
-      "assets.deploy": ["esbuild default --minify", "phx.digest"]
-    ]
-  end
-
-  defp package() do
-    [
-      files: ~w(lib LICENSE mix.exs README.md),
-      name: "auth",
-      licenses: ["GPL-2.0-or-later"],
-      maintainers: ["dwyl"],
-      links: %{"GitHub" => "https://github.com/dwyl/auth"}
+      s: ["phx.server"],
+      setup: ["deps.get", "ecto.setup", "assets.setup", "assets.build"],
+      t: ["test"],
+      test: ["ecto.setup --quiet", "ecto.migrate --quiet", "test"]
     ]
   end
 end
