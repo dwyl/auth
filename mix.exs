@@ -95,7 +95,7 @@ defmodule Auth.Mixfile do
       {:excoveralls, "~> 0.15.1", only: :test},
 
       #  Property based tests: github.com/dwyl/learn-property-based-testing
-      {:stream_data, "~> 0.5.0", only: :test},
+      {:stream_data, "~> 0.6.0", only: :test},
 
       # Create Documentation for publishing Hex.docs:
       {:ex_doc, "~> 0.28", only: :dev},
