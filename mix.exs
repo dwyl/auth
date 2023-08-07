@@ -101,7 +101,7 @@ defmodule Auth.Mixfile do
       {:ex_doc, "~> 0.28", only: :dev},
       {:credo, "~> 1.4", only: [:dev], runtime: false},
       {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
-      {:sobelow, "~> 0.11.1", only: [:dev]}
+      {:sobelow, "~> 0.13.0", only: [:dev]}
     ]
   end
 
