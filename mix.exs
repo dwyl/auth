@@ -77,7 +77,7 @@ defmodule Auth.Mixfile do
       {:auth_plug, "~> 1.4"},
 
       # https://github.com/dwyl/rbac
-      {:rbac, "~> 0.7"},
+      {:rbac, "~> 1.0"},
 
       # Field Validation and Encryption: github.com/dwyl/fields
       {:fields, "~> 2.8.2"},
