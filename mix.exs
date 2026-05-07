@@ -80,7 +80,7 @@ defmodule Auth.Mixfile do
       {:rbac, "~> 0.7"},
 
       # Field Validation and Encryption: github.com/dwyl/fields
-      {:fields, "~> 2.8.2"},
+      {:fields, "~> 2.11.0"},
 
       # Base58 Encodeing: https://github.com/dwyl/base58
       {:b58, "~>1.0.2"},
